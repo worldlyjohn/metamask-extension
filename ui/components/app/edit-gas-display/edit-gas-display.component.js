@@ -5,14 +5,14 @@ import BigNumber from 'bignumber.js';
 import { EditGasModes } from '../../../../shared/constants/gas';
 
 import Button from '../../ui/button';
+import Typography from '../../ui/typography/typography';
 
 import {
   TEXT_ALIGN,
+  TypographyVariant,
   FONT_WEIGHT,
   TextColor,
-  TextVariant,
 } from '../../../helpers/constants/design-system';
-import { Text } from '../../component-library';
 import { areDappSuggestedAndTxParamGasFeesTheSame } from '../../../helpers/utils/confirm-tx.util';
 
 import InfoTooltip from '../../ui/info-tooltip';
@@ -97,10 +97,9 @@ export default function EditGasDisplay({
         )}
         {mode === EditGasModes.speedUp && (
           <div className="edit-gas-display__top-tooltip">
-            <Text
+            <Typography
               color={TextColor.textDefault}
-              variant={TextVariant.bodySm}
-              as="h6"
+              variant={TypographyVariant.H8}
               fontWeight={FONT_WEIGHT.BOLD}
             >
               {t('speedUpTooltipText')}{' '}
@@ -108,17 +107,16 @@ export default function EditGasDisplay({
                 position="top"
                 contentText={t('speedUpExplanation')}
               />
-            </Text>
+            </Typography>
           </div>
         )}
-        <Text
+        <Typography
           color={TextColor.textDefault}
-          variant={TextVariant.displayMd}
-          as="h1"
-          textAlign={TEXT_ALIGN.CENTER}
+          variant={TypographyVariant.H1}
+          align={TEXT_ALIGN.CENTER}
         >
           {estimatedMinimumNative}
-        </Text>
+        </Typography>
         {requireDappAcknowledgement && (
           <Button
             className="edit-gas-display__dapp-acknowledgement-button"

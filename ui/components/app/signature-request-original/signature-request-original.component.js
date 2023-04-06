@@ -24,8 +24,6 @@ import { EtherDenomination } from '../../../../shared/constants/common';
 import ConfirmPageContainerNavigation from '../confirm-page-container/confirm-page-container-navigation';
 import SecurityProviderBannerMessage from '../security-provider-banner-message/security-provider-banner-message';
 import { SECURITY_PROVIDER_MESSAGE_SEVERITIES } from '../security-provider-banner-message/security-provider-banner-message.constants';
-import { formatCurrency } from '../../../helpers/utils/confirm-tx.util';
-import { getValueFromWeiHex } from '../../../../shared/modules/conversion.utils';
 import SignatureRequestOriginalWarning from './signature-request-original-warning';
 
 export default class SignatureRequestOriginal extends Component {
@@ -49,8 +47,6 @@ export default class SignatureRequestOriginal extends Component {
     hardwareWalletRequiresConnection: PropTypes.bool,
     isLedgerWallet: PropTypes.bool,
     nativeCurrency: PropTypes.string.isRequired,
-    currentCurrency: PropTypes.string.isRequired,
-    conversionRate: PropTypes.number,
     messagesCount: PropTypes.number,
     showRejectTransactionsConfirmationModal: PropTypes.func.isRequired,
     cancelAll: PropTypes.func.isRequired,
@@ -73,8 +69,6 @@ export default class SignatureRequestOriginal extends Component {
         return t('goerli');
       case NETWORK_TYPES.SEPOLIA:
         return t('sepolia');
-      case NETWORK_TYPES.LINEA_TESTNET:
-        return t('lineatestnet');
       case NETWORK_TYPES.LOCALHOST:
         return t('localhost');
       default:
@@ -154,7 +148,6 @@ export default class SignatureRequestOriginal extends Component {
         ) : null}
         <div className="request-signature__origin">
           <SiteOrigin
-            title={txData.msgParams.origin}
             siteOrigin={txData.msgParams.origin}
             iconSrc={targetSubjectMetadata?.iconUrl}
             iconName={
@@ -287,9 +280,7 @@ export default class SignatureRequestOriginal extends Component {
     const {
       messagesCount,
       nativeCurrency,
-      currentCurrency,
       fromAccount: { address, balance, name },
-      conversionRate,
     } = this.props;
     const { showSignatureRequestWarning } = this.state;
     const { t } = this.context;
@@ -297,23 +288,11 @@ export default class SignatureRequestOriginal extends Component {
     const rejectNText = t('rejectRequestsN', [messagesCount]);
     const currentNetwork = this.getNetworkName();
 
-    const balanceInBaseAsset = conversionRate
-      ? formatCurrency(
-          getValueFromWeiHex({
-            value: balance,
-            fromCurrency: nativeCurrency,
-            toCurrency: currentCurrency,
-            conversionRate,
-            numberOfDecimals: 6,
-            toDenomination: EtherDenomination.ETH,
-          }),
-          currentCurrency,
-        )
-      : new Numeric(balance, 16, EtherDenomination.WEI)
-          .toDenomination(EtherDenomination.ETH)
-          .round(6)
-          .toBase(10)
-          .toString();
+    const balanceInBaseAsset = new Numeric(balance, 16, EtherDenomination.WEI)
+      .toDenomination(EtherDenomination.ETH)
+      .toBase(10)
+      .round(6)
+      .toString();
 
     return (
       <div className="request-signature__container">
@@ -325,9 +304,7 @@ export default class SignatureRequestOriginal extends Component {
             networkName={currentNetwork}
             accountName={name}
             accountBalance={balanceInBaseAsset}
-            tokenName={
-              conversionRate ? currentCurrency?.toUpperCase() : nativeCurrency
-            }
+            tokenName={nativeCurrency}
             accountAddress={address}
           />
         </div>

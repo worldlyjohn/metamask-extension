@@ -33,7 +33,7 @@ describe('fetchEstimatedL1Fee', () => {
         result: `0x0000000000000000000000000000000000000000000000000000${expectedGasFeeResult}`,
       });
 
-    const gasFee = await fetchEstimatedL1Fee('10', {
+    const gasFee = await fetchEstimatedL1Fee({
       txParams: {
         gasPrice: '0xf4240',
         gas: '0xcf08',
@@ -43,6 +43,7 @@ describe('fetchEstimatedL1Fee', () => {
         data: null,
         type: '0x0',
       },
+      chainId: '10',
     });
     expect(gasFee).toStrictEqual(`0x${expectedGasFeeResult}`);
   });

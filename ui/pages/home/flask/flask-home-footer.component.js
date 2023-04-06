@@ -3,9 +3,9 @@ import React, { useContext } from 'react';
 import { SUPPORT_REQUEST_LINK } from '../../../helpers/constants/common';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import {
-  MetaMetricsContextProp,
-  MetaMetricsEventCategory,
-  MetaMetricsEventName,
+  EVENT,
+  EVENT_NAMES,
+  CONTEXT_PROPS,
 } from '../../../../shared/constants/metametrics';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
 
@@ -22,16 +22,14 @@ const FlaskHomeFooter = () => {
         onClick={() => {
           trackEvent(
             {
-              category: MetaMetricsEventCategory.Footer,
-              event: MetaMetricsEventName.SupportLinkClicked,
+              category: EVENT.CATEGORIES.FOOTER,
+              event: EVENT_NAMES.SUPPORT_LINK_CLICKED,
               properties: {
                 url: SUPPORT_REQUEST_LINK,
               },
             },
             {
-              contextPropsIntoEventProperties: [
-                MetaMetricsContextProp.PageTitle,
-              ],
+              contextPropsIntoEventProperties: [CONTEXT_PROPS.PAGE_TITLE],
             },
           );
         }}

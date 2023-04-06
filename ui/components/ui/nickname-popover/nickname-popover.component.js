@@ -11,11 +11,7 @@ import { shortenAddress } from '../../../helpers/utils/util';
 import { useCopyToClipboard } from '../../../hooks/useCopyToClipboard';
 import { getTokenList, getBlockExplorerLinkText } from '../../../selectors';
 import { NETWORKS_ROUTE } from '../../../helpers/constants/routes';
-import {
-  ICON_NAMES,
-  ICON_SIZES,
-} from '../../component-library/icon/deprecated';
-import { ButtonIcon } from '../../component-library';
+import { ButtonIcon, ICON_NAMES, ICON_SIZES } from '../../component-library';
 
 const NicknamePopover = ({
   address,

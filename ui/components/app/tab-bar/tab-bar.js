@@ -2,11 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-import {
-  Icon,
-  ICON_NAMES,
-  ICON_SIZES,
-} from '../../component-library/icon/deprecated';
+import { Icon, ICON_NAMES, ICON_SIZES } from '../../component-library';
 
 const TabBar = (props) => {
   const { tabs = [], onSelect, isActive } = props;

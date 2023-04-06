@@ -3,7 +3,7 @@ import configureStore from 'redux-mock-store';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { renderWithProvider } from '../../../../test/lib/render-helpers';
 import { CHAIN_IDS } from '../../../../shared/constants/network';
-import { KeyringType } from '../../../../shared/constants/keyring';
+import { HardwareKeyringTypes } from '../../../../shared/constants/hardware-wallets';
 import MenuBar from './menu-bar';
 
 const initState = {
@@ -21,11 +21,11 @@ const initState = {
     },
     keyrings: [
       {
-        type: KeyringType.hdKeyTree,
+        type: HardwareKeyringTypes.hdKeyTree,
         accounts: ['0x0dcd5d886577d5081b0c52e242ef29e70be3e7bc'],
       },
     ],
-    networkConfigurations: {},
+    frequentRpcListDetail: [],
   },
 };
 const mockStore = configureStore();

@@ -3,7 +3,7 @@ import { ObservableStore } from '@metamask/obs-store';
 import { ethErrors } from 'eth-rpc-errors';
 import log from 'loglevel';
 import { MESSAGE_TYPE } from '../../../shared/constants/app';
-import { MetaMetricsEventCategory } from '../../../shared/constants/metametrics';
+import { EVENT } from '../../../shared/constants/metametrics';
 import { METAMASK_CONTROLLER_EVENTS } from '../metamask-controller';
 import createId from '../../../shared/modules/random-id';
 
@@ -225,7 +225,7 @@ export default class EncryptionPublicKeyManager extends EventEmitter {
     if (reason) {
       this.metricsEvent({
         event: reason,
-        category: MetaMetricsEventCategory.Messages,
+        category: EVENT.CATEGORIES.MESSAGES,
         properties: {
           action: 'Encryption public key Request',
         },

@@ -33,6 +33,8 @@ const t = (key) => {
       return 'Clear activity and nonce data';
     case 'clearActivityDescription':
       return "This resets the account's nonce and erases data from the activity tab in your wallet. Only the current account and network will be affected. Your balances and incoming transactions won't change.";
+    case 'showAdvancedGasInline':
+      return 'Advanced gas controls';
     case 'showAdvancedGasInlineDescription':
       return 'Select this to show gas price and limit controls directly on the send and confirm screens.';
     case 'showHexData':
@@ -157,7 +159,7 @@ describe('Settings Search Utils', () => {
     });
 
     it('should get good advanced section number', () => {
-      expect(getNumberOfSettingsInSection(t, t('advanced'))).toStrictEqual(13);
+      expect(getNumberOfSettingsInSection(t, t('advanced'))).toStrictEqual(14);
     });
 
     it('should get good contact section number', () => {
@@ -175,12 +177,12 @@ describe('Settings Search Utils', () => {
     });
 
     it('should get good network section number', () => {
-      expect(getNumberOfSettingsInSection(t, t('networks'))).toStrictEqual(5);
+      expect(getNumberOfSettingsInSection(t, t('networks'))).toStrictEqual(4);
     });
 
     it('should get good experimental section number', () => {
       expect(getNumberOfSettingsInSection(t, t('experimental'))).toStrictEqual(
-        3,
+        1,
       );
     });
 

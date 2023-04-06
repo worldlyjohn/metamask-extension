@@ -10,7 +10,7 @@ const FixtureBuilder = require('../fixture-builder');
 
 const downloadsFolder = `${process.cwd()}/test-artifacts/downloads`;
 
-const getBackupJson = async () => {
+const backupExists = async () => {
   const date = new Date();
 
   const prependZero = (num, maxLength) => {
@@ -31,10 +31,9 @@ const getBackupJson = async () => {
   try {
     const backup = `${downloadsFolder}/${userDataFileName}`;
     await fs.access(backup);
-    const contents = await fs.readFile(backup);
-    return JSON.parse(contents.toString());
+    return true;
   } catch (e) {
-    return null;
+    return false;
   }
 };
 
@@ -79,17 +78,12 @@ describe('Backup and Restore', function () {
         });
 
         // Verify download
-        let info;
+        let fileExists;
         await driver.wait(async () => {
-          info = await getBackupJson();
-          return info !== null;
+          fileExists = await backupExists();
+          return fileExists === true;
         }, 10000);
-        assert.notEqual(info, null);
-        // Verify Json
-        assert.equal(
-          Object.values(info?.network?.networkConfigurations)?.[0].chainId,
-          '0x539',
-        );
+        assert.equal(fileExists, true);
       },
     );
   });

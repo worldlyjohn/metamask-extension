@@ -73,7 +73,6 @@ exports[`Signature Request Component render should match snapshot 1`] = `
     </div>
     <div
       class="request-signature__account"
-      data-testid="request-signature-account"
     >
       <div
         class="box network-account-balance-header box--padding-4 box--display-flex box--flex-direction-row box--justify-content-space-between box--align-items-center"
@@ -368,7 +367,7 @@ exports[`Signature Request Component render should match snapshot 1`] = `
                             </div>
                           </div>
                           <div
-                            class="tx-insight-component-address__name"
+                            class="address__name"
                           >
                             0xCD2...D826
                           </div>
@@ -444,7 +443,7 @@ exports[`Signature Request Component render should match snapshot 1`] = `
                             </div>
                           </div>
                           <div
-                            class="tx-insight-component-address__name"
+                            class="address__name"
                           >
                             0xDea...beeF
                           </div>
@@ -579,7 +578,7 @@ exports[`Signature Request Component render should match snapshot 1`] = `
                                 </div>
                               </div>
                               <div
-                                class="tx-insight-component-address__name"
+                                class="address__name"
                               >
                                 0xbBb...BBbB
                               </div>
@@ -655,7 +654,7 @@ exports[`Signature Request Component render should match snapshot 1`] = `
                                 </div>
                               </div>
                               <div
-                                class="tx-insight-component-address__name"
+                                class="address__name"
                               >
                                 0xB0B...Ea57
                               </div>
@@ -731,7 +730,7 @@ exports[`Signature Request Component render should match snapshot 1`] = `
                                 </div>
                               </div>
                               <div
-                                class="tx-insight-component-address__name"
+                                class="address__name"
                               >
                                 0xB0B...0000
                               </div>

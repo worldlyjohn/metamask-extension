@@ -3,8 +3,7 @@ import { MESSAGE_TYPE } from '../../../../shared/constants/app';
 import {
   rejectPendingApproval,
   resolvePendingApproval,
-  setNewNetworkAdded,
-  upsertNetworkConfiguration,
+  addCustomNetwork,
 } from '../../../store/actions';
 import addEthereumChain from './add-ethereum-chain';
 import switchEthereumChain from './switch-ethereum-chain';
@@ -34,7 +33,6 @@ const ALLOWED_TEMPLATE_KEYS = [
   'onSubmit',
   'networkDisplay',
   'submitText',
-  'loadingText',
 ];
 
 /**
@@ -112,9 +110,7 @@ function getAttenuatedDispatch(dispatch) {
       dispatch(rejectPendingApproval(...args)),
     resolvePendingApproval: (...args) =>
       dispatch(resolvePendingApproval(...args)),
-    upsertNetworkConfiguration: (...args) =>
-      dispatch(upsertNetworkConfiguration(...args)),
-    setNewNetworkAdded: (...args) => dispatch(setNewNetworkAdded(...args)),
+    addCustomNetwork: (...args) => dispatch(addCustomNetwork(...args)),
   };
 }
 

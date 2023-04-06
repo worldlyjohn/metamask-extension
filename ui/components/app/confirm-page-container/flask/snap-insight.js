@@ -1,26 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { useSelector } from 'react-redux';
 import Preloader from '../../../ui/icon/preloader/preloader-icon.component';
-import { Text } from '../../../component-library';
+import Typography from '../../../ui/typography/typography';
 import {
   AlignItems,
   FLEX_DIRECTION,
   JustifyContent,
   TEXT_ALIGN,
   TextColor,
-  TextVariant,
+  TypographyVariant,
 } from '../../../../helpers/constants/design-system';
 import { useI18nContext } from '../../../../hooks/useI18nContext';
 import { useTransactionInsightSnap } from '../../../../hooks/flask/useTransactionInsightSnap';
 import Box from '../../../ui/box/box';
+import ActionableMessage from '../../../ui/actionable-message/actionable-message';
 import { SnapUIRenderer } from '../../flask/snap-ui-renderer';
-import { SnapDelineator } from '../../flask/snap-delineator';
-import { DelineatorType } from '../../../../helpers/constants/flask';
-import { getSnapName } from '../../../../helpers/utils/util';
-import { Copyable } from '../../flask/copyable';
-import { getTargetSubjectMetadata } from '../../../../selectors';
 
 export const SnapInsight = ({ transaction, origin, chainId, selectedSnap }) => {
   const t = useI18nContext();
@@ -34,12 +29,6 @@ export const SnapInsight = ({ transaction, origin, chainId, selectedSnap }) => {
     origin,
     snapId: selectedSnap.id,
   });
-
-  const targetSubjectMetadata = useSelector((state) =>
-    getTargetSubjectMetadata(state, selectedSnap.id),
-  );
-
-  const snapName = getSnapName(selectedSnap.id, targetSubjectMetadata);
 
   const data = response?.content;
 
@@ -63,45 +52,48 @@ export const SnapInsight = ({ transaction, origin, chainId, selectedSnap }) => {
           className="snap-insight__container"
         >
           {data && Object.keys(data).length > 0 ? (
-            <SnapUIRenderer
-              snapId={selectedSnap.id}
-              data={data}
-              delineatorType={DelineatorType.Insights}
-            />
+            <SnapUIRenderer snapId={selectedSnap.id} data={data} />
           ) : (
-            <Text
+            <Typography
               color={TextColor.textAlternative}
-              variant={TextVariant.bodySm}
-              as="h6"
+              variant={TypographyVariant.H6}
             >
               {t('snapsNoInsight')}
-            </Text>
+            </Typography>
           )}
         </Box>
       )}
 
       {!loading && error && (
-        <Box padding={4} className="snap-insight__container__error">
-          <SnapDelineator snapName={snapName} type={DelineatorType.Error}>
-            <Text variant={TextVariant.bodySm} marginBottom={4}>
-              {t('snapsUIError', [<b key="0">{snapName}</b>])}
-            </Text>
-            <Copyable text={error.message} />
-          </SnapDelineator>
+        <Box
+          paddingTop={0}
+          paddingRight={6}
+          paddingBottom={3}
+          paddingLeft={6}
+          className="snap-insight__container__error"
+        >
+          <ActionableMessage
+            message={t('snapsInsightError', [
+              selectedSnap.manifest.proposedName,
+              error.message,
+            ])}
+            type="danger"
+            useIcon
+            iconFillColor="var(--color-error-default)"
+          />
         </Box>
       )}
 
       {loading && (
         <>
           <Preloader size={40} />
-          <Text
+          <Typography
             marginTop={3}
             color={TextColor.textAlternative}
-            variant={TextVariant.bodySm}
-            as="h6"
+            variant={TypographyVariant.H6}
           >
             {t('snapsInsightLoading')}
-          </Text>
+          </Typography>
         </>
       )}
     </Box>

@@ -2,12 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-import { BannerBase, Icon, IconName, IconSize } from '..';
+import { BannerBase, Icon, ICON_NAMES } from '..';
 
 import {
   BackgroundColor,
   IconColor,
   SEVERITIES,
+  Size,
 } from '../../../helpers/constants/design-system';
 import { BANNER_ALERT_SEVERITIES } from './banner-alert.constants';
 
@@ -21,23 +22,23 @@ export const BannerAlert = ({
     switch (severity) {
       case SEVERITIES.DANGER:
         return {
-          name: IconName.Danger,
+          name: ICON_NAMES.DANGER,
           color: IconColor.errorDefault,
         };
       case SEVERITIES.WARNING:
         return {
-          name: IconName.Warning,
+          name: ICON_NAMES.WARNING,
           color: IconColor.warningDefault,
         };
       case SEVERITIES.SUCCESS:
         return {
-          name: IconName.Confirmation,
+          name: ICON_NAMES.CONFIRMATION,
           color: IconColor.successDefault,
         };
       // Defaults to SEVERITIES.INFO
       default:
         return {
-          name: IconName.Info,
+          name: ICON_NAMES.INFO,
           color: IconColor.primaryDefault,
         };
     }
@@ -59,7 +60,7 @@ export const BannerAlert = ({
 
   return (
     <BannerBase
-      startAccessory={<Icon size={IconSize.Lg} {...severityIcon()} />}
+      startAccessory={<Icon size={Size.LG} {...severityIcon()} />}
       backgroundColor={severityBackground()}
       paddingLeft={2}
       className={classnames(

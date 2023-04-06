@@ -20,10 +20,7 @@ import { ONBOARDING_COMPLETION_ROUTE } from '../../../helpers/constants/routes';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import { setSeedPhraseBackedUp } from '../../../store/actions';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
-import {
-  MetaMetricsEventCategory,
-  MetaMetricsEventName,
-} from '../../../../shared/constants/metametrics';
+import { EVENT_NAMES, EVENT } from '../../../../shared/constants/metametrics';
 import RecoveryPhraseChips from './recovery-phrase-chips';
 
 export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
@@ -108,9 +105,8 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
           onClick={async () => {
             await dispatch(setSeedPhraseBackedUp(true));
             trackEvent({
-              category: MetaMetricsEventCategory.Onboarding,
-              event:
-                MetaMetricsEventName.OnboardingWalletSecurityPhraseConfirmed,
+              category: EVENT.CATEGORIES.ONBOARDING,
+              event: EVENT_NAMES.ONBOARDING_WALLET_SECURITY_PHRASE_CONFIRMED,
             });
             history.push(ONBOARDING_COMPLETION_ROUTE);
           }}

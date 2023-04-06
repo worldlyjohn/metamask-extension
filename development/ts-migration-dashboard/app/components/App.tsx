@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
+import classnames from 'classnames';
+import { Tooltip as ReactTippy } from 'react-tippy';
 import { readPartitionsFile } from '../../common/partitions-file';
-import type { ModulePartitionChild } from '../../common/build-module-partitions';
-import Box from './Box';
-import Connections from './Connections';
-import type { BoxRect, BoxModel } from './types';
 
 type Summary = {
   numConvertedModules: number;
@@ -14,85 +12,16 @@ function calculatePercentageComplete(summary: Summary) {
   return ((summary.numConvertedModules / summary.numModules) * 100).toFixed(1);
 }
 
-const partitions = readPartitionsFile();
-const allModules = partitions.flatMap((partition) => {
-  return partition.children;
-});
-const modulesById = allModules.reduce<Record<string, ModulePartitionChild>>(
-  (obj, module) => {
-    return { ...obj, [module.id]: module };
-  },
-  {},
-);
-const overallTotal = {
-  numConvertedModules: allModules.filter((module) => module.hasBeenConverted)
-    .length,
-  numModules: allModules.length,
-};
-
 export default function App() {
-  const [boxRectsByModuleId, setBoxRectsById] = useState<Record<
-    string,
-    BoxRect
-  > | null>(null);
-  const boxesByModuleId =
-    boxRectsByModuleId === null
-      ? {}
-      : Object.values(boxRectsByModuleId).reduce<Record<string, BoxModel>>(
-          (obj, boxRect) => {
-            const module = modulesById[boxRect.moduleId];
+  const partitions = readPartitionsFile();
 
-            const dependencyBoxRects = module.dependencyIds.reduce<BoxRect[]>(
-              (dependencyBoxes, dependencyId) => {
-                if (boxRectsByModuleId[dependencyId] === undefined) {
-                  return dependencyBoxes;
-                }
-                return [...dependencyBoxes, boxRectsByModuleId[dependencyId]];
-              },
-              [],
-            );
-
-            const dependentBoxRects = module.dependentIds.reduce<BoxRect[]>(
-              (dependentBoxes, dependentId) => {
-                if (boxRectsByModuleId[dependentId] === undefined) {
-                  return dependentBoxes;
-                }
-                return [...dependentBoxes, boxRectsByModuleId[dependentId]];
-              },
-              [],
-            );
-
-            return {
-              ...obj,
-              [boxRect.moduleId]: {
-                rect: boxRect,
-                dependencyBoxRects,
-                dependentBoxRects,
-              },
-            };
-          },
-          {},
-        );
-  const [activeBoxRectId, setActiveBoxRectId] = useState<string | null>(null);
-  const activeBoxRect =
-    boxRectsByModuleId === null || activeBoxRectId === null
-      ? null
-      : boxRectsByModuleId[activeBoxRectId];
-
-  const registerBox = (id: string, boxRect: BoxRect) => {
-    setBoxRectsById((existingBoxRectsById) => {
-      if (existingBoxRectsById === undefined) {
-        return { [id]: boxRect };
-      }
-      return { ...existingBoxRectsById, [id]: boxRect };
-    });
-  };
-  const toggleConnectionsFor = (id: string) => {
-    if (activeBoxRectId !== undefined && activeBoxRectId === id) {
-      setActiveBoxRectId(null);
-    } else {
-      setActiveBoxRectId(id);
-    }
+  const allModules = partitions.flatMap((partition) => {
+    return partition.children;
+  });
+  const overallTotal = {
+    numConvertedModules: allModules.filter((module) => module.hasBeenConverted)
+      .length,
+    numModules: allModules.length,
   };
 
   return (
@@ -121,35 +50,17 @@ export default function App() {
           </p>
 
           <p>
-            Each box on this page represents a file in the codebase. Gray boxes
-            <span className="module module--inline module--to-be-converted">
+            Each box
+            <div className="module module--inline module--to-be-converted">
               &nbsp;
-            </span>
-            represent files that need to be converted to TypeScript. Green boxes
-            <span className="module module--inline module--has-been-converted">
+            </div>
+            on this page represents a file that either we want to convert or
+            we've already converted to TypeScript (hover over a box to see the
+            filename). Boxes that are
+            <div className="module module--inline module--to-be-converted module--test">
               &nbsp;
-            </span>
-            are files that have already been converted. Faded boxes
-            <span className="module module--inline module--to-be-converted module--test">
-              &nbsp;
-            </span>
-            <span
-              className="module module--inline module--has-been-converted module--test"
-              style={{ marginLeft: 0 }}
-            >
-              &nbsp;
-            </span>
-            are test or Storybook files.
-          </p>
-
-          <p>
-            You can hover over a box to see the name of the file that it
-            represents. You can also click on a box to see connections between
-            other files;{' '}
-            <strong className="module-connection__dependency">red</strong> lines
-            lead to dependencies (other files that import the file);{' '}
-            <strong className="module-connection__dependent">blue</strong> lines
-            lead to dependents (other files that are imported by the file).
+            </div>
+            greyed out are test or Storybook files.
           </p>
 
           <p>
@@ -192,25 +103,36 @@ export default function App() {
             <div key={partition.level} className="partition">
               <div className="partition__name">level {partition.level}</div>
               <div className="partition__children">
-                {partition.children.map((module) => {
-                  const areConnectionsVisible = activeBoxRectId === module.id;
+                {partition.children.map(({ name, hasBeenConverted }) => {
+                  const isTest = /\.test\.(?:js|tsx?)/u.test(name);
+                  const isStorybookModule = /\.stories\.(?:js|tsx?)/u.test(
+                    name,
+                  );
                   return (
-                    <Box
-                      key={module.id}
-                      module={module}
-                      register={registerBox}
-                      toggleConnectionsFor={toggleConnectionsFor}
-                      areConnectionsVisible={areConnectionsVisible}
-                    />
+                    <ReactTippy
+                      key={name}
+                      title={name}
+                      arrow={true}
+                      animation="fade"
+                      duration={250}
+                      className="module__tooltipped"
+                      style={{ display: 'block' }}
+                    >
+                      <div
+                        className={classnames('module', {
+                          'module--has-been-converted': hasBeenConverted,
+                          'module--to-be-converted': !hasBeenConverted,
+                          'module--test': isTest,
+                          'module--storybook': isStorybookModule,
+                        })}
+                      />
+                    </ReactTippy>
                   );
                 })}
               </div>
             </div>
           );
         })}
-        {activeBoxRect === null ? null : (
-          <Connections activeBox={boxesByModuleId[activeBoxRect.moduleId]} />
-        )}
       </div>
     </>
   );

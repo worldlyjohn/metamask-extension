@@ -38,7 +38,7 @@ describe('Test Snap Error', function () {
         await driver.delay(1000);
 
         // switch to metamask extension and click connect
-        const windowHandles = await driver.waitUntilXWindowHandles(
+        let windowHandles = await driver.waitUntilXWindowHandles(
           3,
           1000,
           10000,
@@ -48,40 +48,41 @@ describe('Test Snap Error', function () {
           'MetaMask Notification',
           windowHandles,
         );
-        await driver.clickElement({
-          text: 'Connect',
-          tag: 'button',
-        });
+        await driver.clickElement(
+          {
+            text: 'Connect',
+            tag: 'button',
+          },
+          10000,
+        );
 
-        await driver.waitForSelector({ text: 'Approve & install' });
+        await driver.delay(2000);
 
+        // approve install of snap
+        windowHandles = await driver.waitUntilXWindowHandles(3, 1000, 10000);
+        await driver.switchToWindowWithTitle(
+          'MetaMask Notification',
+          windowHandles,
+        );
         await driver.clickElement({
           text: 'Approve & install',
           tag: 'button',
         });
 
-        await driver.waitForSelector({ text: 'Ok' });
-
-        await driver.clickElement({
-          text: 'Ok',
-          tag: 'button',
-        });
+        // delay for npm installation
+        await driver.delay(2000);
 
         // click send inputs on test snap page
+        windowHandles = await driver.waitUntilXWindowHandles(2, 1000, 10000);
         await driver.switchToWindowWithTitle('Test Snaps', windowHandles);
-
-        // wait for npm installation success
-        await driver.waitForSelector({
-          css: '#connectErrorSnap',
-          text: 'Reconnect to Error Snap',
-        });
+        await driver.delay(1000);
 
         // find and click on send error
         await driver.clickElement('#sendError');
 
         // switch back to the extension page
         await driver.switchToWindow(extensionPage);
-        await driver.delay(500);
+        await driver.delay(1000);
 
         // look for the actual error and check if it is correct
         const error = await driver.findElement(

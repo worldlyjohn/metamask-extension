@@ -5,9 +5,8 @@ import { useSelector } from 'react-redux';
 import { useI18nContext } from '../../../../hooks/useI18nContext';
 import { MetaMetricsContext } from '../../../../contexts/metametrics';
 import {
-  MetaMetricsEventCategory,
-  MetaMetricsEventName,
-  MetaMetricsTokenEventSource,
+  EVENT,
+  EVENT_NAMES,
 } from '../../../../../shared/constants/metametrics';
 import { getDetectedTokensInCurrentNetwork } from '../../../../selectors';
 
@@ -41,10 +40,10 @@ const DetectedTokenSelectionPopover = ({
       ({ address, symbol }) => `${symbol} - ${address}`,
     );
     trackEvent({
-      event: MetaMetricsEventName.TokenImportCanceled,
-      category: MetaMetricsEventCategory.Wallet,
+      event: EVENT_NAMES.TOKEN_IMPORT_CANCELED,
+      category: EVENT.CATEGORIES.WALLET,
       properties: {
-        source: MetaMetricsTokenEventSource.Detected,
+        source: EVENT.SOURCE.TOKEN.DETECTED,
         tokens: eventTokensDetails,
       },
     });
@@ -63,7 +62,6 @@ const DetectedTokenSelectionPopover = ({
         className="detected-token-selection-popover__import-button"
         type="primary"
         onClick={onImport}
-        disabled={selectedTokens.length === 0}
       >
         {t('importWithCount', [numOfTokensImporting])}
       </Button>

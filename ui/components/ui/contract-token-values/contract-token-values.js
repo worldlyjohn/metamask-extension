@@ -16,8 +16,7 @@ import {
   Color,
 } from '../../../helpers/constants/design-system';
 import { useCopyToClipboard } from '../../../hooks/useCopyToClipboard';
-import { ButtonIcon } from '../../component-library';
-import { ICON_NAMES } from '../../component-library/icon/deprecated';
+import { ButtonIcon, ICON_NAMES } from '../../component-library';
 
 export default function ContractTokenValues({
   address,

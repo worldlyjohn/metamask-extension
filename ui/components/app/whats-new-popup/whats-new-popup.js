@@ -8,7 +8,7 @@ import { I18nContext } from '../../../contexts/i18n';
 import { useEqualityCheck } from '../../../hooks/useEqualityCheck';
 import Button from '../../ui/button';
 import Popover from '../../ui/popover';
-import { Text } from '../../component-library';
+import Typography from '../../ui/typography';
 import { updateViewedNotifications } from '../../../store/actions';
 import { getTranslatedUINotifications } from '../../../../shared/notifications';
 import { getSortedAnnouncementsToShow } from '../../../selectors';
@@ -18,7 +18,7 @@ import {
   EXPERIMENTAL_ROUTE,
   SECURITY_ROUTE,
 } from '../../../helpers/constants/routes';
-import { TextVariant } from '../../../helpers/constants/design-system';
+import { TypographyVariant } from '../../../helpers/constants/design-system';
 import ZENDESK_URLS from '../../../helpers/constants/zendesk-url';
 
 function getActionFunctionById(id, history) {
@@ -59,19 +59,9 @@ function getActionFunctionById(id, history) {
       updateViewedNotifications({ 14: true });
       history.push(`${ADVANCED_ROUTE}#backup-userdata`);
     },
-    16: () => {
-      updateViewedNotifications({ 16: true });
-    },
     17: () => {
       updateViewedNotifications({ 17: true });
-    },
-    18: () => {
-      updateViewedNotifications({ 18: true });
-      history.push(`${EXPERIMENTAL_ROUTE}#transaction-security-check`);
-    },
-    19: () => {
-      updateViewedNotifications({ 19: true });
-      history.push(`${EXPERIMENTAL_ROUTE}#autodetect-nfts`);
+      history.push(SECURITY_ROUTE);
     },
   };
 
@@ -80,7 +70,11 @@ function getActionFunctionById(id, history) {
 
 const renderDescription = (description) => {
   if (!Array.isArray(description)) {
-    return <Text variant={TextVariant.bodyMd}>{description}</Text>;
+    return (
+      <Typography variant={TypographyVariant.paragraph}>
+        {description}
+      </Typography>
+    );
   }
 
   return (
@@ -88,13 +82,13 @@ const renderDescription = (description) => {
       {description.map((piece, index) => {
         const isLast = index === description.length - 1;
         return (
-          <Text
+          <Typography
             key={`item-${index}`}
-            variant={TextVariant.bodyMd}
-            marginBottom={isLast ? 0 : 4}
+            variant={TypographyVariant.paragraph}
+            boxProps={{ marginBottom: isLast ? 0 : 2 }}
           >
             {piece}
-          </Text>
+          </Typography>
         );
       })}
     </>
@@ -123,10 +117,8 @@ const renderFirstNotification = (notification, idRefMap, history, isLast) => {
       )}
       key={`whats-new-popop-notification-${id}`}
     >
-      <Text variant={TextVariant.bodyLgMedium} marginBottom={2}>
-        {title}
-      </Text>
       {!placeImageBelowDescription && imageComponent}
+      <div className="whats-new-popup__notification-title">{title}</div>
       <div className="whats-new-popup__description-and-date">
         <div className="whats-new-popup__notification-description">
           {renderDescription(description)}
@@ -136,7 +128,7 @@ const renderFirstNotification = (notification, idRefMap, history, isLast) => {
       {placeImageBelowDescription && imageComponent}
       {actionText && (
         <Button
-          type="primary"
+          type="secondary"
           className="whats-new-popup__button"
           onClick={actionFunction}
         >
@@ -195,7 +187,6 @@ export default function WhatsNewPopup({ onClose }) {
   const locale = useSelector(getCurrentLocale);
 
   const [seenNotifications, setSeenNotifications] = useState({});
-  const [shouldShowScrollButton, setShouldShowScrollButton] = useState(true);
 
   const popoverRef = useRef();
 
@@ -212,15 +203,6 @@ export default function WhatsNewPopup({ onClose }) {
     [memoizedNotifications],
   );
 
-  const handleScrollDownClick = (e) => {
-    e.stopPropagation();
-    idRefMap[notifications[notifications.length - 1].id].current.scrollIntoView(
-      {
-        behavior: 'smooth',
-      },
-    );
-    setShouldShowScrollButton(false);
-  };
   useEffect(() => {
     const observer = new window.IntersectionObserver(
       (entries, _observer) => {
@@ -256,24 +238,20 @@ export default function WhatsNewPopup({ onClose }) {
 
   return (
     <Popover
-      title={t('whatsNew')}
-      headerProps={{ padding: [4, 4, 4] }}
       className="whats-new-popup__popover"
+      title={t('whatsNew')}
       onClose={() => {
         updateViewedNotifications(seenNotifications);
         onClose();
       }}
       popoverRef={popoverRef}
-      showScrollDown={shouldShowScrollButton && notifications.length > 1}
-      onScrollDownButtonClick={handleScrollDownClick}
     >
       <div className="whats-new-popup__notifications">
         {notifications.map(({ id }, index) => {
           const notification = getTranslatedUINotifications(t, locale)[id];
           const isLast = index === notifications.length - 1;
           // Display the swaps notification with full image
-          // Displays the NFTs & OpenSea notifications 18,19 with full image
-          return index === 0 || id === 1 || id === 18 || id === 19
+          return index === 0 || id === 1
             ? renderFirstNotification(notification, idRefMap, history, isLast)
             : renderSubsequentNotification(
                 notification,

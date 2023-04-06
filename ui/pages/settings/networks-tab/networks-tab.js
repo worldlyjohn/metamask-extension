@@ -10,19 +10,17 @@ import {
   DEFAULT_ROUTE,
   NETWORKS_ROUTE,
 } from '../../../helpers/constants/routes';
-import { setSelectedNetworkConfigurationId } from '../../../store/actions';
+import { setSelectedSettingsRpcUrl } from '../../../store/actions';
 import Button from '../../../components/ui/button';
 import { getEnvironmentType } from '../../../../app/scripts/lib/util';
 import { ENVIRONMENT_TYPE_FULLSCREEN } from '../../../../shared/constants/app';
 import {
-  getNetworkConfigurations,
-  getNetworksTabSelectedNetworkConfigurationId,
+  getFrequentRpcListDetail,
+  getNetworksTabSelectedRpcUrl,
   getProvider,
 } from '../../../selectors';
 import {
-  CHAIN_IDS,
   NETWORK_TYPES,
-  SHOULD_SHOW_LINEA_TESTNET_NETWORK,
   TEST_CHAINS,
 } from '../../../../shared/constants/network';
 import { defaultNetworksData } from './networks-tab.constants';
@@ -30,13 +28,11 @@ import NetworksTabContent from './networks-tab-content';
 import NetworksForm from './networks-form';
 import NetworksFormSubheader from './networks-tab-subheader';
 
-const defaultNetworks = defaultNetworksData
-  .map((network) => ({
-    ...network,
-    viewOnly: true,
-    isATestNetwork: TEST_CHAINS.includes(network.chainId),
-  }))
-  .filter((network) => network.chainId !== CHAIN_IDS.LINEA_TESTNET);
+const defaultNetworks = defaultNetworksData.map((network) => ({
+  ...network,
+  viewOnly: true,
+  isATestNetwork: TEST_CHAINS.includes(network.chainId),
+}));
 
 const NetworksTab = ({ addNewNetwork }) => {
   const t = useI18nContext();
@@ -51,39 +47,30 @@ const NetworksTab = ({ addNewNetwork }) => {
     Boolean(pathname.match(NETWORKS_FORM_ROUTE)) ||
     window.location.hash.split('#')[2] === 'blockExplorerUrl';
 
-  const networkConfigurations = useSelector(getNetworkConfigurations);
+  const frequentRpcListDetail = useSelector(getFrequentRpcListDetail);
   const provider = useSelector(getProvider);
-  const networksTabSelectedNetworkConfigurationId = useSelector(
-    getNetworksTabSelectedNetworkConfigurationId,
-  );
+  const networksTabSelectedRpcUrl = useSelector(getNetworksTabSelectedRpcUrl);
 
-  const networkConfigurationsList = Object.entries(networkConfigurations).map(
-    ([networkConfigurationId, networkConfiguration]) => {
-      return {
-        label: networkConfiguration.nickname,
-        iconColor: 'var(--color-icon-alternative)',
-        providerType: NETWORK_TYPES.RPC,
-        rpcUrl: networkConfiguration.rpcUrl,
-        chainId: networkConfiguration.chainId,
-        ticker: networkConfiguration.ticker,
-        blockExplorerUrl: networkConfiguration.rpcPrefs?.blockExplorerUrl || '',
-        isATestNetwork: TEST_CHAINS.includes(networkConfiguration.chainId),
-        networkConfigurationId,
-      };
-    },
-  );
+  const frequentRpcNetworkListDetails = frequentRpcListDetail.map((rpc) => {
+    return {
+      label: rpc.nickname,
+      iconColor: 'var(--color-icon-alternative)',
+      providerType: NETWORK_TYPES.RPC,
+      rpcUrl: rpc.rpcUrl,
+      chainId: rpc.chainId,
+      ticker: rpc.ticker,
+      blockExplorerUrl: rpc.rpcPrefs?.blockExplorerUrl || '',
+      isATestNetwork: TEST_CHAINS.includes(rpc.chainId),
+    };
+  });
 
-  let networksToRender = [...defaultNetworks, ...networkConfigurationsList];
-  if (!SHOULD_SHOW_LINEA_TESTNET_NETWORK) {
-    networksToRender = networksToRender.filter(
-      (network) => network.chainId !== CHAIN_IDS.LINEA_TESTNET,
-    );
-  }
+  const networksToRender = [
+    ...defaultNetworks,
+    ...frequentRpcNetworkListDetails,
+  ];
   let selectedNetwork =
     networksToRender.find(
-      (network) =>
-        network.networkConfigurationId ===
-        networksTabSelectedNetworkConfigurationId,
+      (network) => network.rpcUrl === networksTabSelectedRpcUrl,
     ) || {};
   const networkIsSelected = Boolean(selectedNetwork.rpcUrl);
 
@@ -102,7 +89,7 @@ const NetworksTab = ({ addNewNetwork }) => {
 
   useEffect(() => {
     return () => {
-      dispatch(setSelectedNetworkConfigurationId(''));
+      dispatch(setSelectedSettingsRpcUrl(''));
     };
   }, [dispatch]);
 

@@ -1,14 +1,17 @@
 .mm-button-link {
   &:hover {
+    color: var(--color-primary-default);
     opacity: 0.5;
   }
 
   &:active {
+    color: var(--color-primary-default);
     opacity: 0.5;
   }
 
   &--disabled {
     &:hover {
+      color: var(--color-primary-default);
       opacity: 0.3;
     }
 

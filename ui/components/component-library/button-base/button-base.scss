@@ -6,13 +6,18 @@
   vertical-align: middle;
   user-select: none;
 
+  &:active,
+  &:hover {
+    color: var(--color-text-default);
+  }
+
   &--block {
     display: block;
     width: 100%;
   }
 
-  &--ellipsis {
-    max-width: 100%;
+  &__content {
+    height: 100%;
   }
 
   &--size-sm {
@@ -29,6 +34,10 @@
 
   &--loading {
     cursor: not-allowed;
+  }
+
+  &--loading &__content {
+    color: transparent;
   }
 
   &--disabled,

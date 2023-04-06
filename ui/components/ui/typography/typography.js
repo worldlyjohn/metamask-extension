@@ -33,8 +33,6 @@ export const ValidColors = [
   Color.sepolia,
   Color.goerliInverse,
   Color.sepoliaInverse,
-  Color.lineaTestnet,
-  Color.lineaTestnetInverse,
 ];
 
 export const ValidTags = [

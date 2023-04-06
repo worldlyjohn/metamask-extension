@@ -49,8 +49,6 @@ export default class LoadingNetworkScreen extends PureComponent {
         return t('connectingToGoerli');
       case NETWORK_TYPES.SEPOLIA:
         return t('connectingToSepolia');
-      case NETWORK_TYPES.LINEA_TESTNET:
-        return t('connectingToLineaTestnet');
       default:
         return t('connectingTo', [providerId]);
     }

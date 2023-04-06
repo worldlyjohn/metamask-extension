@@ -15,11 +15,7 @@ import Box from '../../../ui/box';
 import withModalProps from '../../../../helpers/higher-order-components/with-modal-props';
 import { useI18nContext } from '../../../../hooks/useI18nContext';
 import ZENDESK_URLS from '../../../../helpers/constants/zendesk-url';
-import { ButtonIcon } from '../../../component-library';
-import {
-  ICON_NAMES,
-  ICON_SIZES,
-} from '../../../component-library/icon/deprecated';
+import { ButtonIcon, ICON_NAMES, ICON_SIZES } from '../../../component-library';
 
 const CustomizeNonce = ({
   hideModal,

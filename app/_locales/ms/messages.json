@@ -163,9 +163,6 @@
   "connectingToGoerli": {
     "message": "Menyambung kepada Rangkaian Ujian Goerli"
   },
-  "connectingToLineaTestnet": {
-    "message": "Menyambung kepada Rangkaian Ujian Linea Goerli"
-  },
   "connectingToMainnet": {
     "message": "Menyambung kepada Rangkaian Ethereum Utama"
   },
@@ -403,9 +400,6 @@
   },
   "likeToImportTokens": {
     "message": "Adakah anda ingin menambah token ini?"
-  },
-  "lineatestnet": {
-    "message": "Rangkaian Ujian Linea Goerli"
   },
   "links": {
     "message": "Pautan"
@@ -657,6 +651,12 @@
   },
   "settings": {
     "message": "Tetapan"
+  },
+  "showAdvancedGasInline": {
+    "message": "Kawalan gas lanjutan"
+  },
+  "showAdvancedGasInlineDescription": {
+    "message": "Pilih ini untuk menunjukkan harga gas dan kawalan had terus di skrin hantar dan sahkan."
   },
   "showFiatConversionInTestnets": {
     "message": "Tunjukkan Penukaran di Testnets"

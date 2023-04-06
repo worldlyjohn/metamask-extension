@@ -5,7 +5,7 @@ import { createSegmentMock } from '../lib/segment';
 import {
   METAMETRICS_ANONYMOUS_ID,
   METAMETRICS_BACKGROUND_PAGE_OBJECT,
-  MetaMetricsUserTrait,
+  TRAITS,
 } from '../../../shared/constants/metametrics';
 import waitUntilCalled from '../../../test/lib/wait-until-called';
 import {
@@ -15,6 +15,7 @@ import {
 } from '../../../shared/constants/network';
 import * as Utils from '../lib/util';
 import MetaMetricsController from './metametrics';
+import { NETWORK_EVENTS } from './network';
 
 const segment = createSegmentMock(2, 10000);
 
@@ -71,17 +72,17 @@ function getMockNetworkController() {
     },
     network: 'loading',
   };
-  const onNetworkDidChange = sinon.stub();
+  const on = sinon.stub().withArgs(NETWORK_EVENTS.NETWORK_DID_CHANGE);
   const updateState = (newState) => {
     state = { ...state, ...newState };
-    onNetworkDidChange.getCall(0).args[0]();
+    on.getCall(0).args[1]();
   };
   return {
     store: {
       getState: () => state,
       updateState,
     },
-    onNetworkDidChange,
+    on,
   };
 }
 
@@ -118,7 +119,6 @@ const SAMPLE_NON_PERSISTED_EVENT = {
   category: 'Unit Test',
   successEvent: 'sample non-persisted event success',
   failureEvent: 'sample non-persisted event failure',
-  uniqueIdentifier: 'sample-non-persisted-event',
   properties: {
     test: true,
   },
@@ -135,8 +135,10 @@ function getMetaMetricsController({
     segment: segmentInstance || segment,
     getCurrentChainId: () =>
       networkController.store.getState().provider.chainId,
-    onNetworkDidChange:
-      networkController.onNetworkDidChange.bind(networkController),
+    onNetworkDidChange: networkController.on.bind(
+      networkController,
+      NETWORK_EVENTS.NETWORK_DID_CHANGE,
+    ),
     preferencesStore,
     version: '0.0.1',
     environment: 'test',
@@ -173,7 +175,7 @@ describe('MetaMetricsController', function () {
             ...DEFAULT_EVENT_PROPERTIES,
             test: true,
           },
-          messageId: 'sample-non-persisted-event-failure',
+          messageId: Utils.generateRandomId(),
           timestamp: new Date(),
         });
       const metaMetricsController = getMetaMetricsController();
@@ -931,48 +933,34 @@ describe('MetaMetricsController', function () {
           },
         },
         allTokens: MOCK_ALL_TOKENS,
-        networkConfigurations: {
-          'network-configuration-id-1': {
-            chainId: CHAIN_IDS.MAINNET,
-            ticker: CURRENCY_SYMBOLS.ETH,
-          },
-          'network-configuration-id-2': {
-            chainId: CHAIN_IDS.GOERLI,
-            ticker: CURRENCY_SYMBOLS.TEST_ETH,
-          },
-          'network-configuration-id-3': { chainId: '0xaf' },
-        },
+        frequentRpcListDetail: [
+          { chainId: CHAIN_IDS.MAINNET, ticker: CURRENCY_SYMBOLS.ETH },
+          { chainId: CHAIN_IDS.GOERLI, ticker: CURRENCY_SYMBOLS.TEST_ETH },
+          { chainId: '0xaf' },
+        ],
         identities: [{}, {}],
         ledgerTransportType: 'web-hid',
         openSeaEnabled: true,
         useNftDetection: false,
         theme: 'default',
         useTokenDetection: true,
-        desktopEnabled: false,
-        security_providers: [],
       });
 
       assert.deepEqual(traits, {
-        [MetaMetricsUserTrait.AddressBookEntries]: 3,
-        [MetaMetricsUserTrait.InstallDateExt]: '',
-        [MetaMetricsUserTrait.LedgerConnectionType]: 'web-hid',
-        [MetaMetricsUserTrait.NetworksAdded]: [
-          CHAIN_IDS.MAINNET,
-          CHAIN_IDS.GOERLI,
-          '0xaf',
-        ],
-        [MetaMetricsUserTrait.NetworksWithoutTicker]: ['0xaf'],
-        [MetaMetricsUserTrait.NftAutodetectionEnabled]: false,
-        [MetaMetricsUserTrait.NumberOfAccounts]: 2,
-        [MetaMetricsUserTrait.NumberOfNftCollections]: 3,
-        [MetaMetricsUserTrait.NumberOfNfts]: 4,
-        [MetaMetricsUserTrait.NumberOfTokens]: 5,
-        [MetaMetricsUserTrait.OpenseaApiEnabled]: true,
-        [MetaMetricsUserTrait.ThreeBoxEnabled]: false,
-        [MetaMetricsUserTrait.Theme]: 'default',
-        [MetaMetricsUserTrait.TokenDetectionEnabled]: true,
-        [MetaMetricsUserTrait.DesktopEnabled]: false,
-        [MetaMetricsUserTrait.SecurityProviders]: [],
+        [TRAITS.ADDRESS_BOOK_ENTRIES]: 3,
+        [TRAITS.INSTALL_DATE_EXT]: '',
+        [TRAITS.LEDGER_CONNECTION_TYPE]: 'web-hid',
+        [TRAITS.NETWORKS_ADDED]: [CHAIN_IDS.MAINNET, CHAIN_IDS.GOERLI, '0xaf'],
+        [TRAITS.NETWORKS_WITHOUT_TICKER]: ['0xaf'],
+        [TRAITS.NFT_AUTODETECTION_ENABLED]: false,
+        [TRAITS.NUMBER_OF_ACCOUNTS]: 2,
+        [TRAITS.NUMBER_OF_NFT_COLLECTIONS]: 3,
+        [TRAITS.NUMBER_OF_NFTS]: 4,
+        [TRAITS.NUMBER_OF_TOKENS]: 5,
+        [TRAITS.OPENSEA_API_ENABLED]: true,
+        [TRAITS.THREE_BOX_ENABLED]: false,
+        [TRAITS.THEME]: 'default',
+        [TRAITS.TOKEN_DETECTION_ENABLED]: true,
       });
     });
 
@@ -984,17 +972,16 @@ describe('MetaMetricsController', function () {
           [CHAIN_IDS.GOERLI]: [{ address: '0x' }, { address: '0x0' }],
         },
         allTokens: {},
-        networkConfigurations: {
-          'network-configuration-id-1': { chainId: CHAIN_IDS.MAINNET },
-          'network-configuration-id-2': { chainId: CHAIN_IDS.GOERLI },
-        },
+        frequentRpcListDetail: [
+          { chainId: CHAIN_IDS.MAINNET },
+          { chainId: CHAIN_IDS.GOERLI },
+        ],
         ledgerTransportType: 'web-hid',
         openSeaEnabled: true,
         identities: [{}, {}],
         useNftDetection: false,
         theme: 'default',
         useTokenDetection: true,
-        desktopEnabled: false,
       });
 
       const updatedTraits = metaMetricsController._buildUserTraitsObject({
@@ -1005,24 +992,23 @@ describe('MetaMetricsController', function () {
         allTokens: {
           '0x1': { '0xabcde': [{ '0x12345': { address: '0xtestAddress' } }] },
         },
-        networkConfigurations: {
-          'network-configuration-id-1': { chainId: CHAIN_IDS.MAINNET },
-          'network-configuration-id-2': { chainId: CHAIN_IDS.GOERLI },
-        },
+        frequentRpcListDetail: [
+          { chainId: CHAIN_IDS.MAINNET },
+          { chainId: CHAIN_IDS.GOERLI },
+        ],
         ledgerTransportType: 'web-hid',
         openSeaEnabled: false,
         identities: [{}, {}, {}],
         useNftDetection: false,
         theme: 'default',
         useTokenDetection: true,
-        desktopEnabled: false,
       });
 
       assert.deepEqual(updatedTraits, {
-        [MetaMetricsUserTrait.AddressBookEntries]: 4,
-        [MetaMetricsUserTrait.NumberOfAccounts]: 3,
-        [MetaMetricsUserTrait.NumberOfTokens]: 1,
-        [MetaMetricsUserTrait.OpenseaApiEnabled]: false,
+        [TRAITS.ADDRESS_BOOK_ENTRIES]: 4,
+        [TRAITS.NUMBER_OF_ACCOUNTS]: 3,
+        [TRAITS.NUMBER_OF_TOKENS]: 1,
+        [TRAITS.OPENSEA_API_ENABLED]: false,
       });
     });
 
@@ -1034,17 +1020,16 @@ describe('MetaMetricsController', function () {
           [CHAIN_IDS.GOERLI]: [{ address: '0x' }, { address: '0x0' }],
         },
         allTokens: {},
-        networkConfigurations: {
-          'network-configuration-id-1': { chainId: CHAIN_IDS.MAINNET },
-          'network-configuration-id-2': { chainId: CHAIN_IDS.GOERLI },
-        },
+        frequentRpcListDetail: [
+          { chainId: CHAIN_IDS.MAINNET },
+          { chainId: CHAIN_IDS.GOERLI },
+        ],
         ledgerTransportType: 'web-hid',
         openSeaEnabled: true,
         identities: [{}, {}],
         useNftDetection: true,
         theme: 'default',
         useTokenDetection: true,
-        desktopEnabled: false,
       });
 
       const updatedTraits = metaMetricsController._buildUserTraitsObject({
@@ -1053,17 +1038,16 @@ describe('MetaMetricsController', function () {
           [CHAIN_IDS.GOERLI]: [{ address: '0x' }, { address: '0x0' }],
         },
         allTokens: {},
-        networkConfigurations: {
-          'network-configuration-id-1': { chainId: CHAIN_IDS.MAINNET },
-          'network-configuration-id-2': { chainId: CHAIN_IDS.GOERLI },
-        },
+        frequentRpcListDetail: [
+          { chainId: CHAIN_IDS.MAINNET },
+          { chainId: CHAIN_IDS.GOERLI },
+        ],
         ledgerTransportType: 'web-hid',
         openSeaEnabled: true,
         identities: [{}, {}],
         useNftDetection: true,
         theme: 'default',
         useTokenDetection: true,
-        desktopEnabled: false,
       });
 
       assert.equal(updatedTraits, null);

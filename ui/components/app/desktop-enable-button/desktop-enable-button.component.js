@@ -19,21 +19,17 @@ import {
   disableDesktop,
 } from '../../../store/actions';
 import { SECOND } from '../../../../shared/constants/time';
-import { MetaMetricsContext } from '../../../contexts/metametrics';
-import { MetaMetricsEventCategory } from '../../../../shared/constants/metametrics';
 
 const DESKTOP_ERROR_DESKTOP_OUTDATED_ROUTE = `${DESKTOP_ERROR_ROUTE}/${EXTENSION_ERROR_PAGE_TYPES.DESKTOP_OUTDATED}`;
 const DESKTOP_ERROR_EXTENSION_OUTDATED_ROUTE = `${DESKTOP_ERROR_ROUTE}/${EXTENSION_ERROR_PAGE_TYPES.EXTENSION_OUTDATED}`;
 const DESKTOP_ERROR_NOT_FOUND_ROUTE = `${DESKTOP_ERROR_ROUTE}/${EXTENSION_ERROR_PAGE_TYPES.NOT_FOUND}`;
 const DESKTOP_ERROR_PAIRING_KEY_NOT_MATCH_ROUTE = `${DESKTOP_ERROR_ROUTE}/${EXTENSION_ERROR_PAGE_TYPES.PAIRING_KEY_NOT_MATCH}`;
 const SKIP_PAIRING_RESTART_DELAY = 2 * SECOND;
-const DESKTOP_UPDATE_SETTINGS_EVENT = 'Settings Updated';
 
 export default function DesktopEnableButton() {
   const t = useContext(I18nContext);
   const dispatch = useDispatch();
   const history = useHistory();
-  const trackEvent = useContext(MetaMetricsContext);
   const showLoader = () => dispatch(showLoadingIndication());
   const hideLoader = () => dispatch(hideLoadingIndication());
   const desktopEnabled = useSelector(getIsDesktopEnabled);
@@ -44,13 +40,6 @@ export default function DesktopEnableButton() {
     if (desktopEnabled) {
       await disableDesktop();
       setDesktopEnabled(false);
-      trackEvent({
-        category: MetaMetricsEventCategory.Desktop,
-        event: DESKTOP_UPDATE_SETTINGS_EVENT,
-        properties: {
-          desktop_enabled: false,
-        },
-      });
       return;
     }
 
@@ -89,18 +78,8 @@ export default function DesktopEnableButton() {
       return;
     }
 
-    trackEvent({
-      category: MetaMetricsEventCategory.Desktop,
-      event: 'Desktop Button Clicked',
-      properties: {
-        button_action: 'Enable MetaMask Desktop',
-      },
-    });
     history.push(DESKTOP_PAIRING_ROUTE);
   };
-
-  const getButtonText = (isDesktopEnabled) =>
-    isDesktopEnabled ? t('desktopDisableButton') : t('desktopEnableButton');
 
   return (
     <Button
@@ -111,7 +90,7 @@ export default function DesktopEnableButton() {
         onClick();
       }}
     >
-      {getButtonText(desktopEnabled)}
+      {desktopEnabled ? t('desktopDisableButton') : t('desktopEnableButton')}
     </Button>
   );
 }

@@ -69,7 +69,7 @@ import {
   checkNetworkAndAccountSupports1559,
 } from '../../selectors';
 
-import { MetaMetricsEventCategory } from '../../../shared/constants/metametrics';
+import { EVENT } from '../../../shared/constants/metametrics';
 import {
   ERROR_FETCHING_QUOTES,
   QUOTES_NOT_AVAILABLE_ERROR,
@@ -726,7 +726,7 @@ export const fetchQuotesAndSetQuoteState = (
       getCurrentSmartTransactionsEnabled(state);
     trackEvent({
       event: 'Quotes Requested',
-      category: MetaMetricsEventCategory.Swaps,
+      category: EVENT.CATEGORIES.SWAPS,
       sensitiveProperties: {
         token_from: fromTokenSymbol,
         token_from_amount: String(inputValue),
@@ -780,7 +780,7 @@ export const fetchQuotesAndSetQuoteState = (
       if (Object.values(fetchedQuotes)?.length === 0) {
         trackEvent({
           event: 'No Quotes Available',
-          category: MetaMetricsEventCategory.Swaps,
+          category: EVENT.CATEGORIES.SWAPS,
           sensitiveProperties: {
             token_from: fromTokenSymbol,
             token_from_amount: String(inputValue),
@@ -801,7 +801,7 @@ export const fetchQuotesAndSetQuoteState = (
 
         trackEvent({
           event: 'Quotes Received',
-          category: MetaMetricsEventCategory.Swaps,
+          category: EVENT.CATEGORIES.SWAPS,
           sensitiveProperties: {
             token_from: fromTokenSymbol,
             token_from_amount: String(inputValue),
@@ -902,7 +902,7 @@ export const signAndSendSwapsSmartTransaction = ({
     };
     trackEvent({
       event: 'STX Swap Started',
-      category: MetaMetricsEventCategory.Swaps,
+      category: EVENT.CATEGORIES.SWAPS,
       sensitiveProperties: swapMetaData,
     });
 
@@ -1159,7 +1159,7 @@ export const signAndSendTransactions = (
 
     trackEvent({
       event: 'Swap Started',
-      category: MetaMetricsEventCategory.Swaps,
+      category: EVENT.CATEGORIES.SWAPS,
       sensitiveProperties: swapMetaData,
     });
 

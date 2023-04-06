@@ -5,7 +5,7 @@ import {
   getNumberOfSettingsInSection,
   handleSettingsRefs,
 } from '../../../helpers/utils/settings-search';
-import { MetaMetricsEventCategory } from '../../../../shared/constants/metametrics';
+import { EVENT } from '../../../../shared/constants/metametrics';
 import Typography from '../../../components/ui/typography/typography';
 import { Text } from '../../../components/component-library';
 import {
@@ -13,7 +13,7 @@ import {
   TextColor,
   TypographyVariant,
 } from '../../../helpers/constants/design-system';
-///: BEGIN:ONLY_INCLUDE_IN(flask)
+///: BEGIN:ONLY_INCLUDE_IN(desktop)
 import DesktopEnableButton from '../../../components/app/desktop-enable-button';
 ///: END:ONLY_INCLUDE_IN
 
@@ -77,7 +77,7 @@ export default class ExperimentalTab extends PureComponent {
                 value={openSeaEnabled}
                 onToggle={(value) => {
                   this.context.trackEvent({
-                    category: MetaMetricsEventCategory.Settings,
+                    category: EVENT.CATEGORIES.SETTINGS,
                     event: 'Enabled/Disable OpenSea',
                     properties: {
                       action: 'Enabled/Disable OpenSea',
@@ -119,7 +119,7 @@ export default class ExperimentalTab extends PureComponent {
                 value={useNftDetection}
                 onToggle={(value) => {
                   this.context.trackEvent({
-                    category: MetaMetricsEventCategory.Settings,
+                    category: EVENT.CATEGORIES.SETTINGS,
                     event: 'NFT Detected',
                     properties: {
                       action: 'NFT Detected',
@@ -193,7 +193,7 @@ export default class ExperimentalTab extends PureComponent {
                   value={transactionSecurityCheckEnabled}
                   onToggle={(value) => {
                     this.context.trackEvent({
-                      category: MetaMetricsEventCategory.Settings,
+                      category: EVENT.CATEGORIES.SETTINGS,
                       event: 'Enabled/Disable TransactionSecurityCheck',
                       properties: {
                         action: 'Enabled/Disable TransactionSecurityCheck',
@@ -209,16 +209,7 @@ export default class ExperimentalTab extends PureComponent {
                 color={TextColor.textAlternative}
                 marginTop={0}
               >
-                {t('thisServiceIsExperimental', [
-                  <a
-                    href="http://opensea.io/securityproviderterms"
-                    key="termsOfUse"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    {t('termsOfUse')}
-                  </a>,
-                ])}
+                {t('thisServiceIsExperimental')}
               </Typography>
               <Typography
                 variant={TypographyVariant.H5}
@@ -235,7 +226,7 @@ export default class ExperimentalTab extends PureComponent {
     );
   }
 
-  ///: BEGIN:ONLY_INCLUDE_IN(flask)
+  ///: BEGIN:ONLY_INCLUDE_IN(desktop)
   renderDesktopEnableButton() {
     const { t } = this.context;
 
@@ -261,10 +252,11 @@ export default class ExperimentalTab extends PureComponent {
   render() {
     return (
       <div className="settings-page__body">
-        {this.renderTransactionSecurityCheckToggle()}
-        {this.renderOpenSeaEnabledToggle()}
+        {process.env.TRANSACTION_SECURITY_PROVIDER &&
+          this.renderTransactionSecurityCheckToggle()}
+        {process.env.NFTS_V1 && this.renderOpenSeaEnabledToggle()}
         {
-          ///: BEGIN:ONLY_INCLUDE_IN(flask)
+          ///: BEGIN:ONLY_INCLUDE_IN(desktop)
           this.renderDesktopEnableButton()
           ///: END:ONLY_INCLUDE_IN
         }

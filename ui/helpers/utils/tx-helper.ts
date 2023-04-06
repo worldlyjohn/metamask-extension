@@ -9,7 +9,7 @@ export default function txHelper(
   decryptMsgs: Record<string, any> | null,
   encryptionPublicKeyMsgs: Record<string, any> | null,
   typedMessages: Record<string, any> | null,
-  networkId?: string | null,
+  network?: string,
   chainId?: string,
 ): Record<string, any> {
   log.debug('tx-helper called with params:');
@@ -20,13 +20,13 @@ export default function txHelper(
     decryptMsgs,
     encryptionPublicKeyMsgs,
     typedMessages,
-    networkId,
+    network,
     chainId,
   });
 
-  const txValues = networkId
+  const txValues = network
     ? valuesFor(unapprovedTxs).filter((txMeta) =>
-        transactionMatchesNetwork(txMeta, chainId, networkId),
+        transactionMatchesNetwork(txMeta, chainId, network),
       )
     : valuesFor(unapprovedTxs);
   log.debug(`tx helper found ${txValues.length} unapproved txs`);

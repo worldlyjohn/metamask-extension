@@ -20,10 +20,7 @@ import ZENDESK_URLS from '../../../helpers/constants/zendesk-url';
 import SrpInput from '../../../components/app/srp-input';
 import { getCurrentKeyring } from '../../../selectors';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
-import {
-  MetaMetricsEventCategory,
-  MetaMetricsEventName,
-} from '../../../../shared/constants/metametrics';
+import { EVENT_NAMES, EVENT } from '../../../../shared/constants/metametrics';
 
 export default function ImportSRP({ submitSecretRecoveryPhrase }) {
   const [secretRecoveryPhrase, setSecretRecoveryPhrase] = useState('');
@@ -81,9 +78,8 @@ export default function ImportSRP({ submitSecretRecoveryPhrase }) {
             onClick={() => {
               submitSecretRecoveryPhrase(secretRecoveryPhrase);
               trackEvent({
-                category: MetaMetricsEventCategory.Onboarding,
-                event:
-                  MetaMetricsEventName.OnboardingWalletSecurityPhraseConfirmed,
+                category: EVENT.CATEGORIES.ONBOARDING,
+                event: EVENT_NAMES.ONBOARDING_WALLET_SECURITY_PHRASE_CONFIRMED,
               });
               history.replace(ONBOARDING_CREATE_PASSWORD_ROUTE);
             }}

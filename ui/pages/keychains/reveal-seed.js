@@ -5,11 +5,7 @@ import qrCode from 'qrcode-generator';
 import { requestRevealSeedWords, showModal } from '../../store/actions';
 import ExportTextContainer from '../../components/ui/export-text-container';
 import { getMostRecentOverviewPage } from '../../ducks/history/history';
-import {
-  MetaMetricsEventCategory,
-  MetaMetricsEventKeyType,
-  MetaMetricsEventName,
-} from '../../../shared/constants/metametrics';
+import { EVENT, EVENT_NAMES } from '../../../shared/constants/metametrics';
 import {
   TextVariant,
   SEVERITIES,
@@ -76,10 +72,10 @@ const RevealSeedPage = () => {
     dispatch(requestRevealSeedWords(password))
       .then((revealedSeedWords) => {
         trackEvent({
-          category: MetaMetricsEventCategory.Keys,
-          event: MetaMetricsEventName.KeyExportRevealed,
+          category: EVENT.CATEGORIES.KEYS,
+          event: EVENT_NAMES.KEY_EXPORT_REVEALED,
           properties: {
-            key_type: MetaMetricsEventKeyType.Srp,
+            key_type: EVENT.KEY_TYPES.SRP,
           },
         });
         setSeedWords(revealedSeedWords);
@@ -96,10 +92,10 @@ const RevealSeedPage = () => {
       })
       .catch((e) => {
         trackEvent({
-          category: MetaMetricsEventCategory.Keys,
-          event: MetaMetricsEventName.KeyExportFailed,
+          category: EVENT.CATEGORIES.KEYS,
+          event: EVENT_NAMES.KEY_EXPORT_FAILED,
           properties: {
-            key_type: MetaMetricsEventKeyType.Srp,
+            key_type: EVENT.KEY_TYPES.SRP,
             reason: e.message, // 'incorrect_password',
           },
         });
@@ -162,10 +158,10 @@ const RevealSeedPage = () => {
               text={seedWords}
               onClickCopy={() => {
                 trackEvent({
-                  category: MetaMetricsEventCategory.Keys,
-                  event: MetaMetricsEventName.KeyExportCopied,
+                  category: EVENT.CATEGORIES.KEYS,
+                  event: EVENT_NAMES.KEY_EXPORT_COPIED,
                   properties: {
-                    key_type: MetaMetricsEventKeyType.Srp,
+                    key_type: EVENT.KEY_TYPES.SRP,
                     copy_method: 'clipboard',
                   },
                 });
@@ -205,10 +201,10 @@ const RevealSeedPage = () => {
           type={BUTTON_TYPES.SECONDARY}
           onClick={() => {
             trackEvent({
-              category: MetaMetricsEventCategory.Keys,
-              event: MetaMetricsEventName.KeyExportCanceled,
+              category: EVENT.CATEGORIES.KEYS,
+              event: EVENT_NAMES.KEY_EXPORT_CANCELED,
               properties: {
-                key_type: MetaMetricsEventKeyType.Srp,
+                key_type: EVENT.KEY_TYPES.SRP,
               },
             });
             history.push(mostRecentOverviewPage);
@@ -221,10 +217,10 @@ const RevealSeedPage = () => {
           size={Size.LG}
           onClick={(event) => {
             trackEvent({
-              category: MetaMetricsEventCategory.Keys,
-              event: MetaMetricsEventName.KeyExportRequested,
+              category: EVENT.CATEGORIES.KEYS,
+              event: EVENT_NAMES.KEY_EXPORT_REQUESTED,
               properties: {
-                key_type: MetaMetricsEventKeyType.Srp,
+                key_type: EVENT.KEY_TYPES.SRP,
               },
             });
             handleSubmit(event);

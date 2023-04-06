@@ -118,13 +118,13 @@ Use the `actionButtonLabel` prop to pass text, `actionButtonOnClick` prop to pas
 </Canvas>
 
 ```jsx
-import { BannerAlert, IconName } from '../../component-library';
+import { BannerAlert, ICON_NAMES } from '../../component-library';
 
 <BannerAlert
   title="Action prop demo"
   actionButtonLabel="Action"
   actionButtonProps={{
-    endIconName: IconName.Arrow2Right,
+    endIconName: ICON_NAMES.ARROW_2_RIGHT,
   }}
   actionButtonOnClick={() => console.log('ButtonLink actionButtonOnClick demo')}
 >

@@ -1,25 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 import nanoid from 'nanoid';
 import { isComponent } from '@metamask/snaps-ui';
-import { useSelector } from 'react-redux';
 import MetaMaskTemplateRenderer from '../../metamask-template-renderer/metamask-template-renderer';
 import {
   TypographyVariant,
   FONT_WEIGHT,
   DISPLAY,
   FLEX_DIRECTION,
-  OVERFLOW_WRAP,
-  TextVariant,
 } from '../../../../helpers/constants/design-system';
 import { SnapDelineator } from '../snap-delineator';
 import { useI18nContext } from '../../../../hooks/useI18nContext';
+import ActionableMessage from '../../../ui/actionable-message/actionable-message';
 import Box from '../../../ui/box';
-import { getSnapName } from '../../../../helpers/utils/util';
-import { getTargetSubjectMetadata } from '../../../../selectors';
-import { Text } from '../../../component-library';
-import { Copyable } from '../copyable';
-import { DelineatorType } from '../../../../helpers/constants/flask';
+import { getSnap } from '../../../../selectors';
 
 export const UI_MAPPING = {
   panel: (props) => ({
@@ -38,7 +33,6 @@ export const UI_MAPPING = {
     props: {
       variant: TypographyVariant.H3,
       fontWeight: FONT_WEIGHT.BOLD,
-      overflowWrap: OVERFLOW_WRAP.BREAK_WORD,
     },
   }),
   text: (props) => ({
@@ -74,25 +68,22 @@ export const mapToTemplate = (data) => {
 };
 
 // Component that maps Snaps UI JSON format to MetaMask Template Renderer format
-export const SnapUIRenderer = ({
-  snapId,
-  delineatorType = DelineatorType.Content,
-  data,
-}) => {
+export const SnapUIRenderer = ({ snapId, data }) => {
   const t = useI18nContext();
-  const targetSubjectMetadata = useSelector((state) =>
-    getTargetSubjectMetadata(state, snapId),
-  );
+  const snap = useSelector((state) => getSnap(state, snapId));
 
-  const snapName = getSnapName(snapId, targetSubjectMetadata);
+  const snapName = snap.manifest.proposedName;
 
   if (!isComponent(data)) {
     return (
-      <SnapDelineator snapName={snapName} type={DelineatorType.Error}>
-        <Text variant={TextVariant.bodySm} marginBottom={4}>
-          {t('snapsUIError', [<b key="0">{snapName}</b>])}
-        </Text>
-        <Copyable text={t('snapsInvalidUIError')} />
+      <SnapDelineator snapName={snapName}>
+        <ActionableMessage
+          className="snap-ui-renderer__error"
+          message={t('snapsUIError')}
+          type="danger"
+          useIcon
+          iconFillColor="var(--color-error-default)"
+        />
       </SnapDelineator>
     );
   }
@@ -100,7 +91,7 @@ export const SnapUIRenderer = ({
   const sections = mapToTemplate(data);
 
   return (
-    <SnapDelineator snapName={snapName} type={delineatorType}>
+    <SnapDelineator snapName={snapName}>
       <Box className="snap-ui-renderer__content">
         <MetaMaskTemplateRenderer sections={sections} />
       </Box>
@@ -110,6 +101,5 @@ export const SnapUIRenderer = ({
 
 SnapUIRenderer.propTypes = {
   snapId: PropTypes.string,
-  delineatorType: PropTypes.string,
   data: PropTypes.object,
 };

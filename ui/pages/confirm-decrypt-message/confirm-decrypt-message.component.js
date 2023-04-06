@@ -9,17 +9,12 @@ import Identicon from '../../components/ui/identicon';
 import Tooltip from '../../components/ui/tooltip';
 import { PageContainerFooter } from '../../components/ui/page-container';
 
-import { MetaMetricsEventCategory } from '../../../shared/constants/metametrics';
+import { EVENT } from '../../../shared/constants/metametrics';
 import { SECOND } from '../../../shared/constants/time';
 import { Numeric } from '../../../shared/modules/Numeric';
 import { EtherDenomination } from '../../../shared/constants/common';
-import {
-  Icon,
-  ICON_NAMES,
-} from '../../components/component-library/icon/deprecated';
+import { Icon, ICON_NAMES } from '../../components/component-library';
 import { IconColor } from '../../helpers/constants/design-system';
-import { formatCurrency } from '../../helpers/utils/confirm-tx.util';
-import { getValueFromWeiHex } from '../../../shared/modules/conversion.utils';
 
 export default class ConfirmDecryptMessage extends Component {
   static contextTypes = {
@@ -37,17 +32,17 @@ export default class ConfirmDecryptMessage extends Component {
     cancelDecryptMessage: PropTypes.func.isRequired,
     decryptMessage: PropTypes.func.isRequired,
     decryptMessageInline: PropTypes.func.isRequired,
+    conversionRate: PropTypes.number,
     history: PropTypes.object.isRequired,
     mostRecentOverviewPage: PropTypes.string.isRequired,
     requesterAddress: PropTypes.string,
     txData: PropTypes.object,
     subjectMetadata: PropTypes.object,
     nativeCurrency: PropTypes.string.isRequired,
-    currentCurrency: PropTypes.string.isRequired,
-    conversionRate: PropTypes.number,
   };
 
   state = {
+    fromAccount: this.props.fromAccount,
     copyToClipboardPressed: false,
     hasCopied: false,
   };
@@ -55,7 +50,7 @@ export default class ConfirmDecryptMessage extends Component {
   copyMessage = () => {
     copyToClipboard(this.state.rawMessage);
     this.context.trackEvent({
-      category: MetaMetricsEventCategory.Messages,
+      category: EVENT.CATEGORIES.MESSAGES,
       event: 'Copy',
       properties: {
         action: 'Decrypt Message Copy',
@@ -83,7 +78,7 @@ export default class ConfirmDecryptMessage extends Component {
   };
 
   renderAccount = () => {
-    const { fromAccount } = this.props;
+    const { fromAccount } = this.state;
     const { t } = this.context;
 
     return (
@@ -100,31 +95,20 @@ export default class ConfirmDecryptMessage extends Component {
   };
 
   renderBalance = () => {
+    const { conversionRate, nativeCurrency } = this.props;
     const {
-      conversionRate,
-      nativeCurrency,
-      currentCurrency,
       fromAccount: { balance },
-    } = this.props;
+    } = this.state;
     const { t } = this.context;
 
-    const nativeCurrencyBalance = conversionRate
-      ? formatCurrency(
-          getValueFromWeiHex({
-            value: balance,
-            fromCurrency: nativeCurrency,
-            toCurrency: currentCurrency,
-            conversionRate,
-            numberOfDecimals: 6,
-            toDenomination: EtherDenomination.ETH,
-          }),
-          currentCurrency,
-        )
-      : new Numeric(balance, 16, EtherDenomination.WEI)
-          .toDenomination(EtherDenomination.ETH)
-          .round(6)
-          .toBase(10)
-          .toString();
+    const nativeCurrencyBalance = new Numeric(
+      balance,
+      16,
+      EtherDenomination.WEI,
+    )
+      .applyConversionRate(conversionRate)
+      .round(6)
+      .toBase(10);
 
     return (
       <div className="request-decrypt-message__balance">
@@ -132,9 +116,7 @@ export default class ConfirmDecryptMessage extends Component {
           {`${t('balance')}:`}
         </div>
         <div className="request-decrypt-message__balance-value">
-          {`${nativeCurrencyBalance} ${
-            conversionRate ? currentCurrency?.toUpperCase() : nativeCurrency
-          }`}
+          {`${nativeCurrencyBalance} ${nativeCurrency}`}
         </div>
       </div>
     );
@@ -289,7 +271,7 @@ export default class ConfirmDecryptMessage extends Component {
         onCancel={async (event) => {
           await cancelDecryptMessage(txData, event);
           trackEvent({
-            category: MetaMetricsEventCategory.Messages,
+            category: EVENT.CATEGORIES.MESSAGES,
             event: 'Cancel',
             properties: {
               action: 'Decrypt Message Request',
@@ -302,7 +284,7 @@ export default class ConfirmDecryptMessage extends Component {
         onSubmit={async (event) => {
           await decryptMessage(txData, event);
           trackEvent({
-            category: MetaMetricsEventCategory.Messages,
+            category: EVENT.CATEGORIES.MESSAGES,
             event: 'Confirm',
             properties: {
               action: 'Decrypt Message Request',

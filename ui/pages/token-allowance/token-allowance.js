@@ -35,7 +35,6 @@ import {
   getUnapprovedTxCount,
   getUnapprovedTransactions,
   getUseCurrencyRateCheck,
-  isHardwareWallet,
 } from '../../selectors';
 import { NETWORK_TO_NAME_MAP } from '../../../shared/constants/network';
 import {
@@ -62,13 +61,7 @@ import {
 import { ConfirmPageContainerNavigation } from '../../components/app/confirm-page-container';
 import { useSimulationFailureWarning } from '../../hooks/useSimulationFailureWarning';
 import SimulationErrorMessage from '../../components/ui/simulation-error-message';
-import {
-  Icon,
-  ICON_NAMES,
-} from '../../components/component-library/icon/deprecated';
-import LedgerInstructionField from '../../components/app/ledger-instruction-field/ledger-instruction-field';
-
-const ALLOWED_HOSTS = ['portfolio.metamask.io'];
+import { Icon, ICON_NAMES } from '../../components/component-library';
 
 export default function TokenAllowance({
   origin,
@@ -99,13 +92,10 @@ export default function TokenAllowance({
   const history = useHistory();
   const mostRecentOverviewPage = useSelector(getMostRecentOverviewPage);
 
-  const { hostname } = new URL(origin);
-  const thisOriginIsAllowedToSkipFirstPage = ALLOWED_HOSTS.includes(hostname);
-
   const [showContractDetails, setShowContractDetails] = useState(false);
   const [showFullTxDetails, setShowFullTxDetails] = useState(false);
   const [isFirstPage, setIsFirstPage] = useState(
-    dappProposedTokenAmount !== '0' && !thisOriginIsAllowedToSkipFirstPage,
+    dappProposedTokenAmount !== '0',
   );
   const [errorText, setErrorText] = useState('');
   const [userAcknowledgedGasMissing, setUserAcknowledgedGasMissing] =
@@ -117,14 +107,10 @@ export default function TokenAllowance({
   const currentAccount = useSelector(getCurrentAccountWithSendEtherInfo);
   const networkIdentifier = useSelector(getNetworkIdentifier);
   const rpcPrefs = useSelector(getRpcPrefsForCurrentProvider);
+  const customTokenAmount = useSelector(getCustomTokenAmount);
   const unapprovedTxCount = useSelector(getUnapprovedTxCount);
   const unapprovedTxs = useSelector(getUnapprovedTransactions);
   const useCurrencyRateCheck = useSelector(getUseCurrencyRateCheck);
-  const isHardwareWalletConnected = useSelector(isHardwareWallet);
-  let customTokenAmount = useSelector(getCustomTokenAmount);
-  if (thisOriginIsAllowedToSkipFirstPage && dappProposedTokenAmount) {
-    customTokenAmount = dappProposedTokenAmount;
-  }
 
   const replaceCommaToDot = (inputValue) => {
     return inputValue.replace(/,/gu, '.');
@@ -505,11 +491,6 @@ export default function TokenAllowance({
           </Box>
         </Box>
       ) : null}
-      {!isFirstPage && isHardwareWalletConnected && (
-        <Box paddingLeft={2} paddingRight={2}>
-          <LedgerInstructionField showDataInstruction />
-        </Box>
-      )}
       <PageContainerFooter
         cancelText={t('reject')}
         submitText={isFirstPage ? t('next') : t('approveButtonText')}

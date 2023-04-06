@@ -45,25 +45,18 @@ function getBrowserVersionMap(platforms, version) {
   const minor = semver.minor(version);
   const patch = semver.patch(version);
   const prerelease = semver.prerelease(version);
-  let buildType, buildVersionSummary, buildVersion;
+
+  let buildType;
+  let buildVersion;
   if (prerelease) {
-    [buildType, buildVersionSummary] = prerelease;
-    // The version could be version: '10.25.0-beta.1-flask.0',
-    // That results in buildVersionSummary becomes 1-flask
-    // And we only want 1 from this string
-    buildVersion =
-      typeof buildVersionSummary === 'string'
-        ? Number(buildVersionSummary.match(/\d+(?:\.\d+)?/u)[0])
-        : buildVersionSummary;
+    if (prerelease.length !== 2) {
+      throw new Error(`Invalid prerelease version: '${prerelease.join('.')}'`);
+    }
+    [buildType, buildVersion] = prerelease;
     if (!String(buildVersion).match(/^\d+$/u)) {
       throw new Error(`Invalid prerelease build version: '${buildVersion}'`);
     } else if (
-      ![
-        BuildType.beta,
-        BuildType.flask,
-        BuildType.desktop,
-        BuildType.mmi,
-      ].includes(buildType)
+      ![BuildType.beta, BuildType.flask, BuildType.desktop].includes(buildType)
     ) {
       throw new Error(`Invalid prerelease build type: ${buildType}`);
     }

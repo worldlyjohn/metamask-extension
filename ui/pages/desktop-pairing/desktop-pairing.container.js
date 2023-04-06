@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import {
-  generateDesktopOtp,
+  generateOtp,
   hideLoadingIndication,
   showLoadingIndication,
 } from '../../store/actions';
@@ -9,7 +9,7 @@ import DesktopPairingPage from './desktop-pairing.component';
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    generateDesktopOtp: () => generateDesktopOtp(),
+    generateOtp: () => generateOtp(),
     showLoadingIndication: () => dispatch(showLoadingIndication()),
     hideLoadingIndication: () => dispatch(hideLoadingIndication()),
   };

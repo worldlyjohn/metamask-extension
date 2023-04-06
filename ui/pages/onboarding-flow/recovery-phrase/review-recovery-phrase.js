@@ -18,15 +18,9 @@ import {
   ThreeStepProgressBar,
   threeStepStages,
 } from '../../../components/app/step-progress-bar';
-import {
-  MetaMetricsEventCategory,
-  MetaMetricsEventName,
-} from '../../../../shared/constants/metametrics';
+import { EVENT_NAMES, EVENT } from '../../../../shared/constants/metametrics';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
-import {
-  Icon,
-  ICON_NAMES,
-} from '../../../components/component-library/icon/deprecated';
+import { Icon, ICON_NAMES } from '../../../components/component-library';
 import RecoveryPhraseChips from './recovery-phrase-chips';
 
 export default function RecoveryPhrase({ secretRecoveryPhrase }) {
@@ -142,9 +136,9 @@ export default function RecoveryPhrase({ secretRecoveryPhrase }) {
               className="recovery-phrase__footer--button"
               onClick={() => {
                 trackEvent({
-                  category: MetaMetricsEventCategory.Onboarding,
+                  category: EVENT.CATEGORIES.ONBOARDING,
                   event:
-                    MetaMetricsEventName.OnboardingWalletSecurityPhraseWrittenDown,
+                    EVENT_NAMES.ONBOARDING_WALLET_SECURITY_PHRASE_WRITTEN_DOWN,
                 });
                 history.push(
                   `${ONBOARDING_CONFIRM_SRP_ROUTE}${isFromReminderParam}`,
@@ -161,9 +155,8 @@ export default function RecoveryPhrase({ secretRecoveryPhrase }) {
             className="recovery-phrase__footer--button"
             onClick={() => {
               trackEvent({
-                category: MetaMetricsEventCategory.Onboarding,
-                event:
-                  MetaMetricsEventName.OnboardingWalletSecurityPhraseRevealed,
+                category: EVENT.CATEGORIES.ONBOARDING,
+                event: EVENT_NAMES.ONBOARDING_WALLET_SECURITY_PHRASE_REVEALED,
               });
               setPhraseRevealed(true);
             }}

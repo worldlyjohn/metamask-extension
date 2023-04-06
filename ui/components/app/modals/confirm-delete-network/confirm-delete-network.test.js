@@ -9,7 +9,7 @@ describe('Confirm Delete Network', () => {
   const props = {
     hideModal: jest.fn(),
     onConfirm: jest.fn(),
-    removeNetworkConfiguration: jest.fn().mockResolvedValue(),
+    delRpcTarget: jest.fn().mockResolvedValue(),
     target: 'target',
   };
 
@@ -30,7 +30,7 @@ describe('Confirm Delete Network', () => {
 
     fireEvent.click(queryByText('[cancel]'));
 
-    expect(props.removeNetworkConfiguration).not.toHaveBeenCalled();
+    expect(props.delRpcTarget).not.toHaveBeenCalled();
     expect(props.onConfirm).not.toHaveBeenCalled();
 
     expect(props.hideModal).toHaveBeenCalled();
@@ -44,7 +44,7 @@ describe('Confirm Delete Network', () => {
     fireEvent.click(queryByText('[delete]'));
 
     await waitFor(() => {
-      expect(props.removeNetworkConfiguration).toHaveBeenCalled();
+      expect(props.delRpcTarget).toHaveBeenCalled();
       expect(props.onConfirm).toHaveBeenCalled();
       expect(props.hideModal).toHaveBeenCalled();
     });

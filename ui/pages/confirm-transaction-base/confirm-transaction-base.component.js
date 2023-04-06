@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ConfirmPageContainer from '../../components/app/confirm-page-container';
+import TransactionDecoding from '../../components/app/transaction-decoding';
 import { isBalanceSufficient } from '../send/send.utils';
 import { DEFAULT_ROUTE } from '../../helpers/constants/routes';
 import {
@@ -10,11 +11,13 @@ import {
   GAS_PRICE_FETCH_FAILURE_ERROR_KEY,
 } from '../../helpers/constants/error-keys';
 import UserPreferencedCurrencyDisplay from '../../components/app/user-preferenced-currency-display';
+import CopyRawData from '../../components/app/transaction-decoding/components/ui/copy-raw-data';
 
 import { PRIMARY, SECONDARY } from '../../helpers/constants/common';
 import TextField from '../../components/ui/text-field';
 import SimulationErrorMessage from '../../components/ui/simulation-error-message';
-import { MetaMetricsEventCategory } from '../../../shared/constants/metametrics';
+import Disclosure from '../../components/ui/disclosure';
+import { EVENT } from '../../../shared/constants/metametrics';
 import {
   TransactionType,
   TransactionStatus,
@@ -24,6 +27,7 @@ import {
   getTransactionTypeTitle,
   isLegacyTransaction,
 } from '../../helpers/utils/transactions.util';
+import { toBuffer } from '../../../shared/modules/buffer-utils';
 
 import { TransactionModalContextProvider } from '../../contexts/transaction-modal';
 import TransactionDetail from '../../components/app/transaction-detail/transaction-detail.component';
@@ -56,10 +60,6 @@ import {
   hexWEIToDecGWEI,
 } from '../../../shared/modules/conversion.utils';
 import TransactionAlerts from '../../components/app/transaction-alerts';
-import { ConfirmHexData } from '../../components/app/confirm-hexdata';
-import { ConfirmData } from '../../components/app/confirm-data';
-import { ConfirmTitle } from '../../components/app/confirm-title';
-import { ConfirmSubTitle } from '../../components/app/confirm-subtitle';
 
 const renderHeartBeatIfNotInTest = () =>
   process.env.IN_TEST ? null : <LoadingHeartBeat />;
@@ -110,6 +110,8 @@ export default class ConfirmTransactionBase extends Component {
     contentComponent: PropTypes.node,
     dataComponent: PropTypes.node,
     dataHexComponent: PropTypes.node,
+    hideData: PropTypes.bool,
+    hideSubtitle: PropTypes.bool,
     tokenAddress: PropTypes.string,
     customTokenAmount: PropTypes.string,
     dappProposedTokenAmount: PropTypes.string,
@@ -279,7 +281,7 @@ export default class ConfirmTransactionBase extends Component {
     } = this.props;
 
     this.context.trackEvent({
-      category: MetaMetricsEventCategory.Transactions,
+      category: EVENT.CATEGORIES.TRANSACTIONS,
       event: 'User clicks "Edit" on gas',
       properties: {
         action: 'Confirm Screen',
@@ -636,27 +638,85 @@ export default class ConfirmTransactionBase extends Component {
     );
   }
 
-  renderData() {
-    const { txData, dataComponent } = this.props;
+  renderData(functionType) {
+    const { t } = this.context;
     const {
-      txParams: { data },
-    } = txData;
-    if (!data) {
+      txData: { txParams } = {},
+      methodData: { params } = {},
+      hideData,
+      dataComponent,
+    } = this.props;
+
+    if (hideData) {
       return null;
     }
-    return <ConfirmData txData={txData} dataComponent={dataComponent} />;
+
+    const functionParams = params?.length
+      ? `(${params.map(({ type }) => type).join(', ')})`
+      : '';
+
+    return (
+      dataComponent || (
+        <div className="confirm-page-container-content__data">
+          <div className="confirm-page-container-content__data-box-label">
+            {`${t('functionType')}:`}
+            <span className="confirm-page-container-content__function-type">
+              {`${functionType} ${functionParams}`}
+            </span>
+          </div>
+          <Disclosure>
+            <TransactionDecoding to={txParams?.to} inputData={txParams?.data} />
+          </Disclosure>
+        </div>
+      )
+    );
   }
 
-  renderDataHex() {
-    const { txData, dataHexComponent } = this.props;
+  renderDataHex(functionType) {
+    const { t } = this.context;
     const {
-      txParams: { data, to },
-    } = txData;
-    if (!data || !to) {
+      txData: { txParams } = {},
+      methodData: { params } = {},
+      hideData,
+      dataHexComponent,
+    } = this.props;
+
+    if (hideData || !txParams.to) {
       return null;
     }
+
+    const functionParams = params?.length
+      ? `(${params.map(({ type }) => type).join(', ')})`
+      : '';
+
     return (
-      <ConfirmHexData txData={txData} dataHexComponent={dataHexComponent} />
+      dataHexComponent || (
+        <div className="confirm-page-container-content__data">
+          <div className="confirm-page-container-content__data-box-label">
+            {`${t('functionType')}:`}
+            <span className="confirm-page-container-content__function-type">
+              {`${functionType} ${functionParams}`}
+            </span>
+          </div>
+          {params && (
+            <div className="confirm-page-container-content__data-box">
+              <div className="confirm-page-container-content__data-field-label">
+                {`${t('parameters')}:`}
+              </div>
+              <div>
+                <pre>{JSON.stringify(params, null, 2)}</pre>
+              </div>
+            </div>
+          )}
+          <div className="confirm-page-container-content__data-box-label">
+            {`${t('hexData')}: ${toBuffer(txParams?.data).length} bytes`}
+          </div>
+          <div className="confirm-page-container-content__data-box">
+            {txParams?.data}
+          </div>
+          <CopyRawData data={txParams?.data} />
+        </div>
+      )
     );
   }
 
@@ -672,7 +732,7 @@ export default class ConfirmTransactionBase extends Component {
     } = this.props;
 
     this.context.trackEvent({
-      category: MetaMetricsEventCategory.Transactions,
+      category: EVENT.CATEGORIES.TRANSACTIONS,
       event: 'Edit Transaction',
       properties: {
         action: 'Confirm Screen',
@@ -838,24 +898,38 @@ export default class ConfirmTransactionBase extends Component {
   renderTitleComponent() {
     const { title, hexTransactionAmount, txData } = this.props;
 
+    // Title string passed in by props takes priority
+    if (title) {
+      return null;
+    }
+
+    const isContractInteraction =
+      txData.type === TransactionType.contractInteraction;
+
     return (
-      <ConfirmTitle
-        title={title}
-        hexTransactionAmount={hexTransactionAmount}
-        txData={txData}
+      <UserPreferencedCurrencyDisplay
+        value={hexTransactionAmount}
+        type={PRIMARY}
+        showEthLogo
+        ethLogoHeight={24}
+        hideLabel={!isContractInteraction}
+        showCurrencySuffix={isContractInteraction}
       />
     );
   }
 
   renderSubtitleComponent() {
-    const { subtitleComponent, hexTransactionAmount, txData } = this.props;
+    const { subtitleComponent, hexTransactionAmount } = this.props;
 
     return (
-      <ConfirmSubTitle
-        hexTransactionAmount={hexTransactionAmount}
-        subtitleComponent={subtitleComponent}
-        txData={txData}
-      />
+      subtitleComponent || (
+        <UserPreferencedCurrencyDisplay
+          value={hexTransactionAmount}
+          type={SECONDARY}
+          showEthLogo
+          hideLabel
+        />
+      )
     );
   }
 
@@ -881,7 +955,7 @@ export default class ConfirmTransactionBase extends Component {
     } = this.props;
     const { trackEvent } = this.context;
     trackEvent({
-      category: MetaMetricsEventCategory.Transactions,
+      category: EVENT.CATEGORIES.TRANSACTIONS,
       event: 'Confirm: Started',
       properties: {
         action: 'Confirm Screen',
@@ -933,6 +1007,8 @@ export default class ConfirmTransactionBase extends Component {
       toEns,
       toNickname,
       methodData,
+      title,
+      hideSubtitle,
       tokenAddress,
       contentComponent,
       onEdit,
@@ -973,7 +1049,6 @@ export default class ConfirmTransactionBase extends Component {
     // component, which in turn returns this `<ConfirmTransactionBase />` component. We meed to prevent
     // the user from editing the transaction in those cases.
 
-    // as this component is made functional, useTransactionFunctionType can be used to get functionType
     const isTokenApproval =
       txData.type === TransactionType.tokenMethodSetApprovalForAll ||
       txData.type === TransactionType.tokenMethodApprove;
@@ -1009,9 +1084,11 @@ export default class ConfirmTransactionBase extends Component {
           toNickname={toNickname}
           showEdit={!isContractInteractionFromDapp && Boolean(onEdit)}
           action={functionType}
+          title={title}
           image={image}
           titleComponent={this.renderTitleComponent()}
           subtitleComponent={this.renderSubtitleComponent()}
+          hideSubtitle={hideSubtitle}
           detailsComponent={this.renderDetails()}
           dataComponent={this.renderData(functionType)}
           dataHexComponent={this.renderDataHex(functionType)}

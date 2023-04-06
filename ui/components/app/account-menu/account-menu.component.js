@@ -6,10 +6,9 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import classnames from 'classnames';
 import { ENVIRONMENT_TYPE_POPUP } from '../../../../shared/constants/app';
 import {
-  MetaMetricsContextProp,
-  MetaMetricsEventAccountType,
-  MetaMetricsEventCategory,
-  MetaMetricsEventName,
+  EVENT,
+  EVENT_NAMES,
+  CONTEXT_PROPS,
 } from '../../../../shared/constants/metametrics';
 import { getEnvironmentType } from '../../../../app/scripts/lib/util';
 import Identicon from '../../ui/identicon';
@@ -37,11 +36,7 @@ import Button from '../../ui/button';
 import SearchIcon from '../../ui/icon/search-icon';
 import { SUPPORT_LINK } from '../../../../shared/lib/ui-utils';
 import { IconColor } from '../../../helpers/constants/design-system';
-import {
-  Icon,
-  ICON_NAMES,
-  ICON_SIZES,
-} from '../../component-library/icon/deprecated';
+import { Icon, ICON_NAMES, ICON_SIZES } from '../../component-library';
 import KeyRingLabel from './keyring-label';
 
 export function AccountMenuItem(props) {
@@ -214,8 +209,8 @@ export default class AccountMenu extends Component {
           className="account-menu__account account-menu__item--clickable"
           onClick={() => {
             this.context.trackEvent({
-              category: MetaMetricsEventCategory.Navigation,
-              event: MetaMetricsEventName.NavAccountSwitched,
+              category: EVENT.CATEGORIES.NAVIGATION,
+              event: EVENT_NAMES.NAV_ACCOUNT_SWITCHED,
               properties: {
                 location: 'Main Menu',
               },
@@ -365,10 +360,10 @@ export default class AccountMenu extends Component {
           onClick={() => {
             toggleAccountMenu();
             trackEvent({
-              category: MetaMetricsEventCategory.Navigation,
-              event: MetaMetricsEventName.AccountAddSelected,
+              category: EVENT.CATEGORIES.NAVIGATION,
+              event: EVENT_NAMES.ACCOUNT_ADD_SELECTED,
               properties: {
-                account_type: MetaMetricsEventAccountType.Default,
+                account_type: EVENT.ACCOUNT_TYPES.DEFAULT,
                 location: 'Main Menu',
               },
             });
@@ -383,10 +378,10 @@ export default class AccountMenu extends Component {
           onClick={() => {
             toggleAccountMenu();
             trackEvent({
-              category: MetaMetricsEventCategory.Navigation,
-              event: MetaMetricsEventName.AccountAddSelected,
+              category: EVENT.CATEGORIES.NAVIGATION,
+              event: EVENT_NAMES.ACCOUNT_ADD_SELECTED,
               properties: {
-                account_type: MetaMetricsEventAccountType.Imported,
+                account_type: EVENT.ACCOUNT_TYPES.IMPORTED,
                 location: 'Main Menu',
               },
             });
@@ -401,10 +396,10 @@ export default class AccountMenu extends Component {
           onClick={() => {
             toggleAccountMenu();
             trackEvent({
-              category: MetaMetricsEventCategory.Navigation,
-              event: MetaMetricsEventName.AccountAddSelected,
+              category: EVENT.CATEGORIES.NAVIGATION,
+              event: EVENT_NAMES.ACCOUNT_ADD_SELECTED,
               properties: {
-                account_type: MetaMetricsEventAccountType.Hardware,
+                account_type: EVENT.ACCOUNT_TYPES.HARDWARE,
                 location: 'Main Menu',
               },
             });
@@ -451,16 +446,14 @@ export default class AccountMenu extends Component {
           onClick={() => {
             trackEvent(
               {
-                category: MetaMetricsEventCategory.Navigation,
-                event: MetaMetricsEventName.SupportLinkClicked,
+                category: EVENT.CATEGORIES.NAVIGATION,
+                event: EVENT_NAMES.SUPPORT_LINK_CLICKED,
                 properties: {
                   url: supportLink,
                 },
               },
               {
-                contextPropsIntoEventProperties: [
-                  MetaMetricsContextProp.PageTitle,
-                ],
+                contextPropsIntoEventProperties: [CONTEXT_PROPS.PAGE_TITLE],
               },
             );
             global.platform.openTab({ url: supportLink });
@@ -479,8 +472,8 @@ export default class AccountMenu extends Component {
             toggleAccountMenu();
             history.push(SETTINGS_ROUTE);
             this.context.trackEvent({
-              category: MetaMetricsEventCategory.Navigation,
-              event: MetaMetricsEventName.NavSettingsOpened,
+              category: EVENT.CATEGORIES.NAVIGATION,
+              event: EVENT_NAMES.NAV_SETTINGS_OPENED,
               properties: {
                 location: 'Main Menu',
               },

@@ -16,7 +16,6 @@ import Typography from '../../components/ui/typography';
 import Button from '../../components/ui/button';
 import Box from '../../components/ui/box';
 import { openCustomProtocol } from '../../../shared/lib/deep-linking';
-import { MetaMetricsEventCategory } from '../../../shared/constants/metametrics';
 
 export function renderDesktopError({
   type,
@@ -28,20 +27,8 @@ export function renderDesktopError({
   downloadDesktopApp,
   restartExtension,
   openOrDownloadDesktopApp,
-  trackEvent,
 }) {
   let content;
-
-  const DESKTOP_BUTTON_ACTIONS = {
-    DOWNLOAD_METAMASK_DESKTOP: 'Download MetaMask Desktop',
-    OPEN_METAMASK_DESKTOP: 'Open MetaMask Desktop',
-    DISABLE_METAMASK_DESKTOP: 'Disable MetaMask Desktop',
-    UPDATE_METAMASK_DESKTOP: 'Update MetaMask Desktop',
-    RETURN_SETTINGS_PAGE: 'Return to Settings Page',
-    UPDATE_METAMASK_EXTENSION: 'Update MetaMask Extension',
-    RESTART_METAMASK: 'Restart MetaMask',
-    RETURN_METAMASK_HOME: 'Return MetaMask Home',
-  };
 
   const noop = () => {
     // do nothing
@@ -74,29 +61,10 @@ export function renderDesktopError({
     );
   };
 
-  const renderCTA = (id, text, onClick, action) => {
+  const renderCTA = (id, text, onClick) => {
     return (
       <Box marginTop={6}>
-        <Button
-          type="primary"
-          onClick={() => {
-            if (onClick) {
-              onClick();
-              if (typeof trackEvent === 'function') {
-                trackEvent({
-                  category: MetaMetricsEventCategory.Desktop,
-                  event: 'Desktop Button Clicked',
-                  properties: {
-                    button_action: action,
-                  },
-                });
-              }
-            } else {
-              noop();
-            }
-          }}
-          id={id}
-        >
+        <Button type="primary" onClick={onClick ?? noop} id={id}>
           {text}
         </Button>
       </Box>
@@ -120,7 +88,6 @@ export function renderDesktopError({
             'desktop-error-button-download-mmd',
             t('desktopNotFoundErrorCTA'),
             downloadDesktopApp,
-            DESKTOP_BUTTON_ACTIONS.DOWNLOAD_METAMASK_DESKTOP,
           )}
         </>
       );
@@ -140,7 +107,6 @@ export function renderDesktopError({
             'desktop-error-button-disable-mmd',
             t('desktopDisableErrorCTA'),
             disableDesktop,
-            DESKTOP_BUTTON_ACTIONS.DISABLE_METAMASK_DESKTOP,
           )}
         </>
       );
@@ -155,7 +121,6 @@ export function renderDesktopError({
             'desktop-error-button-update-mmd',
             t('desktopOutdatedErrorCTA'),
             downloadDesktopApp,
-            DESKTOP_BUTTON_ACTIONS.UPDATE_METAMASK_DESKTOP,
           )}
         </>
       );
@@ -170,7 +135,6 @@ export function renderDesktopError({
             'desktop-error-button-update-extension',
             t('desktopOutdatedExtensionErrorCTA'),
             downloadExtension,
-            DESKTOP_BUTTON_ACTIONS.UPDATE_METAMASK_EXTENSION,
           )}
         </>
       );
@@ -185,19 +149,17 @@ export function renderDesktopError({
             'desktop-error-button-restart-mm',
             t('desktopErrorRestartMMCTA'),
             restartExtension,
-            DESKTOP_BUTTON_ACTIONS.RESTART_METAMASK,
           )}
           {renderCTA(
             'desktop-error-button-disable-mmd',
             t('desktopDisableErrorCTA'),
             disableDesktop,
-            DESKTOP_BUTTON_ACTIONS.DISABLE_METAMASK_DESKTOP,
           )}
         </>
       );
       break;
 
-    ///: BEGIN:ONLY_INCLUDE_IN(flask)
+    ///: BEGIN:ONLY_INCLUDE_IN(desktop)
     // This route only exists on the Desktop App
     case EXTENSION_ERROR_PAGE_TYPES.ROUTE_NOT_FOUND:
       content = (
@@ -208,7 +170,6 @@ export function renderDesktopError({
             'desktop-error-button-navigate-settings',
             t('desktopErrorNavigateSettingsCTA'),
             navigateSettings,
-            DESKTOP_BUTTON_ACTIONS.RETURN_SETTINGS_PAGE,
           )}
         </>
       );
@@ -233,7 +194,6 @@ export function renderDesktopError({
             'desktop-error-button-navigate-settings',
             t('desktopErrorNavigateSettingsCTA'),
             navigateSettings,
-            DESKTOP_BUTTON_ACTIONS.RETURN_SETTINGS_PAGE,
           )}
         </>
       );
@@ -248,7 +208,6 @@ export function renderDesktopError({
             'desktop-error-button-return-mm-home',
             t('desktopUnexpectedErrorCTA'),
             returnExtensionHome,
-            DESKTOP_BUTTON_ACTIONS.RETURN_METAMASK_HOME,
           )}
         </>
       );

@@ -14,11 +14,7 @@ import {
 import { BETA_BUGS_URL } from '../../../helpers/constants/beta';
 
 import { hideBetaHeader } from '../../../store/actions';
-import { ButtonIcon } from '../../component-library';
-import {
-  ICON_NAMES,
-  ICON_SIZES,
-} from '../../component-library/icon/deprecated';
+import { ButtonIcon, ICON_NAMES, ICON_SIZES } from '../../component-library';
 
 const BetaHeader = () => {
   const t = useI18nContext();

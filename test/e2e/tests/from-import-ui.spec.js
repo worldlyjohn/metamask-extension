@@ -267,10 +267,13 @@ describe('MetaMask Import UI', function () {
         await driver.clickElement({ text: 'Remove', tag: 'button' });
 
         // Wait until selected account switches away from removed account to first account
-        await driver.waitForSelector({
-          css: '.selected-account__name',
-          text: 'Account 1',
-        });
+        await driver.waitForSelector(
+          {
+            css: '.selected-account__name',
+            text: 'Account 1',
+          },
+          { timeout: 10000 },
+        );
 
         await driver.delay(regularDelayMs);
         await driver.clickElement('.account-menu__icon');
@@ -312,7 +315,7 @@ describe('MetaMask Import UI', function () {
         await driver.clickElement('.account-menu__icon');
         await driver.clickElement({ text: 'Import account', tag: 'div' });
 
-        await driver.clickElement('.dropdown__select');
+        await driver.clickElement('.new-account-import-form__select');
         await driver.clickElement({ text: 'JSON File', tag: 'option' });
 
         const fileInput = await driver.findElement('input[type="file"]');
@@ -393,7 +396,7 @@ describe('MetaMask Import UI', function () {
 
         // error should occur
         await driver.waitForSelector({
-          css: '.mm-help-text',
+          css: '.error',
           text: 'The account you are trying to import is a duplicate',
         });
       },

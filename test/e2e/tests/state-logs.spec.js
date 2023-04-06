@@ -9,14 +9,13 @@ const FixtureBuilder = require('../fixture-builder');
 
 const downloadsFolder = `${process.cwd()}/test-artifacts/downloads`;
 
-const getStateLogsJson = async () => {
+const stateLogsExist = async () => {
   try {
     const stateLogs = `${downloadsFolder}/MetaMask state logs.json`;
     await fs.access(stateLogs);
-    const contents = await fs.readFile(stateLogs);
-    return JSON.parse(contents.toString());
+    return true;
   } catch (e) {
-    return null;
+    return false;
   }
 };
 
@@ -54,19 +53,12 @@ describe('State logs', function () {
         });
 
         // Verify download
-        let info;
+        let fileExists;
         await driver.wait(async () => {
-          info = await getStateLogsJson();
-          return info !== null;
+          fileExists = await stateLogsExist();
+          return fileExists === true;
         }, 10000);
-        assert.notEqual(info, null);
-        // Verify Json
-        assert.equal(
-          info?.metamask?.identities[
-            '0x5cfe73b6021e818b776b421b1c4db2474086a7e1'
-          ].address,
-          '0x5cfe73b6021e818b776b421b1c4db2474086a7e1',
-        );
+        assert.equal(fileExists, true);
       },
     );
   });

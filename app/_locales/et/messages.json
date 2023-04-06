@@ -163,9 +163,6 @@
   "connectingToGoerli": {
     "message": "Ühendamine Goerli testvõrguga"
   },
-  "connectingToLineaTestnet": {
-    "message": "Ühendamine Linea Goerli testvõrguga"
-  },
   "connectingToMainnet": {
     "message": "Ühenduse loomine peamise Etherumi võrguga"
   },
@@ -410,9 +407,6 @@
   },
   "likeToImportTokens": {
     "message": "Kas soovite need load lisada?"
-  },
-  "lineatestnet": {
-    "message": "Linea Goerli testvõrk"
   },
   "links": {
     "message": "Lingid"
@@ -667,6 +661,12 @@
   },
   "settings": {
     "message": "Seaded"
+  },
+  "showAdvancedGasInline": {
+    "message": "Täiustatud gaasijuhikud"
+  },
+  "showAdvancedGasInlineDescription": {
+    "message": "Valige see, et kuvada gaasi hinda ja piirangut otse saatmise ning kinnitamise kuval."
   },
   "showFiatConversionInTestnets": {
     "message": "Kuva teisendus Testnetsis"

@@ -123,21 +123,43 @@ describe('Send ERC20 to a 40 character hexadecimal address', function () {
     await withFixtures(
       {
         dapp: true,
-        fixtures: new FixtureBuilder().withTokensControllerERC20().build(),
+        fixtures: new FixtureBuilder()
+          .withPermissionControllerConnectedToTestDapp()
+          .build(),
         ganacheOptions,
         smartContract,
         title: this.test.title,
         failOnConsoleError: false,
       },
-      async ({ driver, ganacheServer }) => {
+      async ({ driver, contractRegistry }) => {
+        const contractAddress = await contractRegistry.getContractAddress(
+          smartContract,
+        );
         await driver.navigate();
         await driver.fill('#password', 'correct horse battery staple');
         await driver.press('#password', driver.Key.ENTER);
-        const balanceAfterDeployment = await ganacheServer.getBalance();
-        await driver.waitForSelector({
-          css: '[data-testid="eth-overview__primary-currency"]',
-          text: `${balanceAfterDeployment} ETH`,
-        });
+
+        await driver.openNewPage(
+          `http://127.0.0.1:8080/?contract=${contractAddress}`,
+        );
+        let windowHandles = await driver.getAllWindowHandles();
+        const extension = windowHandles[0];
+
+        // Using the line below to make wait time deterministic and avoid using a delay
+        // See more here https://github.com/MetaMask/metamask-extension/pull/15604/files#r949300551
+        await driver.findClickableElement('#deployButton');
+
+        // Add token
+        await driver.clickElement('#watchAsset');
+        await driver.waitUntilXWindowHandles(3);
+        windowHandles = await driver.getAllWindowHandles();
+        await driver.switchToWindowWithTitle(
+          'MetaMask Notification',
+          windowHandles,
+        );
+        await driver.clickElement({ text: 'Add token', tag: 'button' });
+        await driver.waitUntilXWindowHandles(2);
+        await driver.switchToWindow(extension);
 
         // Send TST
         await driver.clickElement('[data-testid="home__asset-tab"]');
@@ -153,10 +175,7 @@ describe('Send ERC20 to a 40 character hexadecimal address', function () {
           css: '.ens-input__selected-input__title',
           text: hexPrefixedAddress,
         });
-        await driver.waitForSelector({
-          css: '.transaction-detail-item',
-          text: '0.00008346 ETH',
-        });
+        await driver.delay(2000);
         await driver.clickElement({ text: 'Next', tag: 'button' });
 
         // Confirm transaction
@@ -168,6 +187,7 @@ describe('Send ERC20 to a 40 character hexadecimal address', function () {
         await driver.clickElement('[data-testid="home__activity-tab"]');
         await driver.waitForSelector(
           '.transaction-list__completed-transactions .transaction-list-item:nth-of-type(1)',
+          { timeout: 10000 },
         );
         const sendTransactionListItem = await driver.waitForSelector(
           '.transaction-list__completed-transactions .transaction-list-item:nth-of-type(1)',
@@ -188,21 +208,42 @@ describe('Send ERC20 to a 40 character hexadecimal address', function () {
     await withFixtures(
       {
         dapp: true,
-        fixtures: new FixtureBuilder().withTokensControllerERC20().build(),
+        fixtures: new FixtureBuilder()
+          .withPermissionControllerConnectedToTestDapp()
+          .build(),
         ganacheOptions,
         smartContract,
         title: this.test.title,
         failOnConsoleError: false,
       },
-      async ({ driver, ganacheServer }) => {
+      async ({ driver, contractRegistry }) => {
+        const contractAddress = await contractRegistry.getContractAddress(
+          smartContract,
+        );
         await driver.navigate();
         await driver.fill('#password', 'correct horse battery staple');
         await driver.press('#password', driver.Key.ENTER);
-        const balanceAfterDeployment = await ganacheServer.getBalance();
-        await driver.waitForSelector({
-          css: '[data-testid="eth-overview__primary-currency"]',
-          text: `${balanceAfterDeployment} ETH`,
-        });
+
+        // Create TST
+        await driver.openNewPage(
+          `http://127.0.0.1:8080/?contract=${contractAddress}`,
+        );
+
+        let windowHandles = await driver.getAllWindowHandles();
+        const extension = windowHandles[0];
+
+        // Add token
+        await driver.findClickableElement('#deployButton');
+        await driver.clickElement('#watchAsset');
+        await driver.waitUntilXWindowHandles(3);
+        windowHandles = await driver.getAllWindowHandles();
+        await driver.switchToWindowWithTitle(
+          'MetaMask Notification',
+          windowHandles,
+        );
+        await driver.clickElement({ text: 'Add token', tag: 'button' });
+        await driver.waitUntilXWindowHandles(2);
+        await driver.switchToWindow(extension);
 
         // Send TST
         await driver.clickElement('[data-testid="home__asset-tab"]');
@@ -218,10 +259,7 @@ describe('Send ERC20 to a 40 character hexadecimal address', function () {
           css: '.ens-input__selected-input__title',
           text: hexPrefixedAddress,
         });
-        await driver.waitForSelector({
-          css: '.transaction-detail-item',
-          text: '0.00008346 ETH',
-        });
+        await driver.delay(2000);
         await driver.clickElement({ text: 'Next', tag: 'button' });
 
         // Confirm transaction
@@ -233,6 +271,7 @@ describe('Send ERC20 to a 40 character hexadecimal address', function () {
         await driver.clickElement('[data-testid="home__activity-tab"]');
         await driver.waitForSelector(
           '.transaction-list__completed-transactions .transaction-list-item:nth-of-type(1)',
+          { timeout: 10000 },
         );
         const sendTransactionListItem = await driver.waitForSelector(
           '.transaction-list__completed-transactions .transaction-list-item:nth-of-type(1)',

@@ -18,11 +18,7 @@ import {
 import Chip from '../../ui/chip/chip';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import { isNetworkLoading } from '../../../selectors';
-import {
-  Icon,
-  ICON_NAMES,
-  ICON_SIZES,
-} from '../../component-library/icon/deprecated';
+import { Icon, ICON_NAMES, ICON_SIZES } from '../../component-library';
 
 export default function NetworkDisplay({
   indicatorSize,
@@ -38,7 +34,8 @@ export default function NetworkDisplay({
   }));
   const t = useI18nContext();
 
-  const { nickname, type: networkType } = targetNetwork ?? currentNetwork;
+  const { nickname: networkNickname, type: networkType } =
+    targetNetwork ?? currentNetwork;
 
   return (
     <Chip
@@ -76,7 +73,7 @@ export default function NetworkDisplay({
       }
       label={
         networkType === NETWORK_TYPES.RPC
-          ? nickname ?? t('privateNetwork')
+          ? networkNickname ?? t('privateNetwork')
           : t(networkType)
       }
       className={classnames('network-display', {

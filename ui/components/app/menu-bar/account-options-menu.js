@@ -21,14 +21,10 @@ import {
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import { getEnvironmentType } from '../../../../app/scripts/lib/util';
 import { ENVIRONMENT_TYPE_FULLSCREEN } from '../../../../shared/constants/app';
-import { KeyringType } from '../../../../shared/constants/keyring';
-import {
-  MetaMetricsEventCategory,
-  MetaMetricsEventLinkType,
-  MetaMetricsEventName,
-} from '../../../../shared/constants/metametrics';
+import { HardwareKeyringTypes } from '../../../../shared/constants/hardware-wallets';
+import { EVENT, EVENT_NAMES } from '../../../../shared/constants/metametrics';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
-import { ICON_NAMES } from '../../component-library/icon/deprecated';
+import { ICON_NAMES } from '../../component-library';
 
 export default function AccountOptionsMenu({ anchorElement, onClose }) {
   const t = useI18nContext();
@@ -46,7 +42,7 @@ export default function AccountOptionsMenu({ anchorElement, onClose }) {
   const trackEvent = useContext(MetaMetricsContext);
   const blockExplorerLinkText = useSelector(getBlockExplorerLinkText);
 
-  const isRemovable = keyring.type !== KeyringType.hdKeyTree;
+  const isRemovable = keyring.type !== HardwareKeyringTypes.hdKeyTree;
 
   const routeToAddBlockExplorerUrl = () => {
     history.push(`${NETWORKS_ROUTE}#blockExplorerUrl`);
@@ -54,10 +50,10 @@ export default function AccountOptionsMenu({ anchorElement, onClose }) {
 
   const openBlockExplorer = () => {
     trackEvent({
-      event: MetaMetricsEventName.ExternalLinkClicked,
-      category: MetaMetricsEventCategory.Navigation,
+      event: EVENT_NAMES.EXTERNAL_LINK_CLICKED,
+      category: EVENT.CATEGORIES.NAVIGATION,
       properties: {
-        link_type: MetaMetricsEventLinkType.AccountTracker,
+        link_type: EVENT.EXTERNAL_LINK_TYPES.ACCOUNT_TRACKER,
         location: 'Account Options',
         url_domain: getURLHostName(addressLink),
       },
@@ -100,8 +96,8 @@ export default function AccountOptionsMenu({ anchorElement, onClose }) {
         <MenuItem
           onClick={() => {
             trackEvent({
-              event: MetaMetricsEventName.AppWindowExpanded,
-              category: MetaMetricsEventCategory.Navigation,
+              event: EVENT_NAMES.APP_WINDOW_EXPANDED,
+              category: EVENT.CATEGORIES.NAVIGATION,
               properties: {
                 location: 'Account Options',
               },
@@ -119,8 +115,8 @@ export default function AccountOptionsMenu({ anchorElement, onClose }) {
         onClick={() => {
           dispatch(showModal({ name: 'ACCOUNT_DETAILS' }));
           trackEvent({
-            event: MetaMetricsEventName.NavAccountDetailsOpened,
-            category: MetaMetricsEventCategory.Navigation,
+            event: EVENT_NAMES.NAV_ACCOUNT_DETAILS_OPENED,
+            category: EVENT.CATEGORIES.NAVIGATION,
             properties: {
               location: 'Account Options',
             },
@@ -135,8 +131,8 @@ export default function AccountOptionsMenu({ anchorElement, onClose }) {
         data-testid="account-options-menu__connected-sites"
         onClick={() => {
           trackEvent({
-            event: MetaMetricsEventName.NavConnectedSitesOpened,
-            category: MetaMetricsEventCategory.Navigation,
+            event: EVENT_NAMES.NAV_CONNECTED_SITES_OPENED,
+            category: EVENT.CATEGORIES.NAVIGATION,
             properties: {
               location: 'Account Options',
             },

@@ -44,10 +44,7 @@ export default function MultilayerFeeMessage({
   useEffect(() => {
     const getEstimatedL1Fee = async () => {
       try {
-        const result = await fetchEstimatedL1Fee(
-          transaction.chainId,
-          transaction.txParams,
-        );
+        const result = await fetchEstimatedL1Fee(transaction);
         setLayer1Total(result);
       } catch (e) {
         captureException(e);
@@ -78,7 +75,7 @@ export default function MultilayerFeeMessage({
   return (
     <div className="multi-layer-fee-message">
       <TransactionDetailItem
-        key="total-item-gas-fee"
+        key="total-item"
         detailTitle={t('gasFee')}
         detailTotal={layer1Total}
         detailText={feeTotalInFiat}
@@ -86,7 +83,7 @@ export default function MultilayerFeeMessage({
         flexWidthValues={plainStyle}
       />
       <TransactionDetailItem
-        key="total-item-total"
+        key="total-item"
         detailTitle={t('total')}
         detailTotal={totalInEth}
         detailText={totalInFiat}

@@ -8,7 +8,7 @@ import qrCode from 'qrcode-generator';
 import Button from '../../components/ui/button';
 import LoadingScreen from '../../components/ui/loading-screen';
 import { MINUTE, SECOND } from '../../../shared/constants/time';
-import { KeyringType } from '../../../shared/constants/keyring';
+import { HardwareKeyringTypes } from '../../../shared/constants/hardware-wallets';
 
 const PASSWORD_PROMPT_SCREEN = 'PASSWORD_PROMPT_SCREEN';
 const REVEAL_SEED_SCREEN = 'REVEAL_SEED_SCREEN';
@@ -82,7 +82,7 @@ export default class MobileSyncPage extends Component {
   async exportAccounts() {
     const addresses = [];
     this.props.keyrings.forEach((keyring) => {
-      if (keyring.type === KeyringType.imported) {
+      if (keyring.type === HardwareKeyringTypes.imported) {
         addresses.push(keyring.accounts[0]);
       }
     });

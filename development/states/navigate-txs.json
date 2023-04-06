@@ -304,8 +304,7 @@
     "infuraNetworkStatus": {
       "mainnet": "ok",
       "goerli": "ok",
-      "sepolia": "ok",
-      "lineatestnet": "ok"
+      "sepolia": "ok"
     }
   },
   "send": {

@@ -160,9 +160,6 @@
   "connectingToGoerli": {
     "message": "Connectant a Xarxa de Prova Goerli"
   },
-  "connectingToLineaTestnet": {
-    "message": "Connectant a Xarxa de Prova Linea Goerli"
-  },
   "connectingToMainnet": {
     "message": "Connectant a Xarxa Principal Ethereum"
   },
@@ -401,9 +398,6 @@
   },
   "likeToImportTokens": {
     "message": "T'agradaria afegir aquestes fitxes?"
-  },
-  "lineatestnet": {
-    "message": "Xarxa de test Linea Goerli"
   },
   "links": {
     "message": "Enllaços"
@@ -655,6 +649,12 @@
   },
   "settings": {
     "message": "Configuració"
+  },
+  "showAdvancedGasInline": {
+    "message": "Controls de gas avançats"
+  },
+  "showAdvancedGasInlineDescription": {
+    "message": "Selecciona això per a mostrar el preu del gas i els controls de límit directament a les pantalles d'enviament i confirmació."
   },
   "showFiatConversionInTestnets": {
     "message": "Mostra Conversió a Testnets"

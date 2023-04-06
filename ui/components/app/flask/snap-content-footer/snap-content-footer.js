@@ -16,7 +16,7 @@ import {
 } from '../../../../helpers/constants/design-system';
 import Button from '../../../ui/button';
 import Box from '../../../ui/box/box';
-import { Icon, ICON_NAMES } from '../../../component-library/icon/deprecated';
+import { Icon, ICON_NAMES } from '../../../component-library';
 
 export default function SnapContentFooter({ snapName, snapId }) {
   const t = useI18nContext();

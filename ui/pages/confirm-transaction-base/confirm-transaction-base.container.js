@@ -63,6 +63,7 @@ import {
   TransactionStatus,
   TransactionType,
 } from '../../../shared/constants/transaction';
+import { isEqualCaseInsensitive } from '../../../shared/modules/string-utils';
 import { getTokenAddressParam } from '../../helpers/utils/token-util';
 import { calcGasTotal } from '../../../shared/lib/transactions-controller-utils';
 import ConfirmTransactionBase from './confirm-transaction-base.component';
@@ -101,9 +102,11 @@ const mapStateToProps = (state, ownProps) => {
     conversionRate,
     identities,
     addressBook,
-    networkId,
+    network,
     unapprovedTxs,
     nextNonce,
+    allNftContracts,
+    selectedAddress,
     provider: { chainId },
   } = metamask;
   const { tokenData, txData, tokenProps, nonce } = confirmTransaction;
@@ -160,7 +163,7 @@ const mapStateToProps = (state, ownProps) => {
 
   const currentNetworkUnapprovedTxs = Object.keys(unapprovedTxs)
     .filter((key) =>
-      transactionMatchesNetwork(unapprovedTxs[key], chainId, networkId),
+      transactionMatchesNetwork(unapprovedTxs[key], chainId, network),
     )
     .reduce((acc, key) => ({ ...acc, [key]: unapprovedTxs[key] }), {});
   const unapprovedTxCount = valuesFor(currentNetworkUnapprovedTxs).length;
@@ -179,6 +182,12 @@ const mapStateToProps = (state, ownProps) => {
     txId,
     TransactionStatus.unapproved,
     customTxParamsData,
+  );
+
+  const isNftTransfer = Boolean(
+    allNftContracts?.[selectedAddress]?.[chainId]?.find((contract) => {
+      return isEqualCaseInsensitive(contract.address, fullTxData.txParams.to);
+    }),
   );
 
   customNonceValue = getCustomNonceValue(state);
@@ -226,6 +235,7 @@ const mapStateToProps = (state, ownProps) => {
     useNonceField: getUseNonceField(state),
     customNonceValue,
     insufficientBalance,
+    hideSubtitle: !getShouldShowFiat(state) && !isNftTransfer,
     hideFiatConversion: !getShouldShowFiat(state),
     type,
     nextNonce,

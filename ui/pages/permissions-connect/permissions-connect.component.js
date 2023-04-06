@@ -13,13 +13,12 @@ import {
   Icon,
   ICON_NAMES,
   ICON_SIZES,
-} from '../../components/component-library/icon/deprecated';
+} from '../../components/component-library';
 import ChooseAccount from './choose-account';
 import PermissionsRedirect from './redirect';
 ///: BEGIN:ONLY_INCLUDE_IN(flask)
 import SnapInstall from './flask/snap-install';
 import SnapUpdate from './flask/snap-update';
-import SnapResult from './flask/snap-result';
 ///: END:ONLY_INCLUDE_IN
 
 const APPROVE_TIMEOUT = MILLISECOND * 1200;
@@ -45,9 +44,7 @@ export default class PermissionConnect extends Component {
     ///: BEGIN:ONLY_INCLUDE_IN(flask)
     snapInstallPath: PropTypes.string.isRequired,
     snapUpdatePath: PropTypes.string.isRequired,
-    snapResultPath: PropTypes.string.isRequired,
-    requestType: PropTypes.string.isRequired,
-    requestState: PropTypes.object.isRequired,
+    isSnap: PropTypes.bool.isRequired,
     approvePendingApproval: PropTypes.func.isRequired,
     rejectPendingApproval: PropTypes.func.isRequired,
     ///: END:ONLY_INCLUDE_IN
@@ -105,8 +102,7 @@ export default class PermissionConnect extends Component {
       ///: BEGIN:ONLY_INCLUDE_IN(flask)
       snapInstallPath,
       snapUpdatePath,
-      snapResultPath,
-      requestType,
+      isSnap,
       ///: END:ONLY_INCLUDE_IN
       getRequestAccountTabIds,
       permissionsRequest,
@@ -127,20 +123,13 @@ export default class PermissionConnect extends Component {
 
     if (history.location.pathname === connectPath && !isRequestingAccounts) {
       ///: BEGIN:ONLY_INCLUDE_IN(flask)
-
-      switch (requestType) {
-        case 'wallet_installSnap':
-          history.push(snapInstallPath);
-          break;
-        case 'wallet_updateSnap':
-          history.push(snapUpdatePath);
-          break;
-        case 'wallet_installSnapResult':
-          history.push(snapResultPath);
-          break;
-        default:
-          ///: END:ONLY_INCLUDE_IN
-          history.push(confirmPermissionPath);
+      if (isSnap) {
+        history.push(
+          permissionsRequest.newPermissions ? snapUpdatePath : snapInstallPath,
+        );
+      } else {
+        ///: END:ONLY_INCLUDE_IN
+        history.push(confirmPermissionPath);
         ///: BEGIN:ONLY_INCLUDE_IN(flask)
       }
       ///: END:ONLY_INCLUDE_IN
@@ -182,8 +171,8 @@ export default class PermissionConnect extends Component {
       ///: BEGIN:ONLY_INCLUDE_IN(flask)
       snapInstallPath,
       snapUpdatePath,
-      snapResultPath,
-      requestType,
+      isSnap,
+      permissionsRequest,
       ///: END:ONLY_INCLUDE_IN
     } = this.props;
     this.setState(
@@ -194,65 +183,30 @@ export default class PermissionConnect extends Component {
       () => this.props.history.push(confirmPermissionPath),
       ///: END:ONLY_INCLUDE_IN
       ///: BEGIN:ONLY_INCLUDE_IN(flask)
-      () => {
-        switch (requestType) {
-          case 'wallet_installSnap':
-            this.props.history.push(snapInstallPath);
-            break;
-          case 'wallet_updateSnap':
-            this.props.history.push(snapUpdatePath);
-            break;
-          case 'wallet_installSnapResult':
-            this.props.history.push(snapResultPath);
-            break;
-          default:
-            this.props.history.push(confirmPermissionPath);
-        }
-      },
+      () =>
+        this.props.history.push(
+          // eslint-disable-next-line no-nested-ternary
+          isSnap
+            ? permissionsRequest.newPermissions
+              ? snapUpdatePath
+              : snapInstallPath
+            : confirmPermissionPath,
+        ),
       ///: END:ONLY_INCLUDE_IN
     );
   };
 
   redirect(approved) {
-    const {
-      history,
-      ///: BEGIN:ONLY_INCLUDE_IN(flask)
-      permissionsRequest,
-      ///: END:ONLY_INCLUDE_IN
-    } = this.props;
-
-    ///: BEGIN:ONLY_INCLUDE_IN(flask)
-    const isRequestingSnap =
-      permissionsRequest?.permissions &&
-      Object.keys(permissionsRequest.permissions).includes('wallet_snap');
-
-    const shouldRedirect = !isRequestingSnap;
-
-    this.setState({
-      redirecting: shouldRedirect,
-      permissionsApproved: approved,
-    });
-    ///: END:ONLY_INCLUDE_IN
-
-    ///: BEGIN:ONLY_INCLUDE_IN(main,beta)
+    const { history } = this.props;
     this.setState({
       redirecting: true,
       permissionsApproved: approved,
     });
-    ///: END:ONLY_INCLUDE_IN
     this.removeBeforeUnload();
 
-    ///: BEGIN:ONLY_INCLUDE_IN(flask)
-    if (shouldRedirect && approved) {
-      setTimeout(() => history.push(DEFAULT_ROUTE), APPROVE_TIMEOUT);
-    }
-    ///: END:ONLY_INCLUDE_IN
-    ///: BEGIN:ONLY_INCLUDE_IN(main,beta,mmi)
     if (approved) {
       setTimeout(() => history.push(DEFAULT_ROUTE), APPROVE_TIMEOUT);
-    }
-    ///: END:ONLY_INCLUDE_IN
-    else {
+    } else {
       history.push(DEFAULT_ROUTE);
     }
   }
@@ -314,8 +268,6 @@ export default class PermissionConnect extends Component {
       ///: BEGIN:ONLY_INCLUDE_IN(flask)
       snapInstallPath,
       snapUpdatePath,
-      snapResultPath,
-      requestState,
       approvePendingApproval,
       rejectPendingApproval,
       ///: END:ONLY_INCLUDE_IN
@@ -388,22 +340,19 @@ export default class PermissionConnect extends Component {
               render={() => (
                 <SnapInstall
                   request={permissionsRequest || {}}
-                  requestState={requestState || {}}
                   approveSnapInstall={(requestId) => {
                     approvePendingApproval(requestId, {
                       ...permissionsRequest,
-                      permissions: requestState.permissions,
                       approvedAccounts: [...selectedAccountAddresses],
                     });
-                    this.setState({ permissionsApproved: true });
+                    this.redirect(true);
                   }}
                   rejectSnapInstall={(requestId) => {
                     rejectPendingApproval(
                       requestId,
                       serializeError(ethErrors.provider.userRejectedRequest()),
                     );
-                    this.setState({ permissionsApproved: true });
-                    this.removeBeforeUnload();
+                    this.redirect(false);
                   }}
                   targetSubjectMetadata={targetSubjectMetadata}
                 />
@@ -421,44 +370,19 @@ export default class PermissionConnect extends Component {
               render={() => (
                 <SnapUpdate
                   request={permissionsRequest || {}}
-                  requestState={requestState || {}}
                   approveSnapUpdate={(requestId) => {
                     approvePendingApproval(requestId, {
                       ...permissionsRequest,
-                      permissions: requestState.permissions,
                       approvedAccounts: [...selectedAccountAddresses],
                     });
-                    this.setState({ permissionsApproved: true });
+                    this.redirect(true);
                   }}
                   rejectSnapUpdate={(requestId) => {
                     rejectPendingApproval(
                       requestId,
                       serializeError(ethErrors.provider.userRejectedRequest()),
                     );
-                    this.setState({ permissionsApproved: false });
-                    this.removeBeforeUnload();
-                  }}
-                  targetSubjectMetadata={targetSubjectMetadata}
-                />
-              )}
-            />
-            {
-              ///: END:ONLY_INCLUDE_IN
-            }
-            {
-              ///: BEGIN:ONLY_INCLUDE_IN(flask)
-            }
-            <Route
-              path={snapResultPath}
-              exact
-              render={() => (
-                <SnapResult
-                  request={permissionsRequest || {}}
-                  requestState={requestState || {}}
-                  approveSnapResult={(requestId) => {
-                    approvePendingApproval(requestId);
-                    this.setState({ permissionsApproved: true });
-                    this.removeBeforeUnload();
+                    this.redirect(false);
                   }}
                   targetSubjectMetadata={targetSubjectMetadata}
                 />

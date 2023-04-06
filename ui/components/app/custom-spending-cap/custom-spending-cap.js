@@ -6,14 +6,15 @@ import BigNumber from 'bignumber.js';
 import { I18nContext } from '../../../contexts/i18n';
 import Box from '../../ui/box';
 import FormField from '../../ui/form-field';
-import { Text, ButtonLink } from '../../component-library';
-import { Icon, ICON_NAMES } from '../../component-library/icon/deprecated';
+import Typography from '../../ui/typography';
+import { ButtonLink, Icon, ICON_NAMES } from '../../component-library';
 import {
   AlignItems,
   DISPLAY,
   FLEX_DIRECTION,
   TEXT_ALIGN,
-  TextVariant,
+  FONT_WEIGHT,
+  TypographyVariant,
   JustifyContent,
   Size,
   BLOCK_SIZES,
@@ -70,14 +71,14 @@ export default function CustomSpendingCap({
       return {
         className: 'custom-spending-cap__lowerValue',
         description: t('inputLogicEqualOrSmallerNumber', [
-          <Text
+          <Typography
             key="custom-spending-cap"
-            variant={TextVariant.bodySmBold}
-            as="h6"
+            variant={TypographyVariant.H6}
+            fontWeight={FONT_WEIGHT.BOLD}
             className="custom-spending-cap__input-value-and-token-name"
           >
             {replaceCommaToDot(inputNumber)} {tokenName}
-          </Text>,
+          </Typography>,
         ]),
       };
     } else if (decConversionGreaterThan(inputNumber, currentTokenBalance)) {
@@ -144,14 +145,14 @@ export default function CustomSpendingCap({
     currentTokenBalance,
   )
     ? t('warningTooltipText', [
-        <Text
+        <Typography
           key="tooltip-text"
-          variant={TextVariant.bodySmBold}
-          as="h6"
+          variant={TypographyVariant.H7}
+          fontWeight={FONT_WEIGHT.BOLD}
           color={TextColor.errorDefault}
         >
           <Icon name={ICON_NAMES.WARNING} /> {t('beCareful')}
-        </Text>,
+        </Typography>,
       ])
     : t('inputLogicEmptyState');
 
@@ -248,17 +249,15 @@ export default function CustomSpendingCap({
                 'custom-spending-cap__description--with-error-message': error,
               })}
             >
-              <Text
+              <Typography
                 color={TextColor.textDefault}
-                variant={TextVariant.bodySm}
-                as="h6"
-                paddingTop={2}
-                paddingBottom={2}
+                variant={TypographyVariant.H7}
+                boxProps={{ paddingTop: 2, paddingBottom: 2 }}
               >
                 {replaceCommaToDot(value)
                   ? customSpendingCapText
                   : inputLogicEmptyStateText}
-              </Text>
+              </Typography>
             </Box>
           </label>
         </Box>

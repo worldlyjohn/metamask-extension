@@ -14,33 +14,7 @@ describe('migration #79', () => {
     });
   });
 
-  it('should remove the "collectiblesDetectionNoticeDismissed"', async () => {
-    const oldStorage = {
-      meta: {
-        version: 78,
-      },
-      data: {
-        AppStateController: {
-          collectiblesDetectionNoticeDismissed: false,
-          bar: 'baz',
-        },
-      },
-    };
-
-    const newStorage = await migration79.migrate(oldStorage);
-    expect(newStorage).toStrictEqual({
-      meta: {
-        version: 79,
-      },
-      data: {
-        AppStateController: {
-          bar: 'baz',
-        },
-      },
-    });
-  });
-
-  it('should remove the "collectiblesDropdownState"', async () => {
+  it('should remove the "showPortfolioToolip" property', async () => {
     const oldStorage = {
       meta: {
         version: 78,
@@ -61,7 +35,19 @@ describe('migration #79', () => {
               name: 'Account 2',
             },
           },
-          collectiblesDropdownState: {},
+          unapprovedTxs: {},
+          frequentRpcList: [],
+          addressBook: {},
+          popupGasPollTokens: [],
+          notificationGasPollTokens: [],
+          fullScreenGasPollTokens: [],
+          recoveryPhraseReminderHasBeenShown: false,
+          recoveryPhraseReminderLastShown: 1675966206345,
+          outdatedBrowserWarningLastShown: 1675966206345,
+          showTestnetMessageInDropdown: true,
+          showPortfolioTooltip: false,
+          showBetaHeader: false,
+          trezorModel: null,
           qrHardware: {},
         },
       },
@@ -88,37 +74,25 @@ describe('migration #79', () => {
               name: 'Account 2',
             },
           },
+          unapprovedTxs: {},
+          frequentRpcList: [],
+          addressBook: {},
+          popupGasPollTokens: [],
+          notificationGasPollTokens: [],
+          fullScreenGasPollTokens: [],
+          recoveryPhraseReminderHasBeenShown: false,
+          recoveryPhraseReminderLastShown: 1675966206345,
+          outdatedBrowserWarningLastShown: 1675966206345,
+          showTestnetMessageInDropdown: true,
+          showBetaHeader: false,
+          trezorModel: null,
           qrHardware: {},
         },
       },
     });
   });
 
-  it('should make no changes if "collectiblesDetectionNoticeDismissed" never existed', async () => {
-    const oldStorage = {
-      meta: {
-        version: 78,
-      },
-      data: {
-        AppStateController: {
-          bar: 'baz',
-        },
-      },
-    };
-
-    const newStorage = await migration79.migrate(oldStorage);
-    expect(newStorage).toStrictEqual({
-      meta: {
-        version: 79,
-      },
-      data: {
-        AppStateController: {
-          bar: 'baz',
-        },
-      },
-    });
-  });
-  it('should make no changes if "collectiblesDropdownState" never existed', async () => {
+  it('should make no changes if "showPortfolioToolip" never existed', async () => {
     const oldStorage = {
       meta: {
         version: 78,
@@ -139,6 +113,18 @@ describe('migration #79', () => {
               name: 'Account 2',
             },
           },
+          unapprovedTxs: {},
+          frequentRpcList: [],
+          addressBook: {},
+          popupGasPollTokens: [],
+          notificationGasPollTokens: [],
+          fullScreenGasPollTokens: [],
+          recoveryPhraseReminderHasBeenShown: false,
+          recoveryPhraseReminderLastShown: 1675966206345,
+          outdatedBrowserWarningLastShown: 1675966206345,
+          showTestnetMessageInDropdown: true,
+          showBetaHeader: false,
+          trezorModel: null,
           qrHardware: {},
         },
       },
@@ -165,6 +151,18 @@ describe('migration #79', () => {
               name: 'Account 2',
             },
           },
+          unapprovedTxs: {},
+          frequentRpcList: [],
+          addressBook: {},
+          popupGasPollTokens: [],
+          notificationGasPollTokens: [],
+          fullScreenGasPollTokens: [],
+          recoveryPhraseReminderHasBeenShown: false,
+          recoveryPhraseReminderLastShown: 1675966206345,
+          outdatedBrowserWarningLastShown: 1675966206345,
+          showTestnetMessageInDropdown: true,
+          showBetaHeader: false,
+          trezorModel: null,
           qrHardware: {},
         },
       },

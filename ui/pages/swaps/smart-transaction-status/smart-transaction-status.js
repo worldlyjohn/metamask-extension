@@ -48,7 +48,7 @@ import {
   stopPollingForQuotes,
   setBackgroundSwapRouteState,
 } from '../../../store/actions';
-import { MetaMetricsEventCategory } from '../../../../shared/constants/metametrics';
+import { EVENT } from '../../../../shared/constants/metametrics';
 import { SmartTransactionStatus } from '../../../../shared/constants/transaction';
 
 import SwapsFooter from '../swaps-footer';
@@ -165,7 +165,7 @@ export default function SmartTransactionStatusPage() {
   useEffect(() => {
     trackEvent({
       event: 'STX Status Page Loaded',
-      category: MetaMetricsEventCategory.Swaps,
+      category: EVENT.CATEGORIES.SWAPS,
       sensitiveProperties,
     });
     // eslint-disable-next-line
@@ -299,7 +299,7 @@ export default function SmartTransactionStatusPage() {
             setCancelSwapLinkClicked(true); // We want to hide it after a user clicks on it.
             trackEvent({
               event: 'Cancel STX',
-              category: MetaMetricsEventCategory.Swaps,
+              category: EVENT.CATEGORIES.SWAPS,
               sensitiveProperties,
             });
             dispatch(cancelSwapsSmartTransaction(latestSmartTransactionUuid));

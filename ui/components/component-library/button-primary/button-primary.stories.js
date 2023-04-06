@@ -5,7 +5,7 @@ import {
   Size,
 } from '../../../helpers/constants/design-system';
 import Box from '../../ui/box/box';
-import { IconName } from '..';
+import { ICON_NAMES } from '../icon';
 import { ButtonPrimary } from './button-primary';
 
 import README from './README.mdx';
@@ -63,12 +63,12 @@ export default {
     },
     startIconName: {
       control: 'select',
-      options: Object.values(IconName),
+      options: Object.values(ICON_NAMES),
       table: { category: 'button base props' },
     },
     endIconName: {
       control: 'select',
-      options: Object.values(IconName),
+      options: Object.values(ICON_NAMES),
       table: { category: 'button base props' },
     },
     startIconProps: {

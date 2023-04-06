@@ -6,11 +6,7 @@ import { shortenAddress } from '../../../helpers/utils/util';
 import Tooltip from '../../ui/tooltip';
 import { toChecksumHexAddress } from '../../../../shared/modules/hexstring-utils';
 import { SECOND } from '../../../../shared/constants/time';
-import {
-  Icon,
-  ICON_NAMES,
-  ICON_SIZES,
-} from '../../component-library/icon/deprecated';
+import { Icon, ICON_NAMES, ICON_SIZES } from '../../component-library';
 import { IconColor } from '../../../helpers/constants/design-system';
 
 class SelectedAccount extends Component {

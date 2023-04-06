@@ -163,9 +163,6 @@
   "connectingToGoerli": {
     "message": "Підключення до тестової мережі Goerli"
   },
-  "connectingToLineaTestnet": {
-    "message": "Підключення до тестової мережі Linea Goerli"
-  },
   "connectingToMainnet": {
     "message": "З'єднуємось з Головною мережею Ethereum"
   },
@@ -414,9 +411,6 @@
   },
   "likeToImportTokens": {
     "message": "Ви б хотіли додати ці токени?"
-  },
-  "lineatestnet": {
-    "message": "Тестова мережа Linea Goerli"
   },
   "links": {
     "message": "Посилання"
@@ -677,6 +671,12 @@
   },
   "settings": {
     "message": "Налаштування"
+  },
+  "showAdvancedGasInline": {
+    "message": "Розширене керування газом"
+  },
+  "showAdvancedGasInlineDescription": {
+    "message": "Виберіть цей параметр, щоб відображати регулятори ціни й ліміту газу на екранах надсилання й підтвердження."
   },
   "showFiatConversionInTestnets": {
     "message": "Показати бесіду у Testnet"

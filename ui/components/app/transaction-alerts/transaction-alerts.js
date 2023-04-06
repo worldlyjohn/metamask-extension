@@ -6,9 +6,10 @@ import { PriorityLevels } from '../../../../shared/constants/gas';
 import { submittedPendingTransactionsSelector } from '../../../selectors';
 import { useGasFeeContext } from '../../../contexts/gasFee';
 import { useI18nContext } from '../../../hooks/useI18nContext';
-import { BannerAlert, ButtonLink, Text } from '../../component-library';
+import ActionableMessage from '../../ui/actionable-message/actionable-message';
 import SimulationErrorMessage from '../../ui/simulation-error-message';
-import { SEVERITIES } from '../../../helpers/constants/design-system';
+import Typography from '../../ui/typography';
+import { TypographyVariant } from '../../../helpers/constants/design-system';
 import ZENDESK_URLS from '../../../helpers/constants/zendesk-url';
 
 const TransactionAlerts = ({
@@ -29,41 +30,74 @@ const TransactionAlerts = ({
         />
       )}
       {supportsEIP1559 && pendingTransactions?.length > 0 && (
-        <BannerAlert severity={SEVERITIES.WARNING}>
-          <Text as="p">
-            <strong>
-              {pendingTransactions?.length === 1
-                ? t('pendingTransactionSingle', [pendingTransactions?.length])
-                : t('pendingTransactionMultiple', [
-                    pendingTransactions?.length,
-                  ])}
-            </strong>{' '}
-            {t('pendingTransactionInfo')}
-            {t('learnCancelSpeeedup', [
-              <ButtonLink
-                key="cancelSpeedUpInfo"
-                href={ZENDESK_URLS.SPEEDUP_CANCEL}
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                {t('cancelSpeedUp')}
-              </ButtonLink>,
-            ])}
-          </Text>
-        </BannerAlert>
+        <ActionableMessage
+          message={
+            <Typography
+              align="left"
+              className="transaction-alerts__pending-transactions"
+              margin={0}
+              tag={TypographyVariant.paragraph}
+              variant={TypographyVariant.H7}
+            >
+              <strong>
+                {pendingTransactions?.length === 1
+                  ? t('pendingTransactionSingle', [pendingTransactions?.length])
+                  : t('pendingTransactionMultiple', [
+                      pendingTransactions?.length,
+                    ])}
+              </strong>{' '}
+              {t('pendingTransactionInfo')}
+              {t('learnCancelSpeeedup', [
+                <a
+                  key="cancelSpeedUpInfo"
+                  href={ZENDESK_URLS.SPEEDUP_CANCEL}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  {t('cancelSpeedUp')}
+                </a>,
+              ])}
+            </Typography>
+          }
+          useIcon
+          iconFillColor="var(--color-warning-default)"
+          type="warning"
+        />
       )}
       {estimateUsed === PriorityLevels.low && (
-        <BannerAlert
-          data-testid="low-gas-fee-alert"
-          severity={SEVERITIES.WARNING}
-        >
-          {t('lowPriorityMessage')}
-        </BannerAlert>
+        <ActionableMessage
+          dataTestId="low-gas-fee-alert"
+          message={
+            <Typography
+              align="left"
+              margin={0}
+              tag={TypographyVariant.paragraph}
+              variant={TypographyVariant.H7}
+            >
+              {t('lowPriorityMessage')}
+            </Typography>
+          }
+          useIcon
+          iconFillColor="var(--color-warning-default)"
+          type="warning"
+        />
       )}
       {supportsEIP1559 && isNetworkBusy ? (
-        <BannerAlert severity={SEVERITIES.WARNING}>
-          {t('networkIsBusy')}
-        </BannerAlert>
+        <ActionableMessage
+          message={
+            <Typography
+              align="left"
+              margin={0}
+              tag={TypographyVariant.paragraph}
+              variant={TypographyVariant.H7}
+            >
+              {t('networkIsBusy')}
+            </Typography>
+          }
+          iconFillColor="var(--color-warning-default)"
+          type="warning"
+          useIcon
+        />
       ) : null}
     </div>
   );

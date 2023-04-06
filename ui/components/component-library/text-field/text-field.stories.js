@@ -16,14 +16,12 @@ import Box from '../../ui/box/box';
 
 import {
   AvatarAccount,
-  AvatarAccountSize,
   AvatarToken,
   Button,
   ButtonIcon,
-  Text,
-  IconName,
+  ICON_NAMES,
   Icon,
-  IconSize,
+  Text,
 } from '..';
 
 import { TEXT_FIELD_SIZES, TEXT_FIELD_TYPES } from './text-field.constants';
@@ -241,7 +239,7 @@ export const StartAccessoryEndAccessory = (args) => {
         name="search"
         onChange={handleOnChange}
         startAccessory={
-          <Icon color={IconColor.iconAlternative} name={IconName.Search} />
+          <Icon color={IconColor.iconAlternative} name={ICON_NAMES.SEARCH} />
         }
       />
       <TextField
@@ -252,7 +250,7 @@ export const StartAccessoryEndAccessory = (args) => {
         onChange={handleOnChange}
         endAccessory={
           <ButtonIcon
-            iconName={IconName.ScanBarcode}
+            iconName={ICON_NAMES.SCAN_BARCODE}
             ariaLabel="Scan QR code"
             iconProps={{ color: IconColor.primaryDefault }}
           />
@@ -282,9 +280,9 @@ export const StartAccessoryEndAccessory = (args) => {
             />
             <Text>ETH</Text>
             <Icon
-              name={IconName.ArrowDown}
+              name={ICON_NAMES.ARROW_DOWN}
               color={IconColor.iconDefault}
-              size={IconSize.Sm}
+              size={Size.SM}
             />
           </Box>
         }
@@ -307,15 +305,12 @@ export const StartAccessoryEndAccessory = (args) => {
         truncate
         startAccessory={
           value.accountAddress && (
-            <AvatarAccount
-              size={AvatarAccountSize.SM}
-              address={value.accountAddress}
-            />
+            <AvatarAccount size={Size.SM} address={value.accountAddress} />
           )
         }
         endAccessory={
           value.accountAddress.length === 42 && (
-            <Icon name={IconName.Check} color={IconColor.successDefault} />
+            <Icon name={ICON_NAMES.CHECK} color={IconColor.successDefault} />
           )
         }
       />
@@ -465,7 +460,7 @@ export const InputComponent = (args) => (
     size={Size.LG}
     InputComponent={CustomInputComponent}
     startAccessory={
-      <Icon color={IconColor.iconAlternative} name={IconName.Wallet} />
+      <Icon color={IconColor.iconAlternative} name={ICON_NAMES.WALLET} />
     }
   />
 );

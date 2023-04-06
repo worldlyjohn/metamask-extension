@@ -14,7 +14,7 @@ import {
   Icon,
   ICON_NAMES,
   ICON_SIZES,
-} from '../../../components/component-library/icon/deprecated';
+} from '../../../components/component-library';
 
 export default function PermissionsRedirect({ subjectMetadata }) {
   const t = useContext(I18nContext);

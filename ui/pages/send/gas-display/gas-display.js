@@ -45,10 +45,7 @@ import {
   hexWEIToDecETH,
   hexWEIToDecGWEI,
 } from '../../../../shared/modules/conversion.utils';
-import {
-  MetaMetricsEventCategory,
-  MetaMetricsEventName,
-} from '../../../../shared/constants/metametrics';
+import { EVENT, EVENT_NAMES } from '../../../../shared/constants/metametrics';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
 import useRamps from '../../../hooks/experiences/useRamps';
 
@@ -345,8 +342,8 @@ export default function GasDisplay({ gasError }) {
                         onClick={() => {
                           openBuyCryptoInPdapp();
                           trackEvent({
-                            event: MetaMetricsEventName.NavBuyButtonClicked,
-                            category: MetaMetricsEventCategory.Navigation,
+                            event: EVENT_NAMES.NAV_BUY_BUTTON_CLICKED,
+                            category: EVENT.CATEGORIES.NAVIGATION,
                             properties: {
                               location: 'Gas Warning Insufficient Funds',
                               text: 'Buy',

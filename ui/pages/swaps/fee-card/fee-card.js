@@ -13,7 +13,7 @@ import {
   FONT_WEIGHT,
 } from '../../../helpers/constants/design-system';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
-import { MetaMetricsEventCategory } from '../../../../shared/constants/metametrics';
+import { EVENT } from '../../../../shared/constants/metametrics';
 import { getUseCurrencyRateCheck } from '../../../selectors';
 
 const GAS_FEES_LEARN_MORE_URL =
@@ -95,7 +95,7 @@ export default function FeeCard({
                               /* istanbul ignore next */
                               trackEvent({
                                 event: 'Clicked "Gas Fees: Learn More" Link',
-                                category: MetaMetricsEventCategory.Swaps,
+                                category: EVENT.CATEGORIES.SWAPS,
                               });
                               global.platform.openTab({
                                 url: GAS_FEES_LEARN_MORE_URL,

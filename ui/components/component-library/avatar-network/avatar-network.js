@@ -102,17 +102,17 @@ AvatarNetwork.propTypes = {
    * The background color of the AvatarNetwork
    * Defaults to BackgroundColor.backgroundAlternative
    */
-  backgroundColor: PropTypes.oneOf(Object.values(BackgroundColor)),
+  backgroundColor: Box.propTypes.backgroundColor,
   /**
    * The background color of the AvatarNetwork
    * Defaults to BorderColor.borderDefault
    */
-  borderColor: PropTypes.oneOf(Object.values(BorderColor)),
+  borderColor: Box.propTypes.borderColor,
   /**
    * The color of the text inside the AvatarNetwork
    * Defaults to TextColor.textDefault
    */
-  color: PropTypes.oneOf(Object.values(TextColor)),
+  color: Box.propTypes.color,
   /**
    * Additional classNames to be added to the AvatarNetwork
    */

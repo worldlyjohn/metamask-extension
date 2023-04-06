@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  SnapCaveatType,
-  WALLET_SNAP_PERMISSION_KEY,
-} from '@metamask/rpc-methods';
 import Button from '../../../../components/ui/button';
 import Typography from '../../../../components/ui/typography';
 import { useI18nContext } from '../../../../hooks/useI18nContext';
@@ -13,9 +9,8 @@ import {
   TEXT_ALIGN,
   FRACTIONS,
   TextColor,
-  BLOCK_SIZES,
 } from '../../../../helpers/constants/design-system';
-import SnapAuthorship from '../../../../components/app/flask/snap-authorship';
+import SnapsAuthorshipPill from '../../../../components/app/flask/snaps-authorship-pill';
 import Box from '../../../../components/ui/box';
 import SnapRemoveWarning from '../../../../components/app/flask/snap-remove-warning';
 import ToggleButton from '../../../../components/ui/toggle-button';
@@ -28,14 +23,11 @@ import {
   enableSnap,
   removeSnap,
   removePermissionsFor,
-  updateCaveat,
 } from '../../../../store/actions';
 import {
   getSnaps,
-  getSubjectsWithSnapPermission,
+  getSubjectsWithPermission,
   getPermissions,
-  getPermissionSubjects,
-  getTargetSubjectMetadata,
 } from '../../../../selectors';
 import { formatDate } from '../../../../helpers/utils/util';
 
@@ -60,46 +52,24 @@ function ViewSnap() {
   }, [history, snap]);
 
   const connectedSubjects = useSelector((state) =>
-    getSubjectsWithSnapPermission(state, snap?.id),
+    getSubjectsWithPermission(state, snap?.permissionName),
   );
   const permissions = useSelector(
     (state) => snap && getPermissions(state, snap.id),
   );
-  const subjects = useSelector((state) => getPermissionSubjects(state));
-  const targetSubjectMetadata = useSelector((state) =>
-    getTargetSubjectMetadata(state, snap?.id),
-  );
   const dispatch = useDispatch();
-
+  const onDisconnect = (connectedOrigin, snapPermissionName) => {
+    dispatch(
+      removePermissionsFor({
+        [connectedOrigin]: [snapPermissionName],
+      }),
+    );
+  };
   const onToggle = () => {
     if (snap.enabled) {
       dispatch(disableSnap(snap.id));
     } else {
       dispatch(enableSnap(snap.id));
-    }
-  };
-
-  const onDisconnect = (connectedOrigin, snapId) => {
-    const caveatValue =
-      subjects[connectedOrigin].permissions[WALLET_SNAP_PERMISSION_KEY]
-        .caveats[0].value;
-    const newCaveatValue = { ...caveatValue };
-    delete newCaveatValue[snapId];
-    if (Object.keys(newCaveatValue) > 0) {
-      dispatch(
-        updateCaveat(
-          connectedOrigin,
-          WALLET_SNAP_PERMISSION_KEY,
-          SnapCaveatType.SnapIds,
-          newCaveatValue,
-        ),
-      );
-    } else {
-      dispatch(
-        removePermissionsFor({
-          [connectedOrigin]: [WALLET_SNAP_PERMISSION_KEY],
-        }),
-      );
     }
   };
 
@@ -123,7 +93,7 @@ function ViewSnap() {
           </Typography>
           <Box className="view-snap__pill-toggle-container">
             <Box className="view-snap__pill-container" paddingLeft={2}>
-              <SnapAuthorship snapId={snap.id} />
+              <SnapsAuthorshipPill snapId={snap.id} />
             </Box>
             <Box paddingLeft={4} className="view-snap__toggle-container">
               <Tooltip interactive position="bottom" html={t('snapsToggle')}>
@@ -181,10 +151,9 @@ function ViewSnap() {
             >
               {t('snapAccess', [snap.manifest.proposedName])}
             </Typography>
-            <Box width={BLOCK_SIZES.FULL}>
+            <Box width={FRACTIONS.TEN_TWELFTHS}>
               <PermissionsConnectPermissionList
                 permissions={permissions ?? {}}
-                targetSubjectMetadata={targetSubjectMetadata}
               />
             </Box>
           </div>
@@ -202,7 +171,7 @@ function ViewSnap() {
               <ConnectedSitesList
                 connectedSubjects={connectedSubjects}
                 onDisconnect={(origin) => {
-                  onDisconnect(origin, snap.id);
+                  onDisconnect(origin, snap.permissionName);
                 }}
               />
             </Box>

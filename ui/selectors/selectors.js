@@ -24,18 +24,13 @@ import {
   CHAIN_ID_TO_RPC_URL_MAP,
   CHAIN_IDS,
   NETWORK_TYPES,
-  NetworkStatus,
-  SEPOLIA_DISPLAY_NAME,
-  GOERLI_DISPLAY_NAME,
-  ETH_TOKEN_IMAGE_URL,
-  LINEA_TESTNET_DISPLAY_NAME,
 } from '../../shared/constants/network';
 import {
+  HardwareKeyringTypes,
   WebHIDConnectedStatuses,
   LedgerTransportTypes,
   HardwareTransportStates,
 } from '../../shared/constants/hardware-wallets';
-import { KeyringType } from '../../shared/constants/keyring';
 import { MESSAGE_TYPE } from '../../shared/constants/app';
 
 import { TRUNCATED_NAME_CHAR_LIMIT } from '../../shared/constants/labels';
@@ -45,8 +40,6 @@ import {
   ALLOWED_PROD_SWAPS_CHAIN_IDS,
   ALLOWED_DEV_SWAPS_CHAIN_IDS,
 } from '../../shared/constants/swaps';
-
-import { ALLOWED_BRIDGE_CHAIN_IDS } from '../../shared/constants/bridge';
 
 import {
   shortenAddress,
@@ -82,13 +75,16 @@ import { getPermissionSubjects } from './permissions';
 ///: END:ONLY_INCLUDE_IN
 
 /**
- * Returns true if the currently selected network is inaccessible or whether no
- * provider has been set yet for the currently selected network.
+ * One of the only remaining valid uses of selecting the network subkey of the
+ * metamask state tree is to determine if the network is currently 'loading'.
  *
- * @param {object} state - Redux state object.
+ * This will be used for all cases where this state key is accessed only for that
+ * purpose.
+ *
+ * @param {object} state - redux state object
  */
 export function isNetworkLoading(state) {
-  return state.metamask.networkStatus !== NetworkStatus.Available;
+  return state.metamask.network === 'loading';
 }
 
 export function getNetworkIdentifier(state) {
@@ -131,7 +127,7 @@ export function hasUnsignedQRHardwareTransaction(state) {
   }
   const { from } = txParams;
   const { keyrings } = state.metamask;
-  const qrKeyring = keyrings.find((kr) => kr.type === KeyringType.qr);
+  const qrKeyring = keyrings.find((kr) => kr.type === HardwareKeyringTypes.qr);
   if (!qrKeyring) {
     return false;
   }
@@ -149,7 +145,7 @@ export function hasUnsignedQRHardwareMessage(state) {
   }
   const { from } = msgParams;
   const { keyrings } = state.metamask;
-  const qrKeyring = keyrings.find((kr) => kr.type === KeyringType.qr);
+  const qrKeyring = keyrings.find((kr) => kr.type === HardwareKeyringTypes.qr);
   if (!qrKeyring) {
     return false;
   }
@@ -179,6 +175,10 @@ export function getCurrentKeyring(state) {
   return keyring;
 }
 
+export function isEIP1559Account() {
+  return true;
+}
+
 /**
  * The function returns true if network and account details are fetched and
  * both of them support EIP-1559.
@@ -187,7 +187,9 @@ export function getCurrentKeyring(state) {
  */
 export function checkNetworkAndAccountSupports1559(state) {
   const networkSupports1559 = isEIP1559Network(state);
-  return networkSupports1559;
+  const accountSupports1559 = isEIP1559Account(state);
+
+  return networkSupports1559 && accountSupports1559;
 }
 
 /**
@@ -198,7 +200,9 @@ export function checkNetworkAndAccountSupports1559(state) {
  */
 export function checkNetworkOrAccountNotSupports1559(state) {
   const networkNotSupports1559 = isNotEIP1559Network(state);
-  return networkNotSupports1559;
+  const accountSupports1559 = isEIP1559Account(state);
+
+  return networkNotSupports1559 || accountSupports1559 === false;
 }
 
 /**
@@ -228,11 +232,11 @@ export function getAccountType(state) {
   const type = currentKeyring && currentKeyring.type;
 
   switch (type) {
-    case KeyringType.trezor:
-    case KeyringType.ledger:
-    case KeyringType.lattice:
+    case HardwareKeyringTypes.trezor:
+    case HardwareKeyringTypes.ledger:
+    case HardwareKeyringTypes.lattice:
       return 'hardware';
-    case KeyringType.imported:
+    case HardwareKeyringTypes.imported:
       return 'imported';
     default:
       return 'default';
@@ -250,7 +254,7 @@ export function getAccountType(state) {
  * @param {object} state - redux state object
  */
 export function deprecatedGetCurrentNetworkId(state) {
-  return state.metamask.networkId ?? 'loading';
+  return state.metamask.network;
 }
 
 export const getMetaMaskAccounts = createSelector(
@@ -645,7 +649,11 @@ export function getTargetSubjectMetadata(state, origin) {
 }
 
 export function getRpcPrefsForCurrentProvider(state) {
-  const { provider: { rpcPrefs = {} } = {} } = state.metamask;
+  const { frequentRpcListDetail, provider } = state.metamask;
+  const selectRpcInfo = frequentRpcListDetail.find(
+    (rpcInfo) => rpcInfo.rpcUrl === provider.rpcUrl,
+  );
+  const { rpcPrefs = {} } = selectRpcInfo || {};
   return rpcPrefs;
 }
 
@@ -744,11 +752,6 @@ export function getIsSwapsChain(state) {
   return isNotDevelopment
     ? ALLOWED_PROD_SWAPS_CHAIN_IDS.includes(chainId)
     : ALLOWED_DEV_SWAPS_CHAIN_IDS.includes(chainId);
-}
-
-export function getIsBridgeChain(state) {
-  const chainId = getCurrentChainId(state);
-  return ALLOWED_BRIDGE_CHAIN_IDS.includes(chainId);
 }
 
 export function getIsBuyableChain(state) {
@@ -935,7 +938,8 @@ export const getUnreadNotificationsCount = createSelector(
  */
 function getAllowedAnnouncementIds(state) {
   const currentKeyring = getCurrentKeyring(state);
-  const currentKeyringIsLedger = currentKeyring?.type === KeyringType.ledger;
+  const currentKeyringIsLedger =
+    currentKeyring?.type === HardwareKeyringTypes.ledger;
   const supportsWebHid = window.navigator.hid !== undefined;
   const currentlyUsingLedgerLive =
     getLedgerTransportType(state) === LedgerTransportTypes.live;
@@ -956,10 +960,8 @@ function getAllowedAnnouncementIds(state) {
     13: false,
     14: false,
     15: false,
-    16: false,
-    17: false,
-    18: true,
-    19: true,
+    16: true,
+    17: true,
   };
 }
 
@@ -1107,76 +1109,19 @@ export function getRemoveNftMessage(state) {
  * @returns string
  */
 export function getNewNetworkAdded(state) {
-  return state.appState.newNetworkAddedName;
+  return state.appState.newNetworkAdded;
 }
 
-export function getNetworksTabSelectedNetworkConfigurationId(state) {
-  return state.appState.selectedNetworkConfigurationId;
+export function getNetworksTabSelectedRpcUrl(state) {
+  return state.appState.networksTabSelectedRpcUrl;
 }
 
 export function getProvider(state) {
   return state.metamask.provider;
 }
 
-export function getNetworkConfigurations(state) {
-  return state.metamask.networkConfigurations;
-}
-
-export function getAllNetworks(state) {
-  const networkConfigurations = getNetworkConfigurations(state) || {};
-  const showTestnetNetworks = getShowTestNetworks(state);
-  const localhostFilter = (network) => network.chainId === CHAIN_IDS.LOCALHOST;
-
-  const networks = [];
-  // Mainnet always first
-  networks.push({
-    chainId: CHAIN_IDS.MAINNET,
-    nickname: MAINNET_DISPLAY_NAME,
-    rpcUrl: CHAIN_ID_TO_RPC_URL_MAP[CHAIN_IDS.MAINNET],
-    rpcPrefs: {
-      imageUrl: ETH_TOKEN_IMAGE_URL,
-    },
-    providerType: NETWORK_TYPES.MAINNET,
-  });
-  // Custom networks added
-  networks.push(
-    ...Object.entries(networkConfigurations)
-      .filter(
-        ([, network]) =>
-          !localhostFilter(network) && network.chainId !== CHAIN_IDS.MAINNET,
-      )
-      .map(([, network]) => network),
-  );
-  // Test networks if flag is on
-  if (showTestnetNetworks) {
-    networks.push(
-      ...[
-        {
-          chainId: CHAIN_IDS.GOERLI,
-          nickname: GOERLI_DISPLAY_NAME,
-          rpcUrl: CHAIN_ID_TO_RPC_URL_MAP[CHAIN_IDS.GOERLI],
-          providerType: NETWORK_TYPES.GOERLI,
-        },
-        {
-          chainId: CHAIN_IDS.SEPOLIA,
-          nickname: SEPOLIA_DISPLAY_NAME,
-          rpcUrl: CHAIN_ID_TO_RPC_URL_MAP[CHAIN_IDS.SEPOLIA],
-          providerType: NETWORK_TYPES.SEPOLIA,
-        },
-        {
-          chainId: CHAIN_IDS.LINEA_TESTNET,
-          nickname: LINEA_TESTNET_DISPLAY_NAME,
-          rpcUrl: CHAIN_ID_TO_RPC_URL_MAP[CHAIN_IDS.LINEA_TESTNET],
-          provderType: NETWORK_TYPES.LINEA_TESTNET,
-        },
-      ], // Localhosts
-      ...Object.entries(networkConfigurations)
-        .filter(([, network]) => localhostFilter(network))
-        .map(([, network]) => network),
-    );
-  }
-
-  return networks;
+export function getFrequentRpcListDetail(state) {
+  return state.metamask.frequentRpcListDetail;
 }
 
 export function getIsOptimism(state) {
@@ -1412,7 +1357,7 @@ export function getUseCurrencyRateCheck(state) {
   return Boolean(state.metamask.useCurrencyRateCheck);
 }
 
-///: BEGIN:ONLY_INCLUDE_IN(flask)
+///: BEGIN:ONLY_INCLUDE_IN(desktop)
 /**
  * To get the `desktopEnabled` value which determines whether we use the desktop app
  *
@@ -1423,3 +1368,9 @@ export function getIsDesktopEnabled(state) {
   return state.metamask.desktopEnabled;
 }
 ///: END:ONLY_INCLUDE_IN
+
+export function getHasTheOpenSeaTransactionSecurityProviderPopoverBeenShown(
+  state,
+) {
+  return state.metamask.openSeaTransactionSecurityProviderPopoverHasBeenShown;
+}

@@ -1,7 +1,7 @@
 /* eslint-disable jest/require-top-level-describe */
 import { render } from '@testing-library/react';
 import React from 'react';
-import { IconName } from '..';
+import { ICON_NAMES } from '..';
 import { ButtonSecondary } from './button-secondary';
 import { BUTTON_SECONDARY_SIZES } from './button-secondary.constants';
 
@@ -94,7 +94,10 @@ describe('ButtonSecondary', () => {
   });
   it('should render with icon', () => {
     const { container } = render(
-      <ButtonSecondary data-testid="icon" startIconName={IconName.AddSquare} />,
+      <ButtonSecondary
+        data-testid="icon"
+        startIconName={ICON_NAMES.ADD_SQUARE}
+      />,
     );
 
     const icons = container.getElementsByClassName('mm-icon').length;

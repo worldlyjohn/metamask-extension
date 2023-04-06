@@ -1,12 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import {
-  BLOCK_SIZES,
-  DISPLAY,
-  TEXT_ALIGN,
-} from '../../../../helpers/constants/design-system';
-import Box from '../../box';
 
 const Tab = (props) => {
   const {
@@ -21,8 +15,7 @@ const Tab = (props) => {
   } = props;
 
   return (
-    <Box
-      as="li"
+    <li
       className={classnames('tab', className, {
         'tab--active': isActive,
         [activeClassName]: activeClassName && isActive,
@@ -34,16 +27,8 @@ const Tab = (props) => {
       }}
       key={tabKey}
     >
-      <Box
-        as="button"
-        padding={2}
-        textAlign={TEXT_ALIGN.CENTER}
-        display={DISPLAY.BLOCK}
-        width={BLOCK_SIZES.FULL}
-      >
-        {name}
-      </Box>
-    </Box>
+      <button>{name}</button>
+    </li>
   );
 };
 

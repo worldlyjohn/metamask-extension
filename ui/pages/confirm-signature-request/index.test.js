@@ -33,7 +33,7 @@ const mockState = {
     unapprovedTypedMessagesCount: 1,
     provider: { chainId: '0x5', type: 'goerli' },
     keyrings: [],
-    networkConfigurations: {},
+    frequentRpcListDetail: [],
     subjectMetadata: {},
     cachedBalances: {
       '0x5': {},

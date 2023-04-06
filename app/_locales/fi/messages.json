@@ -163,9 +163,6 @@
   "connectingToGoerli": {
     "message": "Yhdistetään Goerlin testiverkostoon"
   },
-  "connectingToLineaTestnet": {
-    "message": "Yhdistetään Linea Goerli testiverkostoon"
-  },
   "connectingToMainnet": {
     "message": "Yhdistetään Ethereumin pääverkkoon"
   },
@@ -414,9 +411,6 @@
   },
   "likeToImportTokens": {
     "message": "Haluaisitko lisätä nämä poletit?"
-  },
-  "lineatestnet": {
-    "message": "Linea-testiverkko"
   },
   "links": {
     "message": "Linkit"
@@ -674,6 +668,12 @@
   },
   "settings": {
     "message": "Asetukset"
+  },
+  "showAdvancedGasInline": {
+    "message": "Bensan lisävalvonta"
+  },
+  "showAdvancedGasInlineDescription": {
+    "message": "Valitse tämä näyttääksesi gas-hinta ja rajoittaaksesi  säätimiä suoraan lähetä- ja vahvista-ruuduissa."
   },
   "showFiatConversionInTestnets": {
     "message": "Näytä vaihtokurssi koeverkoissa"

@@ -19,20 +19,14 @@ const OPTIMISM_GAS_PRICE_ORACLE_ABI = [
 const OPTIMISM_GAS_PRICE_ORACLE_ADDRESS =
   '0x420000000000000000000000000000000000000F';
 
-export default async function fetchEstimatedL1Fee(
-  chainId,
-  txMeta,
-  ethersProvider,
-) {
-  const networkId = Number(chainId);
+export default async function fetchEstimatedL1Fee(txMeta, ethersProvider) {
   const provider = global.ethereumProvider
-    ? new Web3Provider(global.ethereumProvider, networkId)
+    ? new Web3Provider(global.ethereumProvider, 10)
     : ethersProvider;
-
   if (process.env.IN_TEST) {
     provider.detectNetwork = async () => ({
       name: 'optimism',
-      chainId: networkId,
+      chainId: 10,
     });
   }
   const contract = new Contract(
@@ -42,6 +36,7 @@ export default async function fetchEstimatedL1Fee(
   );
   const serializedTransaction =
     buildUnserializedTransaction(txMeta).serialize();
+
   const result = await contract.getL1Fee(serializedTransaction);
   return result?.toHexString();
 }

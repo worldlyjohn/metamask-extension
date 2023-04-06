@@ -18,7 +18,7 @@ import {
 import { getURLHostName } from '../../../helpers/utils/util';
 import { showModal } from '../../../store/actions';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
-import { MetaMetricsEventCategory } from '../../../../shared/constants/metametrics';
+import { EVENT } from '../../../../shared/constants/metametrics';
 import AssetNavigation from './asset-navigation';
 import AssetOptions from './asset-options';
 
@@ -58,7 +58,7 @@ export default function TokenAsset({ token }) {
             onClickBlockExplorer={() => {
               trackEvent({
                 event: 'Clicked Block Explorer Link',
-                category: MetaMetricsEventCategory.Navigation,
+                category: EVENT.CATEGORIES.NAVIGATION,
                 properties: {
                   link_type: 'Token Tracker',
                   action: 'Token Options',

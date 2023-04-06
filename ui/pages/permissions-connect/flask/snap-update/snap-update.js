@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
 import { PageContainerFooter } from '../../../../components/ui/page-container';
+import PermissionsConnectFooter from '../../../../components/app/permissions-connect-footer';
+import PermissionConnectHeader from '../../../../components/app/permissions-connect-header';
 import { useI18nContext } from '../../../../hooks/useI18nContext';
 import SnapInstallWarning from '../../../../components/app/flask/snap-install-warning';
 import Box from '../../../../components/ui/box/box';
@@ -10,22 +12,14 @@ import {
   BorderStyle,
   FLEX_DIRECTION,
   JustifyContent,
-  TextVariant,
-  TEXT_ALIGN,
+  TypographyVariant,
 } from '../../../../helpers/constants/design-system';
-
+import Typography from '../../../../components/ui/typography';
 import UpdateSnapPermissionList from '../../../../components/app/flask/update-snap-permission-list';
 import { getSnapInstallWarnings } from '../util';
-import PulseLoader from '../../../../components/ui/pulse-loader/pulse-loader';
-import InstallError from '../../../../components/app/flask/install-error/install-error';
-import SnapAuthorship from '../../../../components/app/flask/snap-authorship';
-import { Text } from '../../../../components/component-library';
-import { useOriginMetadata } from '../../../../hooks/useOriginMetadata';
-import { getSnapName } from '../../../../helpers/utils/util';
 
 export default function SnapUpdate({
   request,
-  requestState,
   approveSnapUpdate,
   rejectSnapUpdate,
   targetSubjectMetadata,
@@ -33,7 +27,6 @@ export default function SnapUpdate({
   const t = useI18nContext();
 
   const [isShowingWarning, setIsShowingWarning] = useState(false);
-  const originMetadata = useOriginMetadata(request.metadata?.dappOrigin) || {};
 
   const onCancel = useCallback(
     () => rejectSnapUpdate(request.metadata.id),
@@ -45,21 +38,14 @@ export default function SnapUpdate({
     [request, approveSnapUpdate],
   );
 
-  const approvedPermissions = requestState.approvedPermissions ?? {};
-  const revokedPermissions = requestState.unusedPermissions ?? {};
-  const newPermissions = requestState.newPermissions ?? {};
-
-  const isLoading = requestState.loading;
-  const hasError = !isLoading && requestState.error;
-
+  const approvedPermissions = request.approvedPermissions ?? {};
+  const revokedPermissions = request.unusedPermissions ?? {};
+  const newPermissions = request.newPermissions ?? {};
   const hasPermissions =
-    !hasError &&
     Object.keys(approvedPermissions).length +
       Object.keys(revokedPermissions).length +
       Object.keys(newPermissions).length >
-      0;
-
-  const isEmpty = !isLoading && !hasError && !hasPermissions;
+    0;
 
   const warnings = getSnapInstallWarnings(
     newPermissions,
@@ -68,18 +54,6 @@ export default function SnapUpdate({
   );
 
   const shouldShowWarning = warnings.length > 0;
-
-  const snapName = getSnapName(targetSubjectMetadata.origin);
-
-  const handleSubmit = () => {
-    if (!hasError && shouldShowWarning) {
-      setIsShowingWarning(true);
-    } else if (hasError) {
-      onCancel();
-    } else {
-      onSubmit();
-    }
-  };
 
   return (
     <Box
@@ -91,68 +65,45 @@ export default function SnapUpdate({
     >
       <Box
         className="headers"
-        paddingLeft={4}
-        paddingRight={4}
         alignItems={AlignItems.center}
         flexDirection={FLEX_DIRECTION.COLUMN}
       >
-        <SnapAuthorship snapId={targetSubjectMetadata.origin} />
-        {!hasError && (
-          <Text
-            paddingBottom={4}
-            paddingTop={4}
-            variant={TextVariant.headingLg}
-          >
-            {t('snapUpdate')}
-          </Text>
-        )}
-        {isLoading && (
-          <Box
-            className="loader-container"
-            flexDirection={FLEX_DIRECTION.COLUMN}
-            alignItems={AlignItems.center}
-            justifyContent={JustifyContent.center}
-          >
-            <PulseLoader />
-          </Box>
-        )}
-        {hasError && (
-          <InstallError error={requestState.error} title={t('requestFailed')} />
-        )}
+        <PermissionConnectHeader
+          icon={targetSubjectMetadata.iconUrl}
+          iconName={targetSubjectMetadata.name}
+          headerTitle={t('snapUpdate')}
+          headerText={null} // TODO(ritave): Add header text when snaps support description
+          siteOrigin={request.snapId}
+          isSnapInstallOrUpdate
+          snapVersion={request.newVersion}
+          boxProps={{ alignItems: AlignItems.center }}
+        />
+        <Typography
+          boxProps={{
+            padding: [4, 4, 0, 4],
+          }}
+          variant={TypographyVariant.H7}
+          as="span"
+        >
+          {t('snapUpdateExplanation', [`${request.metadata.dappOrigin}`])}
+        </Typography>
         {hasPermissions && (
           <>
-            <Text
-              className="headers__permission-description"
-              paddingBottom={4}
-              textAlign={TEXT_ALIGN.CENTER}
+            <Typography
+              boxProps={{
+                padding: [2, 4, 0, 4],
+              }}
+              variant={TypographyVariant.H7}
+              as="span"
             >
-              {t('snapUpdateRequestsPermission', [
-                <b key="1">{originMetadata?.hostname}</b>,
-                <b key="2">{snapName}</b>,
-              ])}
-            </Text>
+              {t('snapRequestsPermission')}
+            </Typography>
             <UpdateSnapPermissionList
               approvedPermissions={approvedPermissions}
               revokedPermissions={revokedPermissions}
               newPermissions={newPermissions}
-              targetSubjectMetadata={targetSubjectMetadata}
             />
           </>
-        )}
-        {isEmpty && (
-          <Box
-            flexDirection={FLEX_DIRECTION.COLUMN}
-            height={BLOCK_SIZES.FULL}
-            alignItems={AlignItems.center}
-            justifyContent={JustifyContent.center}
-          >
-            <Text textAlign={TEXT_ALIGN.CENTER}>
-              {t('snapUpdateRequest', [
-                <b key="1">{originMetadata?.hostname}</b>,
-                <b key="2">{snapName}</b>,
-              ])}
-            </Text>
-          </Box>
         )}
       </Box>
       <Box
@@ -160,17 +111,17 @@ export default function SnapUpdate({
         alignItems={AlignItems.center}
         flexDirection={FLEX_DIRECTION.COLUMN}
       >
+        <Box className="snap-update__footer--no-source-code" paddingTop={4}>
+          <PermissionsConnectFooter />
+        </Box>
         <PageContainerFooter
           cancelButtonType="default"
-          hideCancel={hasError}
-          disabled={isLoading}
           onCancel={onCancel}
           cancelText={t('cancel')}
-          onSubmit={handleSubmit}
-          submitText={t(
-            // eslint-disable-next-line no-nested-ternary
-            hasError ? 'ok' : hasPermissions ? 'approveAndUpdate' : 'update',
-          )}
+          onSubmit={
+            shouldShowWarning ? () => setIsShowingWarning(true) : onSubmit
+          }
+          submitText={t('approveAndUpdate')}
         />
       </Box>
       {isShowingWarning && (
@@ -187,7 +138,6 @@ export default function SnapUpdate({
 
 SnapUpdate.propTypes = {
   request: PropTypes.object.isRequired,
-  requestState: PropTypes.object.isRequired,
   approveSnapUpdate: PropTypes.func.isRequired,
   rejectSnapUpdate: PropTypes.func.isRequired,
   targetSubjectMetadata: PropTypes.shape({

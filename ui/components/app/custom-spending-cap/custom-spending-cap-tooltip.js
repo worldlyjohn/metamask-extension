@@ -8,11 +8,7 @@ import {
   DISPLAY,
   TypographyVariant,
 } from '../../../helpers/constants/design-system';
-import {
-  Icon,
-  ICON_NAMES,
-  ICON_SIZES,
-} from '../../component-library/icon/deprecated';
+import { Icon, ICON_NAMES, ICON_SIZES } from '../../component-library';
 
 export const CustomSpendingCapTooltip = ({
   tooltipContentText,

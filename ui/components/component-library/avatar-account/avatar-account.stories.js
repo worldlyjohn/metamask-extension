@@ -1,16 +1,21 @@
 import React from 'react';
 import Box from '../../ui/box/box';
-import { AlignItems, DISPLAY } from '../../../helpers/constants/design-system';
+import {
+  AlignItems,
+  DISPLAY,
+  Size,
+} from '../../../helpers/constants/design-system';
 import { AvatarAccount } from './avatar-account';
 import {
-  AvatarAccountVariant,
-  AvatarAccountSize,
-} from './avatar-account.types';
+  AVATAR_ACCOUNT_TYPES,
+  AVATAR_ACCOUNT_SIZES,
+} from './avatar-account.constants';
 
 import README from './README.mdx';
 
 export default {
   title: 'Components/ComponentLibrary/AvatarAccount',
+
   component: AvatarAccount,
   parameters: {
     docs: {
@@ -20,20 +25,18 @@ export default {
   argTypes: {
     size: {
       control: 'select',
-      options: Object.values(AvatarAccountSize).map(
-        (value) => value.toLowerCase(), // Removes reverse mapping from enum this is a temporary fix until we are using typescript for everything
-      ),
+      options: Object.values(AVATAR_ACCOUNT_SIZES),
     },
     address: { control: 'text' },
-    variant: {
+    type: {
       control: 'select',
-      options: Object.values(AvatarAccountVariant),
+      options: Object.values(AVATAR_ACCOUNT_TYPES),
     },
   },
   args: {
     address: '0x5CfE73b6021E818B776b421B1c4Db2474086a7e1',
-    size: AvatarAccountSize.Md,
-    variant: AvatarAccountVariant.Jazzicon,
+    size: Size.MD,
+    type: AVATAR_ACCOUNT_TYPES.JAZZICON,
   },
 };
 
@@ -41,20 +44,21 @@ export const DefaultStory = (args) => <AvatarAccount {...args} />;
 
 DefaultStory.storyName = 'Default';
 
-export const Size = (args) => (
+export const SizeStory = (args) => (
   <Box display={DISPLAY.FLEX} alignItems={AlignItems.baseline} gap={1}>
-    <AvatarAccount {...args} size={AvatarAccountSize.Xs} />
-    <AvatarAccount {...args} size={AvatarAccountSize.Sm} />
-    <AvatarAccount {...args} size={AvatarAccountSize.Md} />
-    <AvatarAccount {...args} size={AvatarAccountSize.Lg} />
-    <AvatarAccount {...args} size={AvatarAccountSize.Xl} />
+    <AvatarAccount {...args} size={Size.XS} />
+    <AvatarAccount {...args} size={Size.SM} />
+    <AvatarAccount {...args} size={Size.MD} />
+    <AvatarAccount {...args} size={Size.LG} />
+    <AvatarAccount {...args} size={Size.XL} />
   </Box>
 );
+SizeStory.storyName = 'Size';
 
-export const Variant = (args) => (
+export const Type = (args) => (
   <Box display={DISPLAY.FLEX} alignItems={AlignItems.baseline} gap={1}>
-    <AvatarAccount {...args} variant={AvatarAccountVariant.Jazzicon} />
-    <AvatarAccount {...args} variant={AvatarAccountVariant.Blockies} />
+    <AvatarAccount {...args} type={AVATAR_ACCOUNT_TYPES.JAZZICON} />
+    <AvatarAccount {...args} type={AVATAR_ACCOUNT_TYPES.BLOCKIES} />
   </Box>
 );
 
@@ -62,12 +66,12 @@ export const Address = (args) => (
   <Box display={DISPLAY.FLEX} alignItems={AlignItems.BASELINE} gap={1}>
     <AvatarAccount
       {...args}
-      variant={AvatarAccountVariant.Jazzicon}
+      type={AVATAR_ACCOUNT_TYPES.JAZZICON}
       address="0x5CfE73b6021E818B776b421B1c4Db2474086a7e1"
     />
     <AvatarAccount
       {...args}
-      variant={AvatarAccountVariant.Blockies}
+      type={AVATAR_ACCOUNT_TYPES.BLOCKIES}
       address="0x0"
     />
   </Box>

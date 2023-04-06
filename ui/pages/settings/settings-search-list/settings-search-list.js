@@ -3,10 +3,7 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { highlightSearchedText } from '../../../helpers/utils/settings-search';
 import { I18nContext } from '../../../contexts/i18n';
-import {
-  Icon,
-  ICON_NAMES,
-} from '../../../components/component-library/icon/deprecated';
+import { Icon, ICON_NAMES } from '../../../components/component-library';
 import { Size } from '../../../helpers/constants/design-system';
 
 export default function SettingsSearchList({ results, onClickSetting }) {

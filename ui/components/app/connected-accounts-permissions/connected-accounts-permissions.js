@@ -20,11 +20,7 @@ const ConnectedAccountsPermissions = ({ permissions }) => {
 
   const permissionLabels = flatten(
     permissions.map(({ key, value }) =>
-      getPermissionDescription({
-        t,
-        permissionName: key,
-        permissionValue: value,
-      }),
+      getPermissionDescription(t, key, value),
     ),
   );
 

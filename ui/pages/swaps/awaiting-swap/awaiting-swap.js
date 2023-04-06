@@ -8,9 +8,9 @@ import { getBlockExplorerLink } from '@metamask/etherscan-link';
 import { I18nContext } from '../../../contexts/i18n';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
 import {
-  MetaMetricsContextProp,
-  MetaMetricsEventCategory,
-  MetaMetricsEventName,
+  EVENT,
+  EVENT_NAMES,
+  CONTEXT_PROPS,
 } from '../../../../shared/constants/metametrics';
 
 import {
@@ -168,16 +168,14 @@ export default function AwaitingSwap({
         onClick={() => {
           trackEvent(
             {
-              category: MetaMetricsEventCategory.Swaps,
-              event: MetaMetricsEventName.SupportLinkClicked,
+              category: EVENT.CATEGORIES.SWAPS,
+              event: EVENT_NAMES.SUPPORT_LINK_CLICKED,
               properties: {
                 url: SUPPORT_LINK,
               },
             },
             {
-              contextPropsIntoEventProperties: [
-                MetaMetricsContextProp.PageTitle,
-              ],
+              contextPropsIntoEventProperties: [CONTEXT_PROPS.PAGE_TITLE],
             },
           );
         }}
@@ -203,7 +201,7 @@ export default function AwaitingSwap({
       setTrackedQuotesExpiredEvent(true);
       trackEvent({
         event: 'Quotes Timed Out',
-        category: MetaMetricsEventCategory.Swaps,
+        category: EVENT.CATEGORIES.SWAPS,
         sensitiveProperties,
       });
     }

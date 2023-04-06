@@ -6,13 +6,13 @@ import { cloneDeep } from 'lodash';
 import { KeyringController } from '@metamask/eth-keyring-controller';
 import firstTimeState from '../first-time-state';
 import mockEncryptor from '../../../test/lib/mock-encryptor';
-import { KeyringType } from '../../../shared/constants/keyring';
+import { HardwareKeyringTypes } from '../../../shared/constants/hardware-wallets';
 import seedPhraseVerifier from './seed-phrase-verifier';
 
 describe('SeedPhraseVerifier', () => {
   describe('verifyAccounts', () => {
     const password = 'passw0rd1';
-    const { hdKeyTree } = KeyringType;
+    const { hdKeyTree } = HardwareKeyringTypes;
 
     let keyringController;
     let primaryKeyring;

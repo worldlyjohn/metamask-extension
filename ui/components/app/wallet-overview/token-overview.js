@@ -27,15 +27,14 @@ import { INVALID_ASSET_TYPE } from '../../../helpers/constants/error-keys';
 import { showModal } from '../../../store/actions';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
 import {
-  MetaMetricsContextProp,
-  MetaMetricsEventCategory,
-  MetaMetricsEventName,
-  MetaMetricsSwapsEventSource,
+  EVENT,
+  EVENT_NAMES,
+  CONTEXT_PROPS,
 } from '../../../../shared/constants/metametrics';
 import { AssetType } from '../../../../shared/constants/transaction';
 import useRamps from '../../../hooks/experiences/useRamps';
 
-import { Icon, ICON_NAMES } from '../../component-library/icon/deprecated';
+import { Icon, ICON_NAMES } from '../../component-library';
 import { IconColor } from '../../../helpers/constants/design-system';
 import WalletOverview from './wallet-overview';
 
@@ -61,7 +60,7 @@ const TokenOverview = ({ className, token }) => {
   const { openBuyCryptoInPdapp } = useRamps();
 
   useEffect(() => {
-    if (token.isERC721) {
+    if (token.isERC721 && process.env.NFTS_V1) {
       dispatch(
         showModal({
           name: 'CONVERT_TOKEN_TO_NFT',
@@ -94,15 +93,15 @@ const TokenOverview = ({ className, token }) => {
           <IconButton
             className="token-overview__button"
             Icon={
-              <Icon name={ICON_NAMES.ADD} color={IconColor.primaryInverse} />
+              <Icon name={ICON_NAMES.CARD} color={IconColor.primaryInverse} />
             }
             label={t('buy')}
             data-testid="token-overview-buy"
             onClick={() => {
               openBuyCryptoInPdapp();
               trackEvent({
-                event: MetaMetricsEventName.NavBuyButtonClicked,
-                category: MetaMetricsEventCategory.Navigation,
+                event: EVENT_NAMES.NAV_BUY_BUTTON_CLICKED,
+                category: EVENT.CATEGORIES.NAVIGATION,
                 properties: {
                   location: 'Token Overview',
                   text: 'Buy',
@@ -115,11 +114,11 @@ const TokenOverview = ({ className, token }) => {
             className="token-overview__button"
             onClick={async () => {
               trackEvent({
-                event: MetaMetricsEventName.NavSendButtonClicked,
-                category: MetaMetricsEventCategory.Navigation,
+                event: EVENT_NAMES.NAV_SEND_BUTTON_CLICKED,
+                category: EVENT.CATEGORIES.NAVIGATION,
                 properties: {
                   token_symbol: token.symbol,
-                  location: MetaMetricsSwapsEventSource.TokenView,
+                  location: EVENT.SOURCE.SWAPS.TOKEN_VIEW,
                   text: 'Send',
                 },
               });
@@ -159,11 +158,11 @@ const TokenOverview = ({ className, token }) => {
             onClick={() => {
               if (isSwapsChain) {
                 trackEvent({
-                  event: MetaMetricsEventName.NavSwapButtonClicked,
-                  category: MetaMetricsEventCategory.Swaps,
+                  event: EVENT_NAMES.NAV_SWAP_BUTTON_CLICKED,
+                  category: EVENT.CATEGORIES.SWAPS,
                   properties: {
                     token_symbol: token.symbol,
-                    location: MetaMetricsSwapsEventSource.TokenView,
+                    location: EVENT.SOURCE.SWAPS.TOKEN_VIEW,
                     text: 'Swap',
                   },
                 });
@@ -215,16 +214,14 @@ const TokenOverview = ({ className, token }) => {
               });
               trackEvent(
                 {
-                  category: MetaMetricsEventCategory.Home,
-                  event: MetaMetricsEventName.PortfolioLinkClicked,
+                  category: EVENT.CATEGORIES.HOME,
+                  event: EVENT_NAMES.PORTFOLIO_LINK_CLICKED,
                   properties: {
                     url: portfolioUrl,
                   },
                 },
                 {
-                  contextPropsIntoEventProperties: [
-                    MetaMetricsContextProp.PageTitle,
-                  ],
+                  contextPropsIntoEventProperties: [CONTEXT_PROPS.PAGE_TITLE],
                 },
               );
             }}

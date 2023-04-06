@@ -16,7 +16,7 @@ import {
 } from '../../../helpers/constants/design-system';
 import Identicon from '../../ui/identicon';
 import { shortenAddress } from '../../../helpers/utils/util';
-import { Icon, ICON_NAMES } from '../../component-library/icon/deprecated';
+import { Icon, ICON_NAMES } from '../../component-library';
 
 const SetApproveForAllWarning = ({
   collectionName,

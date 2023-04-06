@@ -1,10 +1,9 @@
-import { action } from '@storybook/addon-actions';
 import React from 'react';
+import { action } from '@storybook/addon-actions';
 import NewAccountCreateForm from './new-account.component';
 
 export default {
   title: 'Pages/CreateAccount/NewAccount',
-  component: NewAccountCreateForm,
   argTypes: {
     accounts: {
       control: 'array',
@@ -14,9 +13,10 @@ export default {
     accounts: [],
   },
 };
-
-export const DefaultStory = (args) => (
-  <NewAccountCreateForm {...args} createAccount={action('Account Created')} />
-);
+export const DefaultStory = (args) => {
+  return (
+    <NewAccountCreateForm {...args} createAccount={action('Account Created')} />
+  );
+};
 
 DefaultStory.storyName = 'Default';

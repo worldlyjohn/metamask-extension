@@ -79,7 +79,9 @@ describe('FormTextField', () => {
       />,
     );
     expect(getByTestId('text-field')).toHaveClass('mm-text-field--error');
-    expect(getByText('test help text')).toHaveClass('box--color-error-default');
+    expect(getByText('test help text')).toHaveClass(
+      'mm-text--color-error-default',
+    );
   });
   // helpText
   it('should render with helpText', () => {
@@ -231,6 +233,17 @@ describe('FormTextField', () => {
     await user.type(getByRole('textbox'), 'test');
     expect(getByRole('textbox')).toHaveValue('test value');
     expect(getByRole('textbox')).toHaveAttribute('readonly', '');
+  });
+  // required
+  it('should render with required asterisk after Label', () => {
+    const { getByTestId } = render(
+      <FormTextField
+        required
+        label="test label"
+        labelProps={{ 'data-testid': 'label-test-id' }}
+      />,
+    );
+    expect(getByTestId('label-test-id')).toHaveTextContent('test label*');
   });
   // size = SIZES.MD
   it('should render with different size classes', () => {

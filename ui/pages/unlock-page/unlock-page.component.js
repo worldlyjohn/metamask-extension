@@ -6,9 +6,9 @@ import TextField from '../../components/ui/text-field';
 import Mascot from '../../components/ui/mascot';
 import { DEFAULT_ROUTE } from '../../helpers/constants/routes';
 import {
-  MetaMetricsContextProp,
-  MetaMetricsEventCategory,
-  MetaMetricsEventName,
+  EVENT,
+  EVENT_NAMES,
+  CONTEXT_PROPS,
 } from '../../../shared/constants/metametrics';
 import { SUPPORT_LINK } from '../../../shared/lib/ui-utils';
 import { isBeta } from '../../helpers/utils/build-types';
@@ -80,8 +80,8 @@ export default class UnlockPage extends Component {
       await onSubmit(password);
       this.context.trackEvent(
         {
-          category: MetaMetricsEventCategory.Navigation,
-          event: MetaMetricsEventName.AppUnlocked,
+          category: EVENT.CATEGORIES.NAVIGATION,
+          event: EVENT_NAMES.APP_UNLOCKED,
           properties: {
             failed_attempts: this.failed_attempts,
           },
@@ -96,8 +96,8 @@ export default class UnlockPage extends Component {
       if (message === 'Incorrect password') {
         await forceUpdateMetamaskState();
         this.context.trackEvent({
-          category: MetaMetricsEventCategory.Navigation,
-          event: MetaMetricsEventName.AppUnlockedFailed,
+          category: EVENT.CATEGORIES.NAVIGATION,
+          event: EVENT_NAMES.APP_UNLOCKED_FAILED,
           properties: {
             reason: 'incorrect_password',
             failed_attempts: this.failed_attempts,
@@ -208,15 +208,15 @@ export default class UnlockPage extends Component {
                 onClick={() => {
                   this.context.trackEvent(
                     {
-                      category: MetaMetricsEventCategory.Navigation,
-                      event: MetaMetricsEventName.SupportLinkClicked,
+                      category: EVENT.CATEGORIES.NAVIGATION,
+                      event: EVENT_NAMES.SUPPORT_LINK_CLICKED,
                       properties: {
                         url: SUPPORT_LINK,
                       },
                     },
                     {
                       contextPropsIntoEventProperties: [
-                        MetaMetricsContextProp.PageTitle,
+                        CONTEXT_PROPS.PAGE_TITLE,
                       ],
                     },
                   );

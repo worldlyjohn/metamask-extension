@@ -1,6 +1,5 @@
 import { mapToTemplate } from '../../../../../components/app/flask/snap-ui-renderer';
 import { MESSAGE_TYPE } from '../../../../../../shared/constants/app';
-import { DelineatorType } from '../../../../../helpers/constants/flask';
 
 function getValues(pendingApproval, t, actions, _history, setInputState) {
   const {
@@ -21,7 +20,6 @@ function getValues(pendingApproval, t, actions, _history, setInputState) {
           element: 'SnapDelineator',
           key: 'snap-delineator',
           props: {
-            type: DelineatorType.Content,
             snapName,
           },
           children: [

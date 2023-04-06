@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 
 import { I18nContext } from '../../../contexts/i18n';
 import { Menu, MenuItem } from '../../ui/menu';
-import { ButtonIcon } from '../../component-library';
-import { ICON_NAMES } from '../../component-library/icon/deprecated';
+import { ButtonIcon, ICON_NAMES } from '../../component-library';
 import { Color } from '../../../helpers/constants/design-system';
 
 const NftOptions = ({ onRemove, onViewOnOpensea }) => {

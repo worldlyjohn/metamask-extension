@@ -4,12 +4,13 @@ import {
   FLEX_DIRECTION,
   IconColor,
   TextColor,
+  Size,
   SEVERITIES,
 } from '../../../helpers/constants/design-system';
 
 import Box from '../../ui/box';
 
-import { Icon, IconName, IconSize } from '..';
+import { Icon, ICON_NAMES } from '..';
 
 import { HelpText } from './help-text';
 
@@ -58,8 +59,8 @@ export const Children = (args) => (
       <Icon
         marginLeft={1}
         color={IconColor.iconAlternative}
-        name={IconName.Warning}
-        size={IconSize.Inherit}
+        name={ICON_NAMES.WARNING}
+        size={Size.inherit}
         as="span"
       />
     </HelpText>

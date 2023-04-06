@@ -1,13 +1,12 @@
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import withModalProps from '../../../../helpers/higher-order-components/with-modal-props';
-import { removeNetworkConfiguration } from '../../../../store/actions';
+import { delRpcTarget } from '../../../../store/actions';
 import ConfirmDeleteNetwork from './confirm-delete-network.component';
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    removeNetworkConfiguration: (target) =>
-      dispatch(removeNetworkConfiguration(target)),
+    delRpcTarget: (target) => dispatch(delRpcTarget(target)),
   };
 };
 

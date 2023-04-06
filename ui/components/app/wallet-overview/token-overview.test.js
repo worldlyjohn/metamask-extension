@@ -4,7 +4,7 @@ import thunk from 'redux-thunk';
 import { fireEvent, waitFor } from '@testing-library/react';
 import { CHAIN_IDS } from '../../../../shared/constants/network';
 import { renderWithProvider } from '../../../../test/jest/rendering';
-import { KeyringType } from '../../../../shared/constants/keyring';
+import { HardwareKeyringTypes } from '../../../../shared/constants/hardware-wallets';
 import TokenOverview from './token-overview';
 
 // Mock BUYABLE_CHAINS_MAP
@@ -42,11 +42,11 @@ describe('TokenOverview', () => {
       selectedAddress: '0x1',
       keyrings: [
         {
-          type: KeyringType.hdKeyTree,
+          type: HardwareKeyringTypes.hdKeyTree,
           accounts: ['0x1', '0x2'],
         },
         {
-          type: KeyringType.ledger,
+          type: HardwareKeyringTypes.ledger,
           accounts: [],
         },
       ],
@@ -85,6 +85,7 @@ describe('TokenOverview', () => {
     });
 
     it('should show ConvertTokenToNFT modal when token passed in props is an ERC721', () => {
+      process.env.NFTS_V1 = true;
       const nftToken = {
         ...token,
         isERC721: true,
@@ -98,6 +99,7 @@ describe('TokenOverview', () => {
         name: 'CONVERT_TOKEN_TO_NFT',
         tokenAddress: '0x01',
       });
+      process.env.NFTS_V1 = false;
     });
 
     it('should always show the Buy button regardless of chain Id', () => {
@@ -120,6 +122,7 @@ describe('TokenOverview', () => {
     });
 
     it('should always show the Buy button regardless of token type', () => {
+      process.env.NFTS_V1 = true;
       const nftToken = {
         ...token,
         isERC721: true,
@@ -174,6 +177,7 @@ describe('TokenOverview', () => {
     });
 
     it('should have the Buy token button disabled for ERC721 tokens', () => {
+      process.env.NFTS_V1 = true;
       const nftToken = {
         ...token,
         isERC721: true,

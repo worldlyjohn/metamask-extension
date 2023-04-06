@@ -13,7 +13,9 @@ import {
   Size,
   TextVariant,
 } from '../../../helpers/constants/design-system';
-import { AvatarFavicon, ButtonLink, IconName, Icon, IconSize } from '..';
+import { AvatarFavicon } from '../avatar-favicon';
+import { ButtonLink } from '../button-link';
+import { Icon, ICON_NAMES } from '../icon';
 
 export const TagUrl = ({
   label,
@@ -45,9 +47,9 @@ export const TagUrl = ({
       {showLockIcon && (
         <Icon
           className="mm-tag-url__lock-icon"
-          name={IconName.Lock}
+          name={ICON_NAMES.LOCK}
           color={IconColor.iconAlternative}
-          size={IconSize.Sm}
+          size={Size.SM}
           aria-label="https://"
           role="img"
           {...lockIconProps}
@@ -89,7 +91,7 @@ TagUrl.propTypes = {
   /**
    * It accepts all the props from Icon
    */
-  lockIconProps: PropTypes.object,
+  lockIconProps: PropTypes.shape(Icon.PropTypes),
   /**
    * The text content of the TagUrl component
    */

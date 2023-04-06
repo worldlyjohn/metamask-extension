@@ -4,7 +4,7 @@ import { useI18nContext } from '../../../hooks/useI18nContext';
 import TextField from '../../ui/text-field';
 import Button from '../../ui/button';
 import CheckBox from '../../ui/check-box';
-import { Text } from '../../component-library';
+import Typography from '../../ui/typography';
 import SrpInput from '../srp-input';
 import { PASSWORD_MIN_LENGTH } from '../../../helpers/constants/common';
 
@@ -135,7 +135,7 @@ export default function CreateNewVault({
             className="create-new-vault__terms-label"
             htmlFor="create-new-vault__terms-checkbox"
           >
-            <Text as="span">{termsOfUse}</Text>
+            <Typography as="span">{termsOfUse}</Typography>
           </label>
         </div>
       ) : null}

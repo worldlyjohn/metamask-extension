@@ -1,6 +1,5 @@
 /* eslint-disable jest/require-top-level-describe */
 import React from 'react';
-import PropTypes from 'prop-types';
 import { fireEvent, render } from '@testing-library/react';
 import { renderWithUserEvent } from '../../../../test/lib/render-helpers';
 
@@ -228,19 +227,9 @@ describe('TextField', () => {
     expect(getByTestId('text-field-required')).toHaveAttribute('required', '');
   });
   it('should render with a custom input and still work', async () => {
-    const CustomInputComponent = React.forwardRef(
-      ({ disableStateStyles, ...props }, ref) => (
-        <Box
-          ref={ref}
-          as="input"
-          {...props}
-          placeholder={`Removing ${disableStateStyles} from ...props spread to prevent error in test`}
-        />
-      ),
-    );
-    CustomInputComponent.propTypes = {
-      disableStateStyles: PropTypes.bool,
-    };
+    const CustomInputComponent = React.forwardRef((props, ref) => (
+      <Box ref={ref} as="input" {...props} />
+    ));
     CustomInputComponent.displayName = 'CustomInputComponent'; // fixes eslint error
     const { getByTestId, user } = renderWithUserEvent(
       <TextField

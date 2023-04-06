@@ -4,11 +4,7 @@ import {
   TransactionStatus,
   TransactionType,
 } from '../../../../shared/constants/transaction';
-import {
-  CHAIN_IDS,
-  NETWORK_IDS,
-  NetworkStatus,
-} from '../../../../shared/constants/network';
+import { CHAIN_IDS, NETWORK_IDS } from '../../../../shared/constants/network';
 import { GAS_LIMITS } from '../../../../shared/constants/gas';
 import { ORIGIN_METAMASK } from '../../../../shared/constants/app';
 import TxStateManager, { ERROR_SUBMITTING } from './tx-state-manager';
@@ -49,7 +45,6 @@ function generateTransactions(
 describe('TransactionStateManager', function () {
   let txStateManager;
   const currentNetworkId = NETWORK_IDS.GOERLI;
-  const currentNetworkStatus = NetworkStatus.Available;
   const currentChainId = CHAIN_IDS.MAINNET;
   const otherNetworkId = '2';
 
@@ -59,8 +54,7 @@ describe('TransactionStateManager', function () {
         transactions: {},
       },
       txHistoryLimit: 10,
-      getNetworkId: () => currentNetworkId,
-      getNetworkStatus: () => currentNetworkStatus,
+      getNetworkState: () => currentNetworkId,
       getCurrentChainId: () => currentChainId,
     });
   });
@@ -187,8 +181,7 @@ describe('TransactionStateManager', function () {
             [confirmedTx.id]: confirmedTx,
           },
         },
-        getNetworkId: () => currentNetworkId,
-        getNetworkStatus: () => currentNetworkStatus,
+        getNetworkState: () => currentNetworkId,
         getCurrentChainId: () => currentChainId,
       });
 
@@ -253,8 +246,7 @@ describe('TransactionStateManager', function () {
             [confirmedTx3.id]: confirmedTx3,
           },
         },
-        getNetworkId: () => currentNetworkId,
-        getNetworkStatus: () => currentNetworkStatus,
+        getNetworkState: () => currentNetworkId,
         getCurrentChainId: () => currentChainId,
       });
 
@@ -363,8 +355,7 @@ describe('TransactionStateManager', function () {
             [failedTx3Dupe.id]: failedTx3Dupe,
           },
         },
-        getNetworkId: () => currentNetworkId,
-        getNetworkStatus: () => currentNetworkStatus,
+        getNetworkState: () => currentNetworkId,
         getCurrentChainId: () => currentChainId,
       });
 

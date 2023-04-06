@@ -18,16 +18,13 @@ import {
 import { setSeedPhraseBackedUp } from '../../../store/actions';
 import Checkbox from '../../../components/ui/check-box';
 import { ONBOARDING_COMPLETION_ROUTE } from '../../../helpers/constants/routes';
-import {
-  MetaMetricsEventCategory,
-  MetaMetricsEventName,
-} from '../../../../shared/constants/metametrics';
+import { EVENT_NAMES, EVENT } from '../../../../shared/constants/metametrics';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
 import {
   Icon,
   ICON_NAMES,
   ICON_SIZES,
-} from '../../../components/component-library/icon/deprecated';
+} from '../../../components/component-library';
 
 export default function SkipSRPBackup({ handleClose }) {
   const [checked, setChecked] = useState(false);
@@ -48,9 +45,8 @@ export default function SkipSRPBackup({ handleClose }) {
           <Button
             onClick={() => {
               trackEvent({
-                category: MetaMetricsEventCategory.Onboarding,
-                event:
-                  MetaMetricsEventName.OnboardingWalletSecuritySkipCanceled,
+                category: EVENT.CATEGORIES.ONBOARDING,
+                event: EVENT_NAMES.ONBOARDING_WALLET_SECURITY_SKIP_CANCELED,
               });
               handleClose();
             }}
@@ -67,9 +63,8 @@ export default function SkipSRPBackup({ handleClose }) {
             onClick={async () => {
               await dispatch(setSeedPhraseBackedUp(false));
               trackEvent({
-                category: MetaMetricsEventCategory.Onboarding,
-                event:
-                  MetaMetricsEventName.OnboardingWalletSecuritySkipConfirmed,
+                category: EVENT.CATEGORIES.ONBOARDING,
+                event: EVENT_NAMES.ONBOARDING_WALLET_SECURITY_SKIP_CONFIRMED,
               });
               history.push(ONBOARDING_COMPLETION_ROUTE);
             }}
@@ -92,7 +87,7 @@ export default function SkipSRPBackup({ handleClose }) {
           color={IconColor.errorDefault}
         />
         <Typography
-          variant={TypographyVariant.H3}
+          variant={TypographyVariant.h3}
           fontWeight={FONT_WEIGHT.BOLD}
         >
           {t('skipAccountSecurity')}
@@ -107,7 +102,7 @@ export default function SkipSRPBackup({ handleClose }) {
             />
             <Typography
               className="skip-srp-backup-popover__details"
-              variant={TypographyVariant.H7}
+              variant={TypographyVariant.h7}
             >
               {t('skipAccountSecurityDetails')}
             </Typography>

@@ -13,17 +13,8 @@ import {
   DISPLAY,
   TextVariant,
   Size,
-  BorderColor,
-  IconColor,
-  TEXT_ALIGN,
-  BLOCK_SIZES,
 } from '../../../helpers/constants/design-system';
-import {
-  Icon,
-  ICON_NAMES,
-  ICON_SIZES,
-} from '../../component-library/icon/deprecated';
-import { ButtonIcon, Text } from '../../component-library';
+import { ButtonIcon, Text, ICON_NAMES } from '../../component-library';
 
 const defaultHeaderProps = {
   padding: [6, 4, 4],
@@ -60,8 +51,6 @@ const Popover = ({
   showArrow,
   CustomBackground,
   popoverRef,
-  showScrollDown,
-  onScrollDownButtonClick,
   centerTitle,
   headerProps = defaultHeaderProps,
   contentProps = defaultContentProps,
@@ -77,10 +66,9 @@ const Popover = ({
       <Box
         display={DISPLAY.FLEX}
         alignItems={AlignItems.center}
-        justifyContent={centerTitle ? null : JustifyContent.spaceBetween}
-        className={classnames('popover-header__title', {
-          'popover-header__title--center': centerTitle,
-        })}
+        justifyContent={
+          centerTitle ? JustifyContent.center : JustifyContent.spaceBetween
+        }
         marginBottom={2}
       >
         {onBack ? (
@@ -92,13 +80,7 @@ const Popover = ({
             size={Size.SM}
           />
         ) : null}
-        <Text
-          textAlign={centerTitle ? TEXT_ALIGN.CENTER : TEXT_ALIGN.START}
-          ellipsis
-          variant={TextVariant.headingSm}
-          as="h2"
-          width={BLOCK_SIZES.FULL}
-        >
+        <Text ellipsis variant={TextVariant.headingSm} as="h2">
           {title}
         </Text>
         {onClose ? (
@@ -126,26 +108,6 @@ const Popover = ({
         className={classnames('popover-wrap', className)}
         ref={popoverRef}
       >
-        {showScrollDown ? (
-          <Box
-            display={DISPLAY.FLEX}
-            alignItems={AlignItems.center}
-            justifyContent={JustifyContent.center}
-            borderColor={BorderColor.borderDefault}
-            backgroundColor={BackgroundColor.backgroundDefault}
-            color={Color.iconDefault}
-            onClick={onScrollDownButtonClick}
-            className="whats-new-popup__scroll-button"
-            data-testid="whats-new-popup-scroll-button"
-          >
-            <Icon
-              name={ICON_NAMES.ARROW_DOWN}
-              color={IconColor.primaryDefault}
-              size={ICON_SIZES.MD}
-              aria-label={t('scrollDown')}
-            />
-          </Box>
-        ) : null}
         {showArrow ? <div className="popover-arrow" /> : null}
         {showHeader && <Header />}
         {children ? (
@@ -217,14 +179,6 @@ Popover.propTypes = {
   popoverRef: PropTypes.shape({
     current: PropTypes.instanceOf(window.Element),
   }),
-  /**
-   * Show title of the popover
-   */
-  showScrollDown: PropTypes.bool,
-  /**
-   * ScrollDown handler
-   */
-  onScrollDownButtonClick: PropTypes.func,
   /**
    * Check if use centered title
    */

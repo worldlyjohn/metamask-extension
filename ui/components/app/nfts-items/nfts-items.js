@@ -30,7 +30,7 @@ import { updateNftDropDownState } from '../../../store/actions';
 import { usePrevious } from '../../../hooks/usePrevious';
 import { getNftsDropdownState } from '../../../ducks/metamask/metamask';
 import { useI18nContext } from '../../../hooks/useI18nContext';
-import { Icon, ICON_NAMES } from '../../component-library/icon/deprecated';
+import { Icon, ICON_NAMES } from '../../component-library';
 import NftDefaultImage from '../nft-default-image';
 
 const width =
@@ -106,19 +106,17 @@ export default function NftsItems({
   };
 
   const updateNftDropDownStateKey = (key, isExpanded) => {
+    const currentAccountNftDropdownState =
+      nftsDropdownState[selectedAddress][chainId];
+
     const newCurrentAccountState = {
-      ...nftsDropdownState[selectedAddress][chainId],
+      ...currentAccountNftDropdownState,
       [key]: !isExpanded,
     };
 
-    const newState = {
-      ...nftsDropdownState,
-      [selectedAddress]: {
-        [chainId]: newCurrentAccountState,
-      },
-    };
+    nftsDropdownState[selectedAddress][chainId] = newCurrentAccountState;
 
-    dispatch(updateNftDropDownState(newState));
+    dispatch(updateNftDropDownState(nftsDropdownState));
   };
 
   const renderCollection = ({ nfts, collectionName, collectionImage, key }) => {

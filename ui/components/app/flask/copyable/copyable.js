@@ -14,11 +14,7 @@ import {
   Color,
 } from '../../../../helpers/constants/design-system';
 import { useCopyToClipboard } from '../../../../hooks/useCopyToClipboard';
-import {
-  Icon,
-  ICON_NAMES,
-  ICON_SIZES,
-} from '../../../component-library/icon/deprecated';
+import { Icon, ICON_NAMES, ICON_SIZES } from '../../../component-library';
 
 export const Copyable = ({ text }) => {
   const [copied, handleCopy] = useCopyToClipboard();

@@ -82,11 +82,7 @@ import {
   isSwapsDefaultTokenAddress,
   isSwapsDefaultTokenSymbol,
 } from '../../../../shared/modules/swaps.utils';
-import {
-  MetaMetricsEventCategory,
-  MetaMetricsEventLinkType,
-  MetaMetricsEventName,
-} from '../../../../shared/constants/metametrics';
+import { EVENT, EVENT_NAMES } from '../../../../shared/constants/metametrics';
 import {
   SWAPS_CHAINID_DEFAULT_BLOCK_EXPLORER_URL_MAP,
   SWAPS_CHAINID_DEFAULT_TOKEN_MAP,
@@ -102,11 +98,14 @@ import {
   setSmartTransactionsOptInStatus,
   clearSmartTransactionFees,
 } from '../../../store/actions';
-import { countDecimals, fetchTokenPrice } from '../swaps.util';
+import {
+  countDecimals,
+  fetchTokenPrice,
+  fetchTokenBalance,
+} from '../swaps.util';
 import SwapsFooter from '../swaps-footer';
 import { isEqualCaseInsensitive } from '../../../../shared/modules/string-utils';
 import { calcTokenAmount } from '../../../../shared/lib/transactions-controller-utils';
-import { fetchTokenBalance } from '../../../../shared/lib/token-util.ts';
 import { shouldEnableDirectWrapping } from '../../../../shared/lib/swaps-utils';
 import {
   getValueFromWeiHex,
@@ -314,26 +313,24 @@ export default function BuildQuote({
         isEqualCaseInsensitive(usersToken.address, token.address),
       )
     ) {
-      fetchTokenBalance(
-        token.address,
-        selectedAccountAddress,
-        global.ethereumProvider,
-      ).then((fetchedBalance) => {
-        if (fetchedBalance?.balance) {
-          const balanceAsDecString = fetchedBalance.balance.toString(10);
-          const userTokenBalance = calcTokenAmount(
-            balanceAsDecString,
-            token.decimals,
-          );
-          dispatch(
-            setSwapsFromToken({
-              ...token,
-              string: userTokenBalance.toString(10),
-              balance: balanceAsDecString,
-            }),
-          );
-        }
-      });
+      fetchTokenBalance(token.address, selectedAccountAddress).then(
+        (fetchedBalance) => {
+          if (fetchedBalance?.balance) {
+            const balanceAsDecString = fetchedBalance.balance.toString(10);
+            const userTokenBalance = calcTokenAmount(
+              balanceAsDecString,
+              token.decimals,
+            );
+            dispatch(
+              setSwapsFromToken({
+                ...token,
+                string: userTokenBalance.toString(10),
+                balance: balanceAsDecString,
+              }),
+            );
+          }
+        },
+      );
     }
     dispatch(setSwapsFromToken(token));
     onInputChange(
@@ -451,7 +448,7 @@ export default function BuildQuote({
   const trackBuildQuotePageLoadedEvent = useCallback(() => {
     trackEvent({
       event: 'Build Quote Page Loaded',
-      category: MetaMetricsEventCategory.Swaps,
+      category: EVENT.CATEGORIES.SWAPS,
       sensitiveProperties: {
         is_hardware_wallet: hardwareWalletUsed,
         hardware_wallet_type: hardwareWalletType,
@@ -490,10 +487,10 @@ export default function BuildQuote({
         onClick={() => {
           /* istanbul ignore next */
           trackEvent({
-            event: MetaMetricsEventName.ExternalLinkClicked,
-            category: MetaMetricsEventCategory.Swaps,
+            event: EVENT_NAMES.EXTERNAL_LINK_CLICKED,
+            category: EVENT.CATEGORIES.SWAPS,
             properties: {
-              link_type: MetaMetricsEventLinkType.TokenTracker,
+              link_type: EVENT.EXTERNAL_LINK_TYPES.TOKEN_TRACKER,
               location: 'Swaps Confirmation',
               url_domain: getURLHostName(blockExplorerTokenLink),
             },
@@ -823,7 +820,7 @@ export default function BuildQuote({
                         /* istanbul ignore next */
                         trackEvent({
                           event: 'Clicked Block Explorer Link',
-                          category: MetaMetricsEventCategory.Swaps,
+                          category: EVENT.CATEGORIES.SWAPS,
                           properties: {
                             link_type: 'Token Tracker',
                             action: 'Swaps Confirmation',

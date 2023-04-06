@@ -216,11 +216,17 @@
   }
 
   &__back-button {
-    margin-right: 8px;
+    display: none;
 
-    [dir='rtl'] & {
-      margin: 0 0 0 8px;
-      transform: rotate(180deg);
+    @include screen-sm-max {
+      display: block;
+      margin-right: 8px;
+      cursor: pointer;
+
+      [dir='rtl'] & {
+        margin: 0 0 0 8px;
+        transform: rotate(180deg);
+      }
     }
   }
 
@@ -245,12 +251,6 @@
       .tab-bar__tab {
         @include screen-sm-min {
           max-height: 50px;
-        }
-
-        &__caret {
-          @include screen-sm-min {
-            display: none;
-          }
         }
       }
     }

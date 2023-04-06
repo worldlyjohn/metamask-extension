@@ -26,10 +26,10 @@ import {
 } from '../../helpers/constants/design-system';
 import { isEqualCaseInsensitive } from '../../../shared/modules/string-utils';
 import {
+  ButtonIcon,
   ICON_SIZES,
   ICON_NAMES,
-} from '../../components/component-library/icon/deprecated';
-import { ButtonIcon } from '../../components/component-library';
+} from '../../components/component-library';
 
 export default function TokenDetailsPage() {
   const dispatch = useDispatch();
@@ -59,7 +59,7 @@ export default function TokenDetailsPage() {
     type: state.metamask.provider.type,
   }));
 
-  const { nickname, type: networkType } = currentNetwork;
+  const { nickname: networkNickname, type: networkType } = currentNetwork;
 
   const [copied, handleCopy] = useCopyToClipboard();
 
@@ -180,7 +180,7 @@ export default function TokenDetailsPage() {
           color={TextColor.textDefault}
         >
           {networkType === NETWORK_TYPES.RPC
-            ? nickname ?? t('privateNetwork')
+            ? networkNickname ?? t('privateNetwork')
             : t(networkType)}
         </Typography>
         {aggregators && (

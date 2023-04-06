@@ -9,7 +9,7 @@ import Dropdown from '../../../components/ui/dropdown';
 import { getURLHostName } from '../../../helpers/utils/util';
 
 import { HardwareDeviceNames } from '../../../../shared/constants/hardware-wallets';
-import { MetaMetricsEventCategory } from '../../../../shared/constants/metametrics';
+import { EVENT } from '../../../../shared/constants/metametrics';
 
 class AccountList extends Component {
   state = {
@@ -137,7 +137,7 @@ class AccountList extends Component {
                     rpcPrefs,
                   );
                   this.context.trackEvent({
-                    category: MetaMetricsEventCategory.Accounts,
+                    category: EVENT.CATEGORIES.ACCOUNTS,
                     event: 'Clicked Block Explorer Link',
                     properties: {
                       actions: 'Hardware Connect',

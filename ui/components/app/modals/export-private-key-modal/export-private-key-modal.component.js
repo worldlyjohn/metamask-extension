@@ -10,9 +10,8 @@ import {
   stripHexPrefix,
 } from '../../../../../shared/modules/hexstring-utils';
 import {
-  MetaMetricsEventCategory,
-  MetaMetricsEventKeyType,
-  MetaMetricsEventName,
+  EVENT,
+  EVENT_NAMES,
 } from '../../../../../shared/constants/metametrics';
 
 export default class ExportPrivateKeyModal extends Component {
@@ -54,10 +53,10 @@ export default class ExportPrivateKeyModal extends Component {
     exportAccount(password, address)
       .then((privateKey) => {
         this.context.trackEvent({
-          category: MetaMetricsEventCategory.Keys,
-          event: MetaMetricsEventName.KeyExportRevealed,
+          category: EVENT.CATEGORIES.KEYS,
+          event: EVENT_NAMES.KEY_EXPORT_REVEALED,
           properties: {
-            key_type: MetaMetricsEventKeyType.Pkey,
+            key_type: EVENT.KEY_TYPES.PKEY,
           },
         });
 
@@ -68,10 +67,10 @@ export default class ExportPrivateKeyModal extends Component {
       })
       .catch((e) => {
         this.context.trackEvent({
-          category: MetaMetricsEventCategory.Keys,
-          event: MetaMetricsEventName.KeyExportFailed,
+          category: EVENT.CATEGORIES.KEYS,
+          event: EVENT_NAMES.KEY_EXPORT_FAILED,
           properties: {
-            key_type: MetaMetricsEventKeyType.Pkey,
+            key_type: EVENT.KEY_TYPES.PKEY,
             reason: 'incorrect_password',
           },
         });
@@ -109,10 +108,10 @@ export default class ExportPrivateKeyModal extends Component {
         onClick={() => {
           copyToClipboard(plainKey);
           this.context.trackEvent({
-            category: MetaMetricsEventCategory.Keys,
-            event: MetaMetricsEventName.KeyExportCopied,
+            category: EVENT.CATEGORIES.KEYS,
+            event: EVENT_NAMES.KEY_EXPORT_COPIED,
             properties: {
-              key_type: MetaMetricsEventKeyType.Pkey,
+              key_type: EVENT.KEY_TYPES.PKEY,
               copy_method: 'clipboard',
             },
           });
@@ -133,10 +132,10 @@ export default class ExportPrivateKeyModal extends Component {
             className="export-private-key-modal__button export-private-key-modal__button--cancel"
             onClick={() => {
               this.context.trackEvent({
-                category: MetaMetricsEventCategory.Keys,
-                event: MetaMetricsEventName.KeyExportCanceled,
+                category: EVENT.CATEGORIES.KEYS,
+                event: EVENT_NAMES.KEY_EXPORT_CANCELED,
                 properties: {
-                  key_type: MetaMetricsEventKeyType.Pkey,
+                  key_type: EVENT.KEY_TYPES.PKEY,
                 },
               });
               hideModal();
@@ -160,10 +159,10 @@ export default class ExportPrivateKeyModal extends Component {
           <Button
             onClick={() => {
               this.context.trackEvent({
-                category: MetaMetricsEventCategory.Keys,
-                event: MetaMetricsEventName.KeyExportRequested,
+                category: EVENT.CATEGORIES.KEYS,
+                event: EVENT_NAMES.KEY_EXPORT_REQUESTED,
                 properties: {
-                  key_type: MetaMetricsEventKeyType.Pkey,
+                  key_type: EVENT.KEY_TYPES.PKEY,
                 },
               });
 

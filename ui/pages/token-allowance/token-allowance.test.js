@@ -2,7 +2,6 @@ import React from 'react';
 import configureMockStore from 'redux-mock-store';
 import { fireEvent } from '@testing-library/react';
 import { renderWithProvider } from '../../../test/lib/render-helpers';
-import { KeyringType } from '../../../shared/constants/keyring';
 import TokenAllowance from './token-allowance';
 
 const testTokenAddress = '0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F';
@@ -12,19 +11,20 @@ const state = {
   },
   metamask: {
     accounts: {
-      '0x0dcd5d886577d5081b0c52e242ef29e70be3e7bc': {
-        address: '0x0dcd5d886577d5081b0c52e242ef29e70be3e7bc',
-        balance: '0x0',
+      '0xAddress': {
+        address: '0xAddress',
+        balance: '0x1F4',
       },
     },
     gasEstimateType: 'none',
-    selectedAddress: '0x0dcd5d886577d5081b0c52e242ef29e70be3e7bc',
+    selectedAddress: '0xAddress',
     identities: {
-      '0x0dcd5d886577d5081b0c52e242ef29e70be3e7bc': {
-        address: '0x0dcd5d886577d5081b0c52e242ef29e70be3e7bc',
+      '0xAddress': {
         name: 'Account 1',
+        address: '0xAddress',
       },
     },
+    frequentRpcListDetail: [],
     cachedBalances: {},
     addressBook: [
       {
@@ -65,13 +65,6 @@ const state = {
       },
     ],
     unapprovedTxs: {},
-    keyringTypes: [KeyringType.ledger],
-    keyrings: [
-      {
-        type: KeyringType.ledger,
-        accounts: ['0x0dcd5d886577d5081b0c52e242ef29e70be3e7bc'],
-      },
-    ],
   },
   history: {
     mostRecentOverviewPage: '/',
@@ -251,31 +244,5 @@ describe('TokenAllowancePage', () => {
     const gotIt = getByText('Got it');
     fireEvent.click(gotIt);
     expect(gotIt).not.toBeInTheDocument();
-  });
-
-  it('should show hardware wallet info text', () => {
-    const { queryByText, getByText, getByTestId } = renderWithProvider(
-      <TokenAllowance {...props} />,
-      store,
-    );
-
-    const textField = getByTestId('custom-spending-cap-input');
-    fireEvent.change(textField, { target: { value: '1' } });
-
-    expect(queryByText('Prior to clicking confirm:')).toBeNull();
-
-    const nextButton = getByText('Next');
-    fireEvent.click(nextButton);
-
-    expect(queryByText('Prior to clicking confirm:')).toBeInTheDocument();
-  });
-
-  it('should not show hardware wallet info text', () => {
-    const { queryByText } = renderWithProvider(
-      <TokenAllowance {...props} />,
-      store,
-    );
-
-    expect(queryByText('Prior to clicking confirm:')).toBeNull();
   });
 });

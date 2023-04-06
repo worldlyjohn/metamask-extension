@@ -375,7 +375,7 @@ Margin.args = {
   margin: 4,
 };
 
-export const BoxPropsStory = (args) => (
+export const BoxProps = (args) => (
   <>
     <BannerAlert
       severity={SEVERITIES.WARNING}
@@ -390,7 +390,7 @@ export const BoxPropsStory = (args) => (
   </>
 );
 
-BoxPropsStory.args = {
+BoxProps.args = {
   color: TextColor.textDefault,
   boxProps: {
     backgroundColor: BackgroundColor.infoMuted,
@@ -399,5 +399,3 @@ BoxPropsStory.args = {
     borderRadius: 4,
   },
 };
-
-BoxPropsStory.storyName = 'BoxProps';

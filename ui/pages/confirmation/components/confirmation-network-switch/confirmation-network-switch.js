@@ -78,7 +78,7 @@ export default function ConfirmationNetworkSwitch({ newNetwork }) {
         {newNetwork.chainId in CHAIN_ID_TO_NETWORK_IMAGE_URL_MAP ? (
           <SiteIcon
             icon={CHAIN_ID_TO_NETWORK_IMAGE_URL_MAP[newNetwork.chainId]}
-            name={newNetwork.nickname}
+            name={newNetwork.name}
             size={64}
           />
         ) : (
@@ -96,7 +96,7 @@ export default function ConfirmationNetworkSwitch({ newNetwork }) {
             justifyContent: JustifyContent.center,
           }}
         >
-          {newNetwork.nickname}
+          {newNetwork.name}
         </Typography>
       </Box>
     </Box>
@@ -106,6 +106,6 @@ export default function ConfirmationNetworkSwitch({ newNetwork }) {
 ConfirmationNetworkSwitch.propTypes = {
   newNetwork: PropTypes.shape({
     chainId: PropTypes.string.isRequired,
-    nickname: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
   }),
 };

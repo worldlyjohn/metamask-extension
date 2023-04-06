@@ -53,7 +53,9 @@ describe('Failing contract interaction ', function () {
         // display warning when transaction is expected to fail
         const warningText =
           'We were not able to estimate gas. There might be an error in the contract and this transaction may fail.';
-        const warning = await driver.findElement('.mm-banner-alert .mm-text');
+        const warning = await driver.findElement(
+          '.actionable-message__message',
+        );
         const confirmButton = await driver.findElement(
           '[data-testid="page-container-footer-next"]',
         );
@@ -71,6 +73,7 @@ describe('Failing contract interaction ', function () {
         await driver.clickElement({ text: 'Activity', tag: 'button' });
         await driver.waitForSelector(
           '.transaction-list__completed-transactions .transaction-list-item:nth-of-type(1)',
+          { timeout: 10000 },
         );
 
         // display the transaction status
@@ -138,7 +141,9 @@ describe('Failing contract interaction on non-EIP1559 network', function () {
         // display warning when transaction is expected to fail
         const warningText =
           'We were not able to estimate gas. There might be an error in the contract and this transaction may fail.';
-        const warning = await driver.findElement('.mm-banner-alert .mm-text');
+        const warning = await driver.findElement(
+          '.actionable-message__message',
+        );
         const confirmButton = await driver.findElement(
           '[data-testid="page-container-footer-next"]',
         );
@@ -156,6 +161,7 @@ describe('Failing contract interaction on non-EIP1559 network', function () {
         await driver.clickElement({ text: 'Activity', tag: 'button' });
         await driver.waitForSelector(
           '.transaction-list__completed-transactions .transaction-list-item:nth-of-type(1)',
+          { timeout: 10000 },
         );
 
         // display the transaction status

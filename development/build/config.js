@@ -7,7 +7,7 @@ const commonConfigurationPropertyNames = ['PUBNUB_PUB_KEY', 'PUBNUB_SUB_KEY'];
 
 const configurationPropertyNames = [
   ...commonConfigurationPropertyNames,
-  'MULTICHAIN',
+  'NFTS_V1',
   'INFURA_PROJECT_ID',
   'PHISHING_WARNING_PAGE_URL',
   'PORTFOLIO_URL',
@@ -20,7 +20,6 @@ const configurationPropertyNames = [
   'DISABLE_WEB_SOCKET_ENCRYPTION',
   'METAMASK_DEBUG',
   'SKIP_OTP_PAIRING_FLOW',
-  'ENABLE_MV3',
 ];
 
 const productionConfigurationPropertyNames = [

@@ -102,7 +102,6 @@ async function defineAndRunBuildTasks() {
       'navigator',
       'harden',
       'console',
-      'Image', // Used by browser to generate notifications
       // globals chrome driver needs to function (test env)
       /cdc_[a-zA-Z0-9]+_[a-zA-Z]+/iu,
       'performance',
@@ -147,9 +146,6 @@ async function defineAndRunBuildTasks() {
     browserPlatforms,
     browserVersionMap,
     buildType,
-    applyLavaMoat,
-    shouldIncludeSnow,
-    entryTask,
   });
 
   const styleTasks = createStyleTasks({ livereload });

@@ -4,7 +4,7 @@ import React from 'react';
 
 import { renderWithUserEvent } from '../../../../test/lib/render-helpers';
 
-import { Icon, IconName } from '..';
+import { Icon, ICON_NAMES } from '..';
 import { BannerBase } from './banner-base';
 
 describe('BannerBase', () => {
@@ -58,7 +58,7 @@ describe('BannerBase', () => {
         title="Action prop demo"
         actionButtonLabel="Action"
         actionButtonProps={{
-          endIconName: IconName.Arrow2Right,
+          endIconName: ICON_NAMES.ARROW_2_RIGHT,
           'data-testid': 'action',
           className: 'mm-banner-base__action',
         }}
@@ -78,7 +78,7 @@ describe('BannerBase', () => {
     const { getByTestId } = render(
       <BannerBase
         startAccessory={
-          <Icon data-testid="start-accessory" name={IconName.AddSquare} />
+          <Icon data-testid="start-accessory" name={ICON_NAMES.ADD_SQUARE} />
         }
       />,
     );

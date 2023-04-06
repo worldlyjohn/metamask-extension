@@ -19,7 +19,7 @@ import { isCustomPriceExcessive } from '../../selectors';
 import { getSendHexDataFeatureFlagState } from '../../ducks/metamask/metamask';
 import { showQrScanner } from '../../store/actions';
 import { MetaMetricsContext } from '../../contexts/metametrics';
-import { MetaMetricsEventCategory } from '../../../shared/constants/metametrics';
+import { EVENT } from '../../../shared/constants/metametrics';
 import { AssetType } from '../../../shared/constants/transaction';
 import SendHeader from './send-header';
 import AddRecipient from './send-content/add-recipient';
@@ -137,7 +137,7 @@ export default function SendTransactionScreen() {
         scanQrCode={() => {
           trackEvent({
             event: 'Used QR scanner',
-            category: MetaMetricsEventCategory.Transactions,
+            category: EVENT.CATEGORIES.TRANSACTIONS,
             properties: {
               action: 'Edit Screen',
               legacy_event: true,

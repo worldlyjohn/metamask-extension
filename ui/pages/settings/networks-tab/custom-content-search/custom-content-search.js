@@ -5,10 +5,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import TextField from '../../../../components/ui/text-field';
 import { I18nContext } from '../../../../contexts/i18n';
 import SearchIcon from '../../../../components/ui/icon/search-icon';
-import {
-  Icon,
-  ICON_NAMES,
-} from '../../../../components/component-library/icon/deprecated';
+import { Icon, ICON_NAMES } from '../../../../components/component-library';
 
 export default function CustomContentSearch({
   onSearch,

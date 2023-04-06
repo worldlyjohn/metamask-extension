@@ -17,7 +17,7 @@ describe('TransactionActivityLog container', () => {
         metamask: {
           conversionRate: 280.45,
           nativeCurrency: 'ETH',
-          networkConfigurations: {},
+          frequentRpcListDetail: [],
           provider: {
             ticker: 'ETH',
           },
@@ -36,17 +36,17 @@ describe('TransactionActivityLog container', () => {
         metamask: {
           conversionRate: 280.45,
           nativeCurrency: 'ETH',
-          networkConfigurations: {
-            networkConfigurationId: {
+          frequentRpcListDetail: [
+            {
               rpcUrl: 'https://customnetwork.com/',
+              rpcPrefs: {
+                blockExplorerUrl: 'https://customblockexplorer.com/',
+              },
             },
-          },
+          ],
           provider: {
             rpcUrl: 'https://customnetwork.com/',
             ticker: 'ETH',
-            rpcPrefs: {
-              blockExplorerUrl: 'https://customblockexplorer.com/',
-            },
           },
         },
       };

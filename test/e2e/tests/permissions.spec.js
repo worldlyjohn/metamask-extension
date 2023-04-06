@@ -13,6 +13,7 @@ describe('Permissions', function () {
         },
       ],
     };
+    const publicAddress = '0x5cfe73b6021e818b776b421b1c4db2474086a7e1';
     await withFixtures(
       {
         dapp: true,
@@ -20,9 +21,7 @@ describe('Permissions', function () {
         ganacheOptions,
         title: this.test.title,
       },
-      async ({ driver, ganacheServer }) => {
-        const addresses = await ganacheServer.getAccounts();
-        const publicAddress = addresses[0];
+      async ({ driver }) => {
         await driver.navigate();
         await driver.fill('#password', 'correct horse battery staple');
         await driver.press('#password', driver.Key.ENTER);

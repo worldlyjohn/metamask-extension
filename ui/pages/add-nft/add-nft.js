@@ -32,15 +32,12 @@ import { getNftsDropdownState } from '../../ducks/metamask/metamask';
 import NftsDetectionNotice from '../../components/app/nfts-detection-notice';
 import { MetaMetricsContext } from '../../contexts/metametrics';
 import { AssetType } from '../../../shared/constants/transaction';
+import { EVENT, EVENT_NAMES } from '../../../shared/constants/metametrics';
 import {
-  MetaMetricsEventName,
-  MetaMetricsTokenEventSource,
-} from '../../../shared/constants/metametrics';
-import {
+  ButtonIcon,
   ICON_NAMES,
   ICON_SIZES,
-} from '../../components/component-library/icon/deprecated';
-import { ButtonIcon } from '../../components/component-library';
+} from '../../components/component-library';
 
 export default function AddNft() {
   const t = useI18nContext();
@@ -104,7 +101,7 @@ export default function AddNft() {
     );
 
     trackEvent({
-      event: MetaMetricsEventName.TokenAdded,
+      event: EVENT_NAMES.TOKEN_ADDED,
       category: 'Wallet',
       sensitiveProperties: {
         token_contract_address: nftAddress,
@@ -112,7 +109,7 @@ export default function AddNft() {
         tokenId: tokenId.toString(),
         asset_type: AssetType.NFT,
         token_standard: tokenDetails?.standard,
-        source: MetaMetricsTokenEventSource.Custom,
+        source: EVENT.SOURCE.TOKEN.CUSTOM,
       },
     });
 

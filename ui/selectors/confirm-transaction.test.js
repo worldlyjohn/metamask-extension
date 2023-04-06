@@ -31,7 +31,7 @@ describe('Confirm Transaction Selector', () => {
         unapprovedMsgCount: 1,
         unapprovedPersonalMsgCount: 1,
         unapprovedTypedMessagesCount: 1,
-        networkId: '5',
+        network: '5',
         provider: {
           chainId: '0x5',
         },

@@ -102,17 +102,17 @@ AvatarToken.propTypes = {
    * The background color of the AvatarToken
    * Defaults to Color.backgroundAlternative
    */
-  backgroundColor: PropTypes.oneOf(Object.values(BackgroundColor)),
+  backgroundColor: Box.propTypes.backgroundColor,
   /**
    * The background color of the AvatarToken
    * Defaults to Color.borderDefault
    */
-  borderColor: PropTypes.oneOf(Object.values(BorderColor)),
+  borderColor: Box.propTypes.borderColor,
   /**
    * The color of the text inside the AvatarToken
    * Defaults to Color.textDefault
    */
-  color: PropTypes.oneOf(Object.values(TextColor)),
+  color: Box.propTypes.color,
   /**
    * Additional classNames to be added to the AvatarToken
    */

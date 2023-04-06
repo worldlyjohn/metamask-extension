@@ -1,13 +1,11 @@
-import { errorCodes } from 'eth-rpc-errors';
-import { detectSIWE } from '@metamask/controller-utils';
 import { MESSAGE_TYPE, ORIGIN_METAMASK } from '../../../shared/constants/app';
-import { TransactionStatus } from '../../../shared/constants/transaction';
 import { SECOND } from '../../../shared/constants/time';
-
+import { detectSIWE } from '../../../shared/modules/siwe';
 import {
-  MetaMetricsEventCategory,
-  MetaMetricsEventName,
-  MetaMetricsEventUiCustomization,
+  EVENT,
+  EVENT_NAMES,
+  METAMETRIC_KEY_OPTIONS,
+  METAMETRIC_KEY,
 } from '../../../shared/constants/metametrics';
 
 /**
@@ -42,55 +40,54 @@ const RATE_LIMIT_MAP = {
 
 /**
  * For events with user interaction (approve / reject | cancel) this map will
- * return an object with APPROVED, REJECTED, REQUESTED, and FAILED keys that map to the
+ * return an object with APPROVED, REJECTED and REQUESTED keys that map to the
  * appropriate event names.
  */
 const EVENT_NAME_MAP = {
   [MESSAGE_TYPE.ETH_SIGN]: {
-    APPROVED: MetaMetricsEventName.SignatureApproved,
-    FAILED: MetaMetricsEventName.SignatureFailed,
-    REJECTED: MetaMetricsEventName.SignatureRejected,
-    REQUESTED: MetaMetricsEventName.SignatureRequested,
+    APPROVED: EVENT_NAMES.SIGNATURE_APPROVED,
+    REJECTED: EVENT_NAMES.SIGNATURE_REJECTED,
+    REQUESTED: EVENT_NAMES.SIGNATURE_REQUESTED,
   },
   [MESSAGE_TYPE.ETH_SIGN_TYPED_DATA]: {
-    APPROVED: MetaMetricsEventName.SignatureApproved,
-    REJECTED: MetaMetricsEventName.SignatureRejected,
-    REQUESTED: MetaMetricsEventName.SignatureRequested,
+    APPROVED: EVENT_NAMES.SIGNATURE_APPROVED,
+    REJECTED: EVENT_NAMES.SIGNATURE_REJECTED,
+    REQUESTED: EVENT_NAMES.SIGNATURE_REQUESTED,
   },
   [MESSAGE_TYPE.ETH_SIGN_TYPED_DATA_V3]: {
-    APPROVED: MetaMetricsEventName.SignatureApproved,
-    REJECTED: MetaMetricsEventName.SignatureRejected,
-    REQUESTED: MetaMetricsEventName.SignatureRequested,
+    APPROVED: EVENT_NAMES.SIGNATURE_APPROVED,
+    REJECTED: EVENT_NAMES.SIGNATURE_REJECTED,
+    REQUESTED: EVENT_NAMES.SIGNATURE_REQUESTED,
   },
   [MESSAGE_TYPE.ETH_SIGN_TYPED_DATA_V4]: {
-    APPROVED: MetaMetricsEventName.SignatureApproved,
-    REJECTED: MetaMetricsEventName.SignatureRejected,
-    REQUESTED: MetaMetricsEventName.SignatureRequested,
+    APPROVED: EVENT_NAMES.SIGNATURE_APPROVED,
+    REJECTED: EVENT_NAMES.SIGNATURE_REJECTED,
+    REQUESTED: EVENT_NAMES.SIGNATURE_REQUESTED,
   },
   [MESSAGE_TYPE.PERSONAL_SIGN]: {
-    APPROVED: MetaMetricsEventName.SignatureApproved,
-    REJECTED: MetaMetricsEventName.SignatureRejected,
-    REQUESTED: MetaMetricsEventName.SignatureRequested,
+    APPROVED: EVENT_NAMES.SIGNATURE_APPROVED,
+    REJECTED: EVENT_NAMES.SIGNATURE_REJECTED,
+    REQUESTED: EVENT_NAMES.SIGNATURE_REQUESTED,
   },
   [MESSAGE_TYPE.ETH_DECRYPT]: {
-    APPROVED: MetaMetricsEventName.DecryptionApproved,
-    REJECTED: MetaMetricsEventName.DecryptionRejected,
-    REQUESTED: MetaMetricsEventName.DecryptionRequested,
+    APPROVED: EVENT_NAMES.DECRYPTION_APPROVED,
+    REJECTED: EVENT_NAMES.DECRYPTION_REJECTED,
+    REQUESTED: EVENT_NAMES.DECRYPTION_REQUESTED,
   },
   [MESSAGE_TYPE.ETH_GET_ENCRYPTION_PUBLIC_KEY]: {
-    APPROVED: MetaMetricsEventName.EncryptionPublicKeyApproved,
-    REJECTED: MetaMetricsEventName.EncryptionPublicKeyRejected,
-    REQUESTED: MetaMetricsEventName.EncryptionPublicKeyRequested,
+    APPROVED: EVENT_NAMES.ENCRYPTION_PUBLIC_KEY_APPROVED,
+    REJECTED: EVENT_NAMES.ENCRYPTION_PUBLIC_KEY_REJECTED,
+    REQUESTED: EVENT_NAMES.ENCRYPTION_PUBLIC_KEY_REQUESTED,
   },
   [MESSAGE_TYPE.ETH_REQUEST_ACCOUNTS]: {
-    APPROVED: MetaMetricsEventName.PermissionsApproved,
-    REJECTED: MetaMetricsEventName.PermissionsRejected,
-    REQUESTED: MetaMetricsEventName.PermissionsRequested,
+    APPROVED: EVENT_NAMES.PERMISSIONS_APPROVED,
+    REJECTED: EVENT_NAMES.PERMISSIONS_REJECTED,
+    REQUESTED: EVENT_NAMES.PERMISSIONS_REQUESTED,
   },
   [MESSAGE_TYPE.WALLET_REQUEST_PERMISSIONS]: {
-    APPROVED: MetaMetricsEventName.PermissionsApproved,
-    REJECTED: MetaMetricsEventName.PermissionsRejected,
-    REQUESTED: MetaMetricsEventName.PermissionsRequested,
+    APPROVED: EVENT_NAMES.PERMISSIONS_APPROVED,
+    REJECTED: EVENT_NAMES.PERMISSIONS_REJECTED,
+    REQUESTED: EVENT_NAMES.PERMISSIONS_REQUESTED,
   },
 };
 
@@ -108,16 +105,14 @@ const rateLimitTimeouts = {};
  *  MetaMetricsController
  * @param {number} [opts.rateLimitSeconds] - number of seconds to wait before
  *  allowing another set of events to be tracked.
- * @param opts.securityProviderRequest
  * @returns {Function}
  */
 export default function createRPCMethodTrackingMiddleware({
   trackEvent,
   getMetricsState,
   rateLimitSeconds = 60 * 5,
-  securityProviderRequest,
 }) {
-  return async function rpcMethodTrackingMiddleware(
+  return function rpcMethodTrackingMiddleware(
     /** @type {any} */ req,
     /** @type {any} */ res,
     /** @type {Function} */ next,
@@ -143,8 +138,6 @@ export default function createRPCMethodTrackingMiddleware({
     // keys for the various events in the flow.
     const eventType = EVENT_NAME_MAP[method];
 
-    const eventProperties = {};
-
     // Boolean variable that reduces code duplication and increases legibility
     const shouldTrackEvent =
       // Don't track if the request came from our own UI or background
@@ -163,66 +156,33 @@ export default function createRPCMethodTrackingMiddleware({
       // 'Provider Method Called'.
       const event = eventType
         ? eventType.REQUESTED
-        : MetaMetricsEventName.ProviderMethodCalled;
+        : EVENT_NAMES.PROVIDER_METHOD_CALLED;
 
-      if (event === MetaMetricsEventName.SignatureRequested) {
-        eventProperties.signature_type = method;
+      const properties = {};
 
-        const data = req?.params?.[0];
-        const from = req?.params?.[1];
-        const paramsExamplePassword = req?.params?.[2];
-
-        const msgData = {
-          msgParams: {
-            ...paramsExamplePassword,
-            from,
-            data,
-            origin,
-          },
-          status: TransactionStatus.unapproved,
-          type: req.method,
-        };
-
-        try {
-          const securityProviderResponse = await securityProviderRequest(
-            msgData,
-            req.method,
-          );
-
-          if (securityProviderResponse?.flagAsDangerous === 1) {
-            eventProperties.ui_customizations = [
-              MetaMetricsEventUiCustomization.FlaggedAsMalicious,
-            ];
-          } else if (securityProviderResponse?.flagAsDangerous === 2) {
-            eventProperties.ui_customizations = [
-              MetaMetricsEventUiCustomization.FlaggedAsSafetyUnknown,
-            ];
-          }
-
-          if (method === MESSAGE_TYPE.PERSONAL_SIGN) {
-            const { isSIWEMessage } = detectSIWE({ data });
-            if (isSIWEMessage) {
-              eventProperties.ui_customizations = (
-                eventProperties.ui_customizations || []
-              ).concat(MetaMetricsEventUiCustomization.Siwe);
-            }
-          }
-        } catch (e) {
-          console.warn(
-            `createRPCMethodTrackingMiddleware: Error calling securityProviderRequest - ${e}`,
-          );
-        }
+      if (event === EVENT_NAMES.SIGNATURE_REQUESTED) {
+        properties.signature_type = method;
       } else {
-        eventProperties.method = method;
+        properties.method = method;
+      }
+
+      if (method === MESSAGE_TYPE.PERSONAL_SIGN) {
+        const data = req?.params?.[0];
+        const { isSIWEMessage } = detectSIWE({ data });
+        if (isSIWEMessage) {
+          properties.ui_customizations = [
+            METAMETRIC_KEY_OPTIONS[METAMETRIC_KEY.UI_CUSTOMIZATIONS].SIWE,
+          ];
+        }
       }
 
       trackEvent({
         event,
-        category: MetaMetricsEventCategory.InpageProvider,
+        category: EVENT.CATEGORIES.INPAGE_PROVIDER,
         referrer: {
           url: origin,
         },
-        properties: eventProperties,
+        properties,
       });
 
       rateLimitTimeouts[method] = setTimeout(() => {
@@ -230,37 +190,42 @@ export default function createRPCMethodTrackingMiddleware({
       }, SECOND * rateLimitSeconds);
     }
 
-    next(async (callback) => {
+    next((callback) => {
       if (shouldTrackEvent === false || typeof eventType === 'undefined') {
         return callback();
       }
 
-      // The rpc error methodNotFound implies that 'eth_sign' is disabled in Advanced Settings
-      const isDisabledEthSignAdvancedSetting =
-        method === MESSAGE_TYPE.ETH_SIGN &&
-        res.error?.code === errorCodes.rpc.methodNotFound;
+      // An error code of 4001 means the user rejected the request, which we
+      // can use here to determine which event to track.
+      const event =
+        res.error?.code === 4001 ? eventType.REJECTED : eventType.APPROVED;
 
-      const isDisabledRPCMethod = isDisabledEthSignAdvancedSetting;
+      const properties = {};
 
-      let event;
-      if (isDisabledRPCMethod) {
-        event = eventType.FAILED;
-        eventProperties.error = res.error;
-      } else if (res.error?.code === errorCodes.provider.userRejectedRequest) {
-        event = eventType.REJECTED;
+      if (eventType.REQUESTED === EVENT_NAMES.SIGNATURE_REQUESTED) {
+        properties.signature_type = method;
       } else {
-        event = eventType.APPROVED;
+        properties.method = method;
+      }
+
+      if (method === MESSAGE_TYPE.PERSONAL_SIGN) {
+        const data = req?.params?.[0];
+        const { isSIWEMessage } = detectSIWE({ data });
+        if (isSIWEMessage) {
+          properties.ui_customizations = [
+            METAMETRIC_KEY_OPTIONS[METAMETRIC_KEY.UI_CUSTOMIZATIONS].SIWE,
+          ];
+        }
       }
 
       trackEvent({
         event,
-        category: MetaMetricsEventCategory.InpageProvider,
+        category: EVENT.CATEGORIES.INPAGE_PROVIDER,
         referrer: {
           url: origin,
         },
-        properties: eventProperties,
+        properties,
       });
-
       return callback();
     });
   };

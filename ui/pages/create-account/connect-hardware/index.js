@@ -10,11 +10,7 @@ import {
 } from '../../../selectors';
 import { formatBalance } from '../../../helpers/utils/util';
 import { getMostRecentOverviewPage } from '../../../ducks/history/history';
-import {
-  MetaMetricsEventAccountType,
-  MetaMetricsEventCategory,
-  MetaMetricsEventName,
-} from '../../../../shared/constants/metametrics';
+import { EVENT, EVENT_NAMES } from '../../../../shared/constants/metametrics';
 import { SECOND } from '../../../../shared/constants/time';
 import {
   HardwareDeviceNames,
@@ -257,10 +253,10 @@ class ConnectHardwareForm extends Component {
     )
       .then((_) => {
         this.context.trackEvent({
-          category: MetaMetricsEventCategory.Accounts,
-          event: MetaMetricsEventName.AccountAdded,
+          category: EVENT.CATEGORIES.ACCOUNTS,
+          event: EVENT_NAMES.ACCOUNT_ADDED,
           properties: {
-            account_type: MetaMetricsEventAccountType.Hardware,
+            account_type: EVENT.ACCOUNT_TYPES.HARDWARE,
             account_hardware_type: device,
           },
         });
@@ -268,10 +264,10 @@ class ConnectHardwareForm extends Component {
       })
       .catch((e) => {
         this.context.trackEvent({
-          category: MetaMetricsEventCategory.Accounts,
-          event: MetaMetricsEventName.AccountAddFailed,
+          category: EVENT.CATEGORIES.ACCOUNTS,
+          event: EVENT_NAMES.ACCOUNT_ADD_FAILED,
           properties: {
-            account_type: MetaMetricsEventAccountType.Hardware,
+            account_type: EVENT.ACCOUNT_TYPES.HARDWARE,
             account_hardware_type: device,
             error: e.message,
           },

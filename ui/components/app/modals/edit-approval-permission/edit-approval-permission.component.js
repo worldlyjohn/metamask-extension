@@ -10,11 +10,7 @@ import {
   calcTokenAmount,
   toPrecisionWithoutTrailingZeros,
 } from '../../../../../shared/lib/transactions-controller-utils';
-import { ButtonIcon } from '../../../component-library';
-import {
-  ICON_SIZES,
-  ICON_NAMES,
-} from '../../../component-library/icon/deprecated';
+import { ButtonIcon, ICON_SIZES, ICON_NAMES } from '../../../component-library';
 
 const MAX_UNSIGNED_256_INT = new BigNumber(2).pow(256).minus(1).toString(10);
 

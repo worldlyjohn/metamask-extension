@@ -6,7 +6,6 @@ import { GasEstimateType, GasFeeEstimates } from '@metamask/gas-fee-controller';
 import rootReducer from '../ducks';
 import { LedgerTransportTypes } from '../../shared/constants/hardware-wallets';
 import { TransactionMeta } from '../../shared/constants/transaction';
-import type { NetworkStatus } from '../../shared/constants/network';
 
 /**
  * This interface is temporary and is copied from the message-manager.js file
@@ -23,10 +22,6 @@ export interface TemporaryMessageDataType {
     metamaskId: number;
     data: string;
   };
-  ///: BEGIN:ONLY_INCLUDE_IN(mmi)
-  custodyId?: string;
-  status?: string;
-  ///: END:ONLY_INCLUDE_IN
 }
 
 interface MessagesIndexedById {
@@ -66,22 +61,18 @@ interface TemporaryBackgroundState {
   unapprovedMsgs: MessagesIndexedById;
   unapprovedPersonalMsgs: MessagesIndexedById;
   unapprovedTypedMessages: MessagesIndexedById;
-  networkId: string | null;
-  networkStatus: NetworkStatus;
+  network: string;
   pendingApprovals: ApprovalControllerState['pendingApprovals'];
   knownMethodData?: {
     [fourBytePrefix: string]: Record<string, unknown>;
   };
   gasFeeEstimates: GasFeeEstimates;
   gasEstimateType: GasEstimateType;
-  ///: BEGIN:ONLY_INCLUDE_IN(mmi)
-  custodyAccountDetails?: { [key: string]: any };
-  ///: END:ONLY_INCLUDE_IN
 }
 
 type RootReducerReturnType = ReturnType<typeof rootReducer>;
 
-export type CombinedBackgroundAndReduxState = RootReducerReturnType & {
+type CombinedBackgroundAndReduxState = RootReducerReturnType & {
   activeTab: {
     origin: string;
   };

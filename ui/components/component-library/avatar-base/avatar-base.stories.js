@@ -10,7 +10,7 @@ import {
 
 import Box from '../../ui/box/box';
 
-import { Icon, IconName } from '..';
+import { Icon, ICON_NAMES } from '../icon';
 import README from './README.mdx';
 import { AvatarBase } from './avatar-base';
 import { AVATAR_BASE_SIZES } from './avatar-base.constants';
@@ -89,11 +89,10 @@ export default {
     color: TextColor.textDefault,
     backgroundColor: BackgroundColor.backgroundAlternative,
     borderColor: BorderColor.borderDefault,
-    children: 'B',
   },
 };
 
-export const DefaultStory = (args) => <AvatarBase {...args} />;
+export const DefaultStory = (args) => <AvatarBase {...args}>B</AvatarBase>;
 
 DefaultStory.storyName = 'Default';
 
@@ -124,7 +123,7 @@ export const Children = (args) => (
       backgroundColor={BackgroundColor.infoMuted}
       borderColor={BorderColor.infoMuted}
     >
-      <Icon name={IconName.User} color={Color.infoDefault} />
+      <Icon name={ICON_NAMES.USER} color={Color.infoDefault} />
     </AvatarBase>
   </Box>
 );

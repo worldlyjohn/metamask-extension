@@ -21,7 +21,6 @@
     "**/jest-coverage/**/*",
     "**/__mocks__/**/*",
     "**/storybook-build/**/*",
-    "**/*.stories.*",
     ".storybook/**/*",
     "builds/**/*",
     "dist/**/*",

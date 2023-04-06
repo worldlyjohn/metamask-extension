@@ -163,9 +163,6 @@
   "connectingToGoerli": {
     "message": "Opretter forbindelse til Goerli Testnetværk"
   },
-  "connectingToLineaTestnet": {
-    "message": "Opretter forbindelse til Linea Goerli Testnetværk"
-  },
   "connectingToMainnet": {
     "message": "Forbinder til dit Primære Ethereum Netværk"
   },
@@ -407,9 +404,6 @@
   },
   "likeToImportTokens": {
     "message": "Ønsker du at tilføje disse tokens?"
-  },
-  "lineatestnet": {
-    "message": "Linea-testnetværk"
   },
   "loadMore": {
     "message": "Indlæs Mere"
@@ -655,6 +649,12 @@
   },
   "settings": {
     "message": "Indstillinger "
+  },
+  "showAdvancedGasInline": {
+    "message": "Avanceret Gas-styring"
+  },
+  "showAdvancedGasInlineDescription": {
+    "message": "Vælg dette for at vise brændstofprisen og begræns styringen direkte på afsendelses- og bekræftelseskærmene."
   },
   "showFiatConversionInTestnets": {
     "message": "Vis konvertering på testnet"

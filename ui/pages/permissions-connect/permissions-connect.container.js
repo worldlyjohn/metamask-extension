@@ -8,8 +8,6 @@ import {
   getSelectedAddress,
   ///: BEGIN:ONLY_INCLUDE_IN(flask)
   getSnapInstallOrUpdateRequests,
-  getRequestState,
-  getRequestType,
   ///: END:ONLY_INCLUDE_IN
   getTargetSubjectMetadata,
 } from '../../selectors';
@@ -32,7 +30,6 @@ import {
   ///: BEGIN:ONLY_INCLUDE_IN(flask)
   CONNECT_SNAP_INSTALL_ROUTE,
   CONNECT_SNAP_UPDATE_ROUTE,
-  CONNECT_SNAP_RESULT_ROUTE,
   ///: END:ONLY_INCLUDE_IN
 } from '../../helpers/constants/routes';
 import PermissionApproval from './permissions-connect.component';
@@ -75,10 +72,6 @@ const mapStateToProps = (state, ownProps) => {
 
   ///: BEGIN:ONLY_INCLUDE_IN(flask)
   const isSnap = targetSubjectMetadata.subjectType === SubjectType.Snap;
-
-  const requestType = getRequestType(state, permissionsRequestId);
-
-  const requestState = getRequestState(state, permissionsRequestId);
   ///: END:ONLY_INCLUDE_IN
 
   const accountsWithLabels = getAccountsWithLabels(state);
@@ -98,7 +91,6 @@ const mapStateToProps = (state, ownProps) => {
   ///: BEGIN:ONLY_INCLUDE_IN(flask)
   const snapInstallPath = `${CONNECT_ROUTE}/${permissionsRequestId}${CONNECT_SNAP_INSTALL_ROUTE}`;
   const snapUpdatePath = `${CONNECT_ROUTE}/${permissionsRequestId}${CONNECT_SNAP_UPDATE_ROUTE}`;
-  const snapResultPath = `${CONNECT_ROUTE}/${permissionsRequestId}${CONNECT_SNAP_RESULT_ROUTE}`;
   ///: END:ONLY_INCLUDE_IN
 
   let totalPages = 1 + isRequestingAccounts;
@@ -113,11 +105,7 @@ const mapStateToProps = (state, ownProps) => {
   } else if (pathname === confirmPermissionPath) {
     page = isRequestingAccounts ? '2' : '1';
     ///: BEGIN:ONLY_INCLUDE_IN(flask)
-  } else if (
-    pathname === snapInstallPath ||
-    pathname === snapUpdatePath ||
-    pathname === snapResultPath
-  ) {
+  } else if (pathname === snapInstallPath || pathname === snapUpdatePath) {
     page = isRequestingAccounts ? '3' : '2';
     ///: END:ONLY_INCLUDE_IN
   } else {
@@ -127,12 +115,9 @@ const mapStateToProps = (state, ownProps) => {
   return {
     isRequestingAccounts,
     ///: BEGIN:ONLY_INCLUDE_IN(flask)
-    requestType,
+    isSnap,
     snapInstallPath,
     snapUpdatePath,
-    snapResultPath,
-    requestState,
-    isSnap,
     ///: END:ONLY_INCLUDE_IN
     permissionsRequest,
     permissionsRequestId,
