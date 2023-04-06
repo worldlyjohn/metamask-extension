@@ -9,7 +9,10 @@ import TextField from '../../../components/ui/text-field';
 import { I18nContext } from '../../../contexts/i18n';
 import SearchIcon from '../../../components/ui/icon/search-icon';
 import { isEqualCaseInsensitive } from '../../../../shared/modules/string-utils';
-import { Icon, ICON_NAMES } from '../../../components/component-library';
+import {
+  Icon,
+  ICON_NAMES,
+} from '../../../components/component-library/icon/deprecated';
 import { IconColor } from '../../../helpers/constants/design-system';
 ///: BEGIN:ONLY_INCLUDE_IN(flask)
 import { getSnapsRouteObjects } from '../../../selectors';
@@ -34,7 +37,7 @@ export default function SettingsSearch({
   ///: END:ONLY_INCLUDE_IN
   const settingsSearchFuse = new Fuse(settingsRoutesListArray, {
     shouldSort: true,
-    threshold: 0.2,
+    threshold: 0.3,
     location: 0,
     distance: 100,
     maxPatternLength: 32,

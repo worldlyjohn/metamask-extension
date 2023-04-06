@@ -13,10 +13,14 @@ import { startNewDraftTransaction } from '../../../ducks/send';
 import { SEND_ROUTE } from '../../../helpers/constants/routes';
 import { Color, SEVERITIES } from '../../../helpers/constants/design-system';
 import { INVALID_ASSET_TYPE } from '../../../helpers/constants/error-keys';
-import { EVENT } from '../../../../shared/constants/metametrics';
+import { MetaMetricsEventCategory } from '../../../../shared/constants/metametrics';
 import { AssetType } from '../../../../shared/constants/transaction';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
-import { Icon, ICON_NAMES, ICON_SIZES } from '../../component-library';
+import {
+  Icon,
+  ICON_NAMES,
+  ICON_SIZES,
+} from '../../component-library/icon/deprecated';
 import Box from '../../ui/box/box';
 
 const AssetListItem = ({
@@ -68,7 +72,7 @@ const AssetListItem = ({
           e.stopPropagation();
           trackEvent({
             event: 'Clicked Send: Token',
-            category: EVENT.CATEGORIES.NAVIGATION,
+            category: MetaMetricsEventCategory.Navigation,
             properties: {
               action: 'Home',
               legacy_event: true,
@@ -144,7 +148,7 @@ const AssetListItem = ({
               name={ICON_NAMES.ARROW_RIGHT}
               color={Color.iconDefault}
               size={ICON_SIZES.SM}
-              style={{ 'vertical-align': 'middle' }}
+              style={{ verticalAlign: 'middle' }}
             />
             {sendTokenButton}
           </Box>

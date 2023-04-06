@@ -3,7 +3,7 @@ import { memoize } from 'lodash';
 import PropTypes from 'prop-types';
 import LedgerInstructionField from '../ledger-instruction-field';
 import { sanitizeMessage, getURLHostName } from '../../../helpers/utils/util';
-import { EVENT } from '../../../../shared/constants/metametrics';
+import { MetaMetricsEventCategory } from '../../../../shared/constants/metametrics';
 import SiteOrigin from '../../ui/site-origin';
 import Button from '../../ui/button';
 import Typography from '../../ui/typography/typography';
@@ -21,6 +21,8 @@ import { EtherDenomination } from '../../../../shared/constants/common';
 import ConfirmPageContainerNavigation from '../confirm-page-container/confirm-page-container-navigation';
 import SecurityProviderBannerMessage from '../security-provider-banner-message/security-provider-banner-message';
 import { SECURITY_PROVIDER_MESSAGE_SEVERITIES } from '../security-provider-banner-message/security-provider-banner-message.constants';
+import { formatCurrency } from '../../../helpers/utils/confirm-tx.util';
+import { getValueFromWeiHex } from '../../../../shared/modules/conversion.utils';
 import Footer from './signature-request-footer';
 import Message from './signature-request-message';
 
@@ -62,10 +64,9 @@ export default class SignatureRequest extends PureComponent {
      * RPC prefs of the current network
      */
     rpcPrefs: PropTypes.object,
-    conversionRate: PropTypes.number,
     nativeCurrency: PropTypes.string,
     currentCurrency: PropTypes.string.isRequired,
-    useNativeCurrencyAsPrimaryCurrency: PropTypes.bool.isRequired,
+    conversionRate: PropTypes.number,
     provider: PropTypes.object,
     subjectMetadata: PropTypes.object,
     unapprovedMessagesCount: PropTypes.number,
@@ -109,6 +110,8 @@ export default class SignatureRequest extends PureComponent {
         return t('goerli');
       case NETWORK_TYPES.SEPOLIA:
         return t('sepolia');
+      case NETWORK_TYPES.LINEA_TESTNET:
+        return t('lineatestnet');
       case NETWORK_TYPES.LOCALHOST:
         return t('localhost');
       default:
@@ -157,12 +160,12 @@ export default class SignatureRequest extends PureComponent {
       rpcPrefs,
       txData,
       subjectMetadata,
-      conversionRate,
       nativeCurrency,
       currentCurrency,
-      useNativeCurrencyAsPrimaryCurrency,
+      conversionRate,
       unapprovedMessagesCount,
     } = this.props;
+
     const { t, trackEvent } = this.context;
     const {
       sanitizedMessage,
@@ -171,20 +174,29 @@ export default class SignatureRequest extends PureComponent {
     } = this.memoizedParseMessage(data);
     const rejectNText = t('rejectRequestsN', [unapprovedMessagesCount]);
     const currentNetwork = this.getNetworkName();
-    const tokenName = useNativeCurrencyAsPrimaryCurrency
-      ? nativeCurrency
-      : currentCurrency?.toUpperCase();
 
-    const balanceInBaseAsset = new Numeric(balance, 16, EtherDenomination.WEI)
-      .toDenomination(EtherDenomination.ETH)
-      .applyConversionRate(conversionRate)
-      .round(6)
-      .toBase(10)
-      .toString();
+    const balanceInBaseAsset = conversionRate
+      ? formatCurrency(
+          getValueFromWeiHex({
+            value: balance,
+            fromCurrency: nativeCurrency,
+            toCurrency: currentCurrency,
+            conversionRate,
+            numberOfDecimals: 6,
+            toDenomination: EtherDenomination.ETH,
+          }),
+          currentCurrency,
+        )
+      : new Numeric(balance, 16, EtherDenomination.WEI)
+          .toDenomination(EtherDenomination.ETH)
+          .round(6)
+          .toBase(10)
+          .toString();
+
     const onSign = (event) => {
       sign(event);
       trackEvent({
-        category: EVENT.CATEGORIES.TRANSACTIONS,
+        category: MetaMetricsEventCategory.Transactions,
         event: 'Confirm',
         properties: {
           action: 'Sign Request',
@@ -198,7 +210,7 @@ export default class SignatureRequest extends PureComponent {
     const onCancel = (event) => {
       cancel(event);
       trackEvent({
-        category: EVENT.CATEGORIES.TRANSACTIONS,
+        category: MetaMetricsEventCategory.Transactions,
         event: 'Cancel',
         properties: {
           action: 'Sign Request',
@@ -219,12 +231,17 @@ export default class SignatureRequest extends PureComponent {
     return (
       <div className="signature-request">
         <ConfirmPageContainerNavigation />
-        <div className="request-signature__account">
+        <div
+          className="request-signature__account"
+          data-testid="request-signature-account"
+        >
           <NetworkAccountBalanceHeader
             networkName={currentNetwork}
             accountName={name}
             accountBalance={balanceInBaseAsset}
-            tokenName={tokenName}
+            tokenName={
+              conversionRate ? currentCurrency?.toUpperCase() : nativeCurrency
+            }
             accountAddress={address}
           />
         </div>

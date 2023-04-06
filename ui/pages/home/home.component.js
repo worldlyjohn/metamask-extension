@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import { Redirect, Route } from 'react-router-dom';
 ///: BEGIN:ONLY_INCLUDE_IN(main)
 import {
-  EVENT,
-  EVENT_NAMES,
-  CONTEXT_PROPS,
+  MetaMetricsContextProp,
+  MetaMetricsEventCategory,
+  MetaMetricsEventName,
 } from '../../../shared/constants/metametrics';
 ///: END:ONLY_INCLUDE_IN
 import AssetList from '../../components/app/asset-list';
@@ -24,19 +24,18 @@ import { EthOverview } from '../../components/app/wallet-overview';
 import WhatsNewPopup from '../../components/app/whats-new-popup';
 import RecoveryPhraseReminder from '../../components/app/recovery-phrase-reminder';
 import ActionableMessage from '../../components/ui/actionable-message/actionable-message';
-import Typography from '../../components/ui/typography/typography';
 import {
-  TypographyVariant,
   FONT_WEIGHT,
   DISPLAY,
   TextColor,
+  TextVariant,
 } from '../../helpers/constants/design-system';
 import { SECOND } from '../../../shared/constants/time';
 import {
-  ButtonIcon,
   ICON_NAMES,
   ICON_SIZES,
-} from '../../components/component-library';
+} from '../../components/component-library/icon/deprecated';
+import { ButtonIcon, Text } from '../../components/component-library';
 
 import {
   ASSET_ROUTE,
@@ -54,7 +53,6 @@ import {
   ONBOARDING_SECURE_YOUR_WALLET_ROUTE,
 } from '../../helpers/constants/routes';
 import ZENDESK_URLS from '../../helpers/constants/zendesk-url';
-import OpenSeaWhatsNewPopover from '../../components/app/open-sea-whats-new-popover/open-sea-whats-new-popover';
 ///: BEGIN:ONLY_INCLUDE_IN(main)
 import { SUPPORT_LINK } from '../../../shared/lib/ui-utils';
 ///: END:ONLY_INCLUDE_IN
@@ -133,8 +131,7 @@ export default class Home extends PureComponent {
         );
       }
     },
-    newNetworkAdded: PropTypes.string,
-    setNewNetworkAdded: PropTypes.func.isRequired,
+    newNetworkAddedName: PropTypes.string,
     // This prop is used in the `shouldCloseNotificationPopup` function
     // eslint-disable-next-line react/no-unused-prop-types
     isSigningQRHardwareTransaction: PropTypes.bool.isRequired,
@@ -145,9 +142,9 @@ export default class Home extends PureComponent {
     closeNotificationPopup: PropTypes.func.isRequired,
     newTokensImported: PropTypes.string,
     setNewTokensImported: PropTypes.func.isRequired,
-    newCustomNetworkAdded: PropTypes.object,
-    clearNewCustomNetworkAdded: PropTypes.func,
-    setRpcTarget: PropTypes.func,
+    newNetworkAddedConfigurationId: PropTypes.string,
+    clearNewNetworkAdded: PropTypes.func,
+    setActiveNetwork: PropTypes.func,
     onboardedInThisUISession: PropTypes.bool,
   };
 
@@ -268,17 +265,16 @@ export default class Home extends PureComponent {
       ///: END:ONLY_INCLUDE_IN
       infuraBlocked,
       showOutdatedBrowserWarning,
-      newNetworkAdded,
-      setNewNetworkAdded,
       newNftAddedMessage,
       setNewNftAddedMessage,
+      newNetworkAddedName,
       removeNftMessage,
       setRemoveNftMessage,
       newTokensImported,
       setNewTokensImported,
-      newCustomNetworkAdded,
-      clearNewCustomNetworkAdded,
-      setRpcTarget,
+      newNetworkAddedConfigurationId,
+      clearNewNetworkAdded,
+      setActiveNetwork,
     } = this.props;
 
     const onAutoHide = () => {
@@ -300,20 +296,20 @@ export default class Home extends PureComponent {
                     infoText={error.data.snapId}
                     descriptionText={
                       <>
-                        <Typography
+                        <Text
+                          variant={TextVariant.bodyMd}
+                          as="h5"
                           color={TextColor.textAlternative}
-                          variant={TypographyVariant.H5}
-                          fontWeight={FONT_WEIGHT.NORMAL}
                         >
                           {t('somethingWentWrong')}
-                        </Typography>
-                        <Typography
+                        </Text>
+                        <Text
                           color={TextColor.textAlternative}
-                          variant={TypographyVariant.H7}
-                          fontWeight={FONT_WEIGHT.NORMAL}
+                          variant={TextVariant.bodySm}
+                          as="h6"
                         >
                           {t('snapError', [error.message, error.code])}
-                        </Typography>
+                        </Text>
                       </>
                     }
                     onIgnore={async () => {
@@ -336,17 +332,13 @@ export default class Home extends PureComponent {
             message={
               <Box display={DISPLAY.INLINE_FLEX}>
                 <i className="fa fa-check-circle home__new-nft-notification-icon" />
-                <Typography
-                  variant={TypographyVariant.H7}
-                  fontWeight={FONT_WEIGHT.NORMAL}
-                >
+                <Text variant={TextVariant.bodySm} as="h6">
                   {t('newNftAddedMessage')}
-                </Typography>
+                </Text>
                 <ButtonIcon
                   iconName={ICON_NAMES.CLOSE}
                   size={ICON_SIZES.SM}
                   ariaLabel={t('close')}
-                  onClick={onAutoHide}
                 />
               </Box>
             }
@@ -362,12 +354,9 @@ export default class Home extends PureComponent {
             message={
               <Box display={DISPLAY.INLINE_FLEX}>
                 <i className="fa fa-check-circle home__new-nft-notification-icon" />
-                <Typography
-                  variant={TypographyVariant.H7}
-                  fontWeight={FONT_WEIGHT.NORMAL}
-                >
+                <Text variant={TextVariant.bodySm} as="h6">
                   {t('removeNftMessage')}
-                </Typography>
+                </Text>
                 <ButtonIcon
                   iconName={ICON_NAMES.CLOSE}
                   size={ICON_SIZES.SM}
@@ -378,24 +367,21 @@ export default class Home extends PureComponent {
             }
           />
         ) : null}
-        {newNetworkAdded ? (
+        {newNetworkAddedName ? (
           <ActionableMessage
             type="success"
             className="home__new-network-notification"
             message={
               <Box display={DISPLAY.INLINE_FLEX}>
                 <i className="fa fa-check-circle home__new-network-notification-icon" />
-                <Typography
-                  variant={TypographyVariant.H7}
-                  fontWeight={FONT_WEIGHT.NORMAL}
-                >
-                  {t('newNetworkAdded', [newNetworkAdded])}
-                </Typography>
+                <Text variant={TextVariant.bodySm} as="h6">
+                  {t('newNetworkAdded', [newNetworkAddedName])}
+                </Text>
                 <ButtonIcon
                   iconName={ICON_NAMES.CLOSE}
                   size={ICON_SIZES.SM}
                   ariaLabel={t('close')}
-                  onClick={() => setNewNetworkAdded('')}
+                  onClick={() => clearNewNetworkAdded()}
                   className="home__new-network-notification-close"
                 />
               </Box>
@@ -410,20 +396,20 @@ export default class Home extends PureComponent {
               <Box display={DISPLAY.INLINE_FLEX}>
                 <i className="fa fa-check-circle home__new-tokens-imported-notification-icon" />
                 <Box>
-                  <Typography
+                  <Text
                     className="home__new-tokens-imported-notification-title"
-                    variant={TypographyVariant.H6}
-                    fontWeight={FONT_WEIGHT.BOLD}
+                    variant={TextVariant.bodySmBold}
+                    as="h6"
                   >
                     {t('newTokensImportedTitle')}
-                  </Typography>
-                  <Typography
+                  </Text>
+                  <Text
                     className="home__new-tokens-imported-notification-message"
-                    variant={TypographyVariant.H7}
-                    fontWeight={FONT_WEIGHT.NORMAL}
+                    variant={TextVariant.bodySm}
+                    as="h6"
                   >
                     {t('newTokensImportedMessage', [newTokensImported])}
-                  </Typography>
+                  </Text>
                 </Box>
 
                 <ButtonIcon
@@ -508,11 +494,12 @@ export default class Home extends PureComponent {
             key="home-outdatedBrowserNotification"
           />
         ) : null}
-        {Object.keys(newCustomNetworkAdded).length !== 0 && (
+        {newNetworkAddedConfigurationId && (
           <Popover className="home__new-network-added">
             <i className="fa fa-check-circle fa-2x home__new-network-added__check-circle" />
-            <Typography
-              variant={TypographyVariant.H4}
+            <Text
+              variant={TextVariant.headingSm}
+              as="h4"
               marginTop={5}
               marginRight={9}
               marginLeft={9}
@@ -520,40 +507,32 @@ export default class Home extends PureComponent {
               fontWeight={FONT_WEIGHT.BOLD}
             >
               {t('networkAddedSuccessfully')}
-            </Typography>
+            </Text>
             <Box marginTop={8} marginRight={8} marginLeft={8} marginBottom={5}>
               <Button
                 type="primary"
                 className="home__new-network-added__switch-to-button"
                 onClick={() => {
-                  setRpcTarget(
-                    newCustomNetworkAdded.rpcUrl,
-                    newCustomNetworkAdded.chainId,
-                    newCustomNetworkAdded.ticker,
-                    newCustomNetworkAdded.chainName,
-                  );
-                  clearNewCustomNetworkAdded();
+                  setActiveNetwork(newNetworkAddedConfigurationId);
+                  clearNewNetworkAdded();
                 }}
               >
-                <Typography
-                  variant={TypographyVariant.H6}
-                  fontWeight={FONT_WEIGHT.NORMAL}
+                <Text
+                  variant={TextVariant.bodySm}
+                  as="h6"
                   color={TextColor.primaryInverse}
                 >
-                  {t('switchToNetwork', [newCustomNetworkAdded.chainName])}
-                </Typography>
+                  {t('switchToNetwork', [newNetworkAddedName])}
+                </Text>
               </Button>
-              <Button
-                type="secondary"
-                onClick={() => clearNewCustomNetworkAdded()}
-              >
-                <Typography
-                  variant={TypographyVariant.H6}
-                  fontWeight={FONT_WEIGHT.NORMAL}
+              <Button type="secondary" onClick={() => clearNewNetworkAdded()}>
+                <Text
+                  variant={TextVariant.bodySm}
+                  as="h6"
                   color={TextColor.primaryDefault}
                 >
                   {t('dismiss')}
-                </Typography>
+                </Text>
               </Button>
             </Box>
           </Popover>
@@ -625,7 +604,7 @@ export default class Home extends PureComponent {
       firstTimeFlowType,
       completedOnboarding,
       onboardedInThisUISession,
-      newCustomNetworkAdded,
+      newNetworkAddedConfigurationId,
     } = this.props;
 
     if (forgottenPassword) {
@@ -640,7 +619,7 @@ export default class Home extends PureComponent {
       announcementsToShow &&
       showWhatsNewPopup &&
       !process.env.IN_TEST &&
-      Object.keys(newCustomNetworkAdded).length === 0;
+      !newNetworkAddedConfigurationId;
     return (
       <div className="main-container">
         <Route path={CONNECTED_ROUTE} component={ConnectedSites} exact />
@@ -651,7 +630,6 @@ export default class Home extends PureComponent {
         />
         <div className="home__container">
           {showWhatsNew ? <WhatsNewPopup onClose={hideWhatsNewPopup} /> : null}
-          {showWhatsNew ? <OpenSeaWhatsNewPopover /> : null}
           {!showWhatsNew && showRecoveryPhraseReminder ? (
             <RecoveryPhraseReminder
               hasBackedUp={seedPhraseBackedUp}
@@ -685,21 +663,19 @@ export default class Home extends PureComponent {
                   }
                 />
               </Tab>
-              {process.env.NFTS_V1 ? (
-                <Tab
-                  activeClassName="home__tab--active"
-                  className="home__tab"
-                  data-testid="home__nfts-tab"
-                  name={this.context.t('nfts')}
-                  tabKey="nfts"
-                >
-                  <NftsTab
-                    onAddNFT={() => {
-                      history.push(ADD_NFT_ROUTE);
-                    }}
-                  />
-                </Tab>
-              ) : null}
+              <Tab
+                activeClassName="home__tab--active"
+                className="home__tab"
+                data-testid="home__nfts-tab"
+                name={this.context.t('nfts')}
+                tabKey="nfts"
+              >
+                <NftsTab
+                  onAddNFT={() => {
+                    history.push(ADD_NFT_ROUTE);
+                  }}
+                />
+              </Tab>
               <Tab
                 activeClassName="home__tab--active"
                 className="home__tab"
@@ -722,15 +698,15 @@ export default class Home extends PureComponent {
                     onClick={() => {
                       this.context.trackEvent(
                         {
-                          category: EVENT.CATEGORIES.HOME,
-                          event: EVENT_NAMES.SUPPORT_LINK_CLICKED,
+                          category: MetaMetricsEventCategory.Home,
+                          event: MetaMetricsEventName.SupportLinkClicked,
                           properties: {
                             url: SUPPORT_LINK,
                           },
                         },
                         {
                           contextPropsIntoEventProperties: [
-                            CONTEXT_PROPS.PAGE_TITLE,
+                            MetaMetricsContextProp.PageTitle,
                           ],
                         },
                       );

@@ -4,7 +4,10 @@ import classnames from 'classnames';
 import Identicon from '../../ui/identicon';
 import MetaFoxLogo from '../../ui/metafox-logo';
 import { DEFAULT_ROUTE } from '../../../helpers/constants/routes';
-import { EVENT, EVENT_NAMES } from '../../../../shared/constants/metametrics';
+import {
+  MetaMetricsEventCategory,
+  MetaMetricsEventName,
+} from '../../../../shared/constants/metametrics';
 import NetworkDisplay from '../network-display';
 
 ///: BEGIN:ONLY_INCLUDE_IN(beta)
@@ -26,14 +29,12 @@ export default class AppHeader extends PureComponent {
     isAccountMenuOpen: PropTypes.bool,
     ///: BEGIN:ONLY_INCLUDE_IN(flask)
     unreadNotificationsCount: PropTypes.number,
+    desktopEnabled: PropTypes.bool,
     ///: END:ONLY_INCLUDE_IN
     ///: BEGIN:ONLY_INCLUDE_IN(beta)
     showBetaHeader: PropTypes.bool,
     ///: END:ONLY_INCLUDE_IN
     onClick: PropTypes.func,
-    ///: BEGIN:ONLY_INCLUDE_IN(desktop)
-    desktopEnabled: PropTypes.bool,
-    ///: END:ONLY_INCLUDE_IN
   };
 
   static contextTypes = {
@@ -59,8 +60,8 @@ export default class AppHeader extends PureComponent {
 
     if (networkDropdownOpen === false) {
       this.context.trackEvent({
-        category: EVENT.CATEGORIES.NAVIGATION,
-        event: EVENT_NAMES.NAV_NETWORK_MENU_OPENED,
+        category: MetaMetricsEventCategory.Navigation,
+        event: MetaMetricsEventName.NavNetworkMenuOpened,
         properties: {},
       });
       showNetworkDropdown();
@@ -92,8 +93,8 @@ export default class AppHeader extends PureComponent {
             if (!disabled) {
               !isAccountMenuOpen &&
                 this.context.trackEvent({
-                  category: EVENT.CATEGORIES.NAVIGATION,
-                  event: EVENT_NAMES.NAV_MAIN_MENU_OPENED,
+                  category: MetaMetricsEventCategory.Navigation,
+                  event: MetaMetricsEventName.NavMainMenuOpened,
                   properties: {},
                 });
               toggleAccountMenu();
@@ -125,7 +126,7 @@ export default class AppHeader extends PureComponent {
       ///: BEGIN:ONLY_INCLUDE_IN(beta)
       showBetaHeader,
       ///: END:ONLY_INCLUDE_IN(beta)
-      ///: BEGIN:ONLY_INCLUDE_IN(desktop)
+      ///: BEGIN:ONLY_INCLUDE_IN(flask)
       desktopEnabled,
       ///: END:ONLY_INCLUDE_IN
     } = this.props;
@@ -150,7 +151,7 @@ export default class AppHeader extends PureComponent {
               }}
             />
             {
-              ///: BEGIN:ONLY_INCLUDE_IN(desktop)
+              ///: BEGIN:ONLY_INCLUDE_IN(flask)
               desktopEnabled && process.env.METAMASK_DEBUG && (
                 <div data-testid="app-header-desktop-dev-logo">
                   <MetaFoxLogo
